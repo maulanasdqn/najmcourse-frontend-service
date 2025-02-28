@@ -68,8 +68,8 @@ devDependencies:
     specifier: ^3.7.1
     version: 3.7.2(vite@5.4.11)
   admiral:
-    specifier: git+https://gitlab+deploy-token-15:gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral#v2.0.0-beta.98
-    version: gitlab+deploy-token-15+gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral/11c7e9afd3a3b79579def9ae0efa40605f55ee8f(@ant-design/icons@5.5.2)(antd@5.16.2)(dayjs@1.11.13)(react-cookie@7.2.2)(react-dom@18.3.1)(react@18.3.1)
+    specifier: git+https://gitlab+deploy-token-15:gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral#v2.0.0-beta.99
+    version: gitlab+deploy-token-15+gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral/e0fac45f504874132b916561243477adea9daaec(@ant-design/icons@5.5.2)(antd@5.16.2)(dayjs@1.11.13)(react-cookie@7.2.2)(react-dom@18.3.1)(react@18.3.1)
   eslint:
     specifier: ^9.12.0
     version: 9.18.0
@@ -6022,11 +6022,11 @@ packages:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
     dev: false
 
-  gitlab+deploy-token-15+gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral/11c7e9afd3a3b79579def9ae0efa40605f55ee8f(@ant-design/icons@5.5.2)(antd@5.16.2)(dayjs@1.11.13)(react-cookie@7.2.2)(react-dom@18.3.1)(react@18.3.1):
-    resolution: {commit: 11c7e9afd3a3b79579def9ae0efa40605f55ee8f, repo: https://gitlab+deploy-token-15:gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral, type: git}
-    id: gitlab+deploy-token-15+gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral/11c7e9afd3a3b79579def9ae0efa40605f55ee8f
+  gitlab+deploy-token-15+gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral/e0fac45f504874132b916561243477adea9daaec(@ant-design/icons@5.5.2)(antd@5.16.2)(dayjs@1.11.13)(react-cookie@7.2.2)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {commit: e0fac45f504874132b916561243477adea9daaec, repo: https://gitlab+deploy-token-15:gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral, type: git}
+    id: gitlab+deploy-token-15+gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral/e0fac45f504874132b916561243477adea9daaec
     name: admiral
-    version: 2.0.0-beta.98
+    version: 2.0.0-beta.99
     engines: {node: 18 || 20 || 22, pnpm: 8.14.1}
     prepare: true
     requiresBuild: true
