@@ -41,7 +41,7 @@ export const middleware = async ({ request }: LoaderFunctionArgs) => {
   }
 
   if (allowedPermissions.length === 0) {
-    return redirect("/notallowed");
+    return redirect(ROUTES.dashboard);
   }
 
   return null;
