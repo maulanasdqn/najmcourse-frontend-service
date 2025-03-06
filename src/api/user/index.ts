@@ -7,9 +7,7 @@ import {
   TUserPaginateResponse,
 } from "./type";
 
-export const getUsers = (
-  params: TGetUsersParams,
-): Promise<TUserPaginateResponse> => {
+export const getUsers = (params: TGetUsersParams): Promise<TUserPaginateResponse> => {
   console.log(params);
   return Promise.resolve({
     data: {
@@ -111,9 +109,7 @@ export const getUser = (id: string): Promise<TUserDetailResponse> => {
   });
 };
 
-export const createUser = (
-  data: TUserCreateRequest,
-): Promise<TResponseData<null>> => {
+export const createUser = (data: TUserCreateRequest): Promise<TResponseData<null>> => {
   console.log(data);
   if (!data.name.includes("bagus")) {
     throw {
@@ -140,10 +136,7 @@ export const createUser = (
   });
 };
 
-export const updateUser = (
-  id: string,
-  data: TUserUpdateRequest,
-): Promise<TResponseData<null>> => {
+export const updateUser = (id: string, data: TUserUpdateRequest): Promise<TResponseData<null>> => {
   console.log(id, data);
   return Promise.resolve({
     data: null,
