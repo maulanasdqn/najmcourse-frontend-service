@@ -43,7 +43,12 @@ export const Component = () => {
       <Row>
         <Col span={12} style={{ margin: "auto" }}>
           <FormUser
-            formProps={{ onFinish: handleOnFinish }}
+            formProps={{
+              onFinish: handleOnFinish,
+              initialValues: {
+                loginType: "email",
+              },
+            }}
             error={createUserMutation.error}
             loading={createUserMutation.isPending}
           />
