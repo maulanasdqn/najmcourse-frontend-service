@@ -1,6 +1,6 @@
 "use client";
 
-import { ActionTable, Page } from "admiral";
+import { Page } from "admiral";
 import { Button, Flex, message } from "antd";
 import {
   DeleteOutlined,
@@ -19,14 +19,63 @@ import { useFilter } from "@/app/_hooks/datatable/use-filter";
 import { TUserItem } from "@/api/user/type";
 import { ROUTES } from "@/commons/constants/routes";
 import { urlParser } from "@/utils/url-parser";
+import { useState } from "react";
+
+const provinces = [
+  {
+    id: "1",
+    name: "DKI Jakarta",
+    cities: [
+      {
+        id: "1",
+        name: "Jakarta Pusat",
+      },
+      {
+        id: "2",
+        name: "Jakarta Barat",
+      },
+    ],
+  },
+  {
+    id: "2",
+    name: "Jawa Barat",
+    cities: [
+      {
+        id: "3",
+        name: "Bandung",
+      },
+      {
+        id: "4",
+        name: "Bogor",
+      },
+    ],
+  },
+  {
+    id: "3",
+    name: "Jawa Tengah",
+    cities: [
+      {
+        id: "5",
+        name: "Semarang",
+      },
+      {
+        id: "6",
+        name: "Solo",
+      },
+    ],
+  },
+];
 
 const Component = () => {
   const navigate = useNavigate();
-  const { filters, setFilters, pagination, handleChange } = useFilter();
+  const { filters, pagination, handleChange } = useFilter();
+  const [provinceId, setProvinceId] = useState<string | null>(filters.province || null);
 
   const usersQuery = useUsersQuery(pagination);
 
   const deleteUserMutation = useDeleteUserMutation();
+
+  const cities = [...provinces].find((province) => province.id === provinceId)?.cities;
 
   const columns: ColumnsType<TUserItem> = [
     {
@@ -107,15 +156,15 @@ const Component = () => {
 
   return (
     <Page title="Users" breadcrumbs={breadcrumbs} topActions={<TopAction />} noStyle>
-      <ActionTable
-        onSearch={(value) => setFilters({ search: value })}
-        searchValue={filters.search}
-        onFiltersChange={(values) => setFilters(values as Record<string, string>)}
-        filters={[
+      <Datatable
+        onChange={handleChange}
+        rowKey="id"
+        filterComponents={[
           {
             label: "filter",
             name: "filter",
             type: "Group",
+            cols: 2,
             icon: <FilterOutlined />,
             filters: [
               {
@@ -169,27 +218,42 @@ const Component = () => {
                   },
                 ],
               },
+
+              {
+                label: "Province",
+                name: "province",
+                type: "Select",
+                placeholder: "Type to search",
+                defaultValue: filters.province,
+                options: provinces.map((province) => ({
+                  label: province.name,
+                  value: province.id,
+                })),
+                onChange: (value) => {
+                  setProvinceId(value);
+                },
+              },
+
+              {
+                label: "City",
+                name: "city",
+                type: "Select",
+                placeholder: "Type to search",
+                defaultValue: filters.city,
+                options: cities?.map((city) => ({
+                  label: city.name,
+                  value: city.id,
+                })),
+              },
             ],
           },
         ]}
+        showRowSelection={false}
+        loading={usersQuery.isLoading}
+        source={makeSource(usersQuery.data)}
+        columns={columns}
+        search={filters.search}
       />
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "5px",
-          marginTop: "10px",
-        }}
-      >
-        <Datatable
-          onChange={handleChange}
-          rowKey="id"
-          showRowSelection={false}
-          loading={usersQuery.isLoading}
-          source={makeSource(usersQuery.data)}
-          columns={columns}
-          search={filters.search}
-        />
-      </div>
     </Page>
   );
 };
