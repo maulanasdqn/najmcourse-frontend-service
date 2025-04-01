@@ -114,16 +114,9 @@ const SessionProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const signinWithOAuth = async (provider: Provider) => {
     setStatus("authenticating");
 
-    supabase.auth
-      .signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: window.location.origin + "/oauth-callback",
-        },
-      })
-      .catch(() => {
-        setStatus("unauthenticated");
-      });
+    supabase.auth.signInWithOAuth({ provider }).catch(() => {
+      setStatus("unauthenticated");
+    });
   };
   const signin = (payload: TLoginOidcParam) => {
     setStatus("authenticating");
