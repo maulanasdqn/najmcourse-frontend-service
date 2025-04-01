@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_AUTH_FUSION_ID: string;
   readonly VITE_AUTH_FUSION_TENANT_ID: string;
   readonly VITE_AUTH_FUSION_ISSUER_URL: string;
+  readonly VITE_AUTH_SUPABASE_PROJECT_URL: string;
+  readonly VITE_AUTH_SUPABASE_PUBLIC_KEY: string;
 }
 
 interface ImportMeta {

@@ -1,31 +1,22 @@
+import { useEffect } from "react";
 import { Button, Col, Row, Space, Typography, Form, Input } from "antd";
 import { useIsMobileScreen } from "admiral";
 import { useNavigate, useSearchParams } from "react-router";
-import { useEffect } from "react";
-import { useSession } from "@/app/_components/providers/session";
 import { usePostLogin } from "./_hooks/use-post-login";
+import { useSession } from "@/app/_components/providers/session";
 
 const Component: React.FC = () => {
   const session = useSession();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
   const isMobile = useIsMobileScreen();
-
-  const redirectUrl = new URL("/auth/oauth-callback", import.meta.env.VITE_BASE_URL);
-
-  const authFusionLoginUrl = new URL(
-    `/oauth2/authorize?client_id=${import.meta.env.VITE_AUTH_FUSION_ID}&redirect_uri=${redirectUrl.toString()}&response_type=code&tenantId=${import.meta.env.VITE_AUTH_FUSION_TENANT_ID}`,
-    import.meta.env.VITE_AUTH_FUSION_ISSUER_URL,
-  );
+  const { mutate, isPending: loading } = usePostLogin();
 
   useEffect(() => {
     if (session.status === "authenticated") {
       navigate(searchParams.get("callbackUrl") || "/dashboard");
     }
   }, [session.status, navigate, searchParams]);
-
-  const { mutate, isPending: loading } = usePostLogin();
 
   const handleCredentialLogin = async (values: { email: string; password: string }) =>
     mutate(values);
@@ -50,7 +41,7 @@ const Component: React.FC = () => {
         >
           <Typography.Title level={4}>Welcome back!</Typography.Title>
           <Typography.Text style={{ opacity: 0.5 }}>
-            Ant Design is the most influential web design specification in Xihu district
+            Start by sign in to your acccount
           </Typography.Text>
         </Space>
 
@@ -83,12 +74,18 @@ const Component: React.FC = () => {
         </Typography.Text>
 
         <Button
-          href={authFusionLoginUrl.toString()}
           type="primary"
-          htmlType="button"
+          onClick={() => session.signinWithOAuth("google")}
           style={{ width: "100%", marginBottom: "1rem" }}
         >
-          Log in with SSO
+          Log in with Google
+        </Button>
+        <Button
+          type="primary"
+          onClick={() => session.signinWithOAuth("facebook")}
+          style={{ width: "100%", marginBottom: "1rem" }}
+        >
+          Log in with Facebook
         </Button>
       </Col>
     </Row>
