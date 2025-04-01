@@ -82,10 +82,10 @@ const Component: React.FC = () => {
         </Button>
         <Button
           type="primary"
-          onClick={() => session.signinWithOAuth("facebook")}
+          onClick={() => session.signinWithOAuth("github")}
           style={{ width: "100%", marginBottom: "1rem" }}
         >
-          Log in with Facebook
+          Log in with Github
         </Button>
       </Col>
     </Row>
