@@ -1,14 +1,19 @@
 import { useSession } from "@/app/_components/providers/session";
 import { Page } from "admiral";
-import { Typography } from "antd";
+import { Button } from "antd";
 import { FC, ReactElement } from "react";
 
 const Component: FC = (): ReactElement => {
-  const { session } = useSession();
-
+  const { signout } = useSession();
+  const handleLogout = () => {
+    signout();
+  };
   return (
     <Page title="Dashboard">
-      <Typography.Paragraph>Hello, {session?.user?.name}</Typography.Paragraph>
+      <h1>Dashboard</h1>
+      <Button type="primary" onClick={handleLogout}>
+        Logout
+      </Button>
     </Page>
   );
 };

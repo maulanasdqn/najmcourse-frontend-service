@@ -3,18 +3,15 @@ import { LayoutWithHeader } from "admiral";
 import { Outlet } from "react-router";
 import { SIDEBAR_ITEMS } from "@/commons/constants/sidebar";
 import { filterPermission } from "@/utils/permission";
-import { Flex, Typography, Button } from "antd";
+import { Flex, Grid, Typography } from "antd";
 import { useSession } from "../_components/providers/session";
 
 const ProtectedLayout: FC = (): ReactElement => {
-  const { session, signout } = useSession();
+  const { session } = useSession();
   const userPermissions =
     session?.user?.roles?.map((role) => role.permissions?.map((perm) => perm.name)).flat() || [];
-  console.log(userPermissions);
 
-  const _handleLogout = () => {
-    signout();
-  };
+  const { md } = Grid.useBreakpoint();
 
   const filteredItems = filterPermission(
     SIDEBAR_ITEMS,
@@ -32,18 +29,13 @@ const ProtectedLayout: FC = (): ReactElement => {
               level={4}
               style={{
                 marginBottom: 0,
-                color: "black",
+                color: md ? "white" : "black",
                 whiteSpace: "nowrap",
               }}
             >
               Vite Admiral
             </Typography.Title>
           </Flex>
-        ),
-        menu: (
-          <Button type="primary" onClick={_handleLogout}>
-            Logout
-          </Button>
         ),
       }}
       sidebar={{
