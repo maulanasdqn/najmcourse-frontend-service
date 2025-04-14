@@ -1,6 +1,7 @@
 import { TPermissionItem } from "@/api/permission/type";
 import { lazy, LazyExoticComponent } from "react";
 import { ActionFunction, LoaderFunction, RouteObject } from "react-router";
+import { SessionUser } from "../localstorage";
 
 /**
  * Represents the expected structure of a page module's exports.
@@ -84,15 +85,16 @@ export function convertPagesToRoute(
       },
       async guard() {
         const result = (await importer()) as PageModuleExports;
-        const localStoragePermission = localStorage.getItem("permissions");
-        const permissions: TPermissionItem[] | undefined = localStoragePermission
-          ? JSON.parse(localStoragePermission)
-          : undefined;
-        return "permissions" in result
-          ? result.permissions?.every(
-              (permission) => permissions?.some((item) => permission === item.key) || false,
-            ) || false
-          : true;
+        // TODO: add support multi roles
+        const localStoragePermission = SessionUser.get()?.user.roles[0].permissions;
+        const permissions: TPermissionItem[] | undefined = localStoragePermission;
+        const isAllowed =
+          "permissions" in result
+            ? result.permissions?.every(
+                (permission) => permissions?.some((item) => permission === item.key) || false,
+              ) || false
+            : true;
+        return isAllowed;
       },
     });
     routes = mergeRoutes(routes, route);
