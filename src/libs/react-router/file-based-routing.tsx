@@ -1,7 +1,6 @@
 import { TPermissionItem } from "@/api/permission/type";
 import { lazy, LazyExoticComponent } from "react";
 import { ActionFunction, LoaderFunction, RouteObject } from "react-router";
-import { SessionUser } from "../localstorage";
 
 /**
  * Represents the expected structure of a page module's exports.
@@ -85,16 +84,15 @@ export function convertPagesToRoute(
       },
       async guard() {
         const result = (await importer()) as PageModuleExports;
-        // TODO: add support multi roles
-        const localStoragePermission = SessionUser.get()?.user.roles[0].permissions;
-        const permissions: TPermissionItem[] | undefined = localStoragePermission;
-        const isAllowed =
-          "permissions" in result
-            ? result.permissions?.every(
-                (permission) => permissions?.some((item) => permission === item.key) || false,
-              ) || false
-            : true;
-        return isAllowed;
+        const localStoragePermission = localStorage.getItem("permissions");
+        const permissions: TPermissionItem[] | undefined = localStoragePermission
+          ? JSON.parse(localStoragePermission)
+          : undefined;
+        return "permissions" in result
+          ? result.permissions?.every(
+              (permission) => permissions?.some((item) => permission === item.key) || false,
+            ) || false
+          : true;
       },
     });
     routes = mergeRoutes(routes, route);
@@ -160,58 +158,138 @@ function mergeRoutes(
   if (target.path !== source.path)
     throw new Error(`Paths do not match: "${target.path}" and "${source.path}"`);
 
-  // If target doesn't have children yet, initialize it
+  target.children = target.children || [];
+
+  // Handle layouts first as priority routes
+  if (source.handle?.pageType === "layout") {
+    return handleLayoutMerge(target, source);
+  }
+
+  // Handle page route
+  if (source.handle?.pageType === "page") {
+    return handlePageMerge(target, source);
+  }
+
+  // Handle nested routes
+  if (source.children && source.children.length > 0) {
+    // If target is currently a page but source adds children,
+    // convert target's page to an index route before merging children.
+    if (target.handle?.pageType === "page") {
+      // Ensure children array exists and no index route already exists
+      if (!target.children?.some((child) => child.index)) {
+        target.children = target.children || [];
+        target.children.unshift({
+          // Use unshift to prioritize index over potential later merges
+          index: true,
+          element: target.element,
+          HydrateFallback: target.HydrateFallback,
+          action: target.action,
+          loader: target.loader,
+          handle: target.handle,
+          errorElement: target.errorElement,
+        });
+      }
+      // Clear page-specific properties from target as it now acts primarily as a parent/layout
+      // Keep properties that might apply to a layout scope (like ErrorBoundary, HydrateFallback)
+      delete target.element;
+      delete target.action;
+      delete target.loader;
+      delete target.handle;
+    }
+    mergeChildRoutes(target, source);
+  }
+
+  return target;
+}
+
+/**
+ * Merges child routes from source to target.
+ */
+export function mergeChildRoutes(target: ExtendedRouteObject, source: ExtendedRouteObject): void {
+  if (!source.children) return;
+
+  // Ensure target.children exists
   if (!target.children) {
     target.children = [];
   }
 
-  // Prioritize layouts by handling them first
-  if (source.handle?.pageType === "layout") {
-    if (!target.element) {
-      target.element = source.element;
-      target.HydrateFallback = source.HydrateFallback;
-      target.action = source.action;
-      target.loader = source.loader;
-      target.handle = source.handle;
-      target.errorElement = source.errorElement;
-      target.children = target.children ?? [];
-    } else if (target.handle?.pageType === "page") {
-      target = swapTargetRouteAsIndexRouteAndUpdateWithRoute(target, source);
-    }
-    return target;
-  }
+  source.children.forEach((sourceChild) => {
+    const matchingChild = target.children!.find(
+      (targetChild) => targetChild.path === sourceChild.path,
+    );
 
-  // If this is a page route and we don't have an index route yet, add it
-  if (source.handle?.pageType === "page" && !target.children.some((child) => child.index)) {
-    target.children.unshift({
-      index: true,
+    if (matchingChild) {
+      mergeRoutes(matchingChild, sourceChild);
+    } else {
+      target.children!.push(sourceChild);
+    }
+  });
+}
+
+/**
+ * Handles the merging of a layout route.
+ */
+export function handleLayoutMerge(
+  target: ExtendedRouteObject,
+  source: ExtendedRouteObject,
+): ExtendedRouteObject {
+  // If target has no element, use the source layout
+  if (!target.element) {
+    Object.assign(target, {
       element: source.element,
       HydrateFallback: source.HydrateFallback,
       action: source.action,
       loader: source.loader,
       handle: source.handle,
-    });
-    return target;
-  }
-
-  // Handle other cases...
-  if (target.handle?.pageType === "layout" && source.handle?.pageType === "page") {
-    target = addRouteAsIndexRouteForTargetRoute(target, source);
-    return target;
-  }
-
-  // Rest of the existing mergeRoutes logic...
-  if (source.children) {
-    target.children = target.children ?? [];
-    source.children.forEach((sourceChild) => {
-      const matchingChild = target.children?.find(
-        (targetChild) => targetChild.path === sourceChild.path,
-      );
-      if (matchingChild) mergeRoutes(matchingChild, sourceChild);
-      else target.children?.push(sourceChild);
+      errorElement: source.errorElement,
     });
   }
+  // If target is a page, convert it to an index route under the layout
+  else if (target.handle?.pageType === "page") {
+    target = swapTargetRouteAsIndexRouteAndUpdateWithRoute(target, source);
+  }
 
+  return target;
+}
+
+/**
+ * Handles the merging of a page route.
+ */
+export function handlePageMerge(
+  target: ExtendedRouteObject,
+  source: ExtendedRouteObject,
+): ExtendedRouteObject {
+  // Ensure target.children exists
+  if (!target.children) {
+    target.children = [];
+  }
+
+  // If there's no index route yet, add this page as index
+  // Also handles the case where target is a layout and source is a page for the same path
+  if (!target.children.some((child) => child.index) || target.handle?.pageType === "layout") {
+    // Check if target is a layout, if so, use addRouteAsIndexRouteForTargetRoute
+    if (target.handle?.pageType === "layout") {
+      addRouteAsIndexRouteForTargetRoute(target, source);
+    } else {
+      // Otherwise, just add the source page as the index route
+      target.children.unshift({
+        // Use unshift to prioritize index
+        index: true,
+        element: source.element,
+        HydrateFallback: source.HydrateFallback,
+        action: source.action,
+        loader: source.loader,
+        handle: source.handle,
+        errorElement: source.errorElement,
+      });
+    }
+  }
+  // If an index route already exists and target is not a layout, the new page might be ignored or log a warning.
+  // Current logic prioritizes the first page found as index.
+
+  // If the target was previously just a placeholder parent created during nesting,
+  // ensure layout-like properties from the source page (if it implies a layout structure implicitly) are considered.
+  // This part might need refinement based on how layouts are implicitly handled.
   return target;
 }
 
@@ -219,11 +297,11 @@ function mergeRoutes(
  * Takes a page route and converts it into an index route under a layout route.
  * Preserves all route properties while restructuring the hierarchy.
  */
-function swapTargetRouteAsIndexRouteAndUpdateWithRoute(
+export function swapTargetRouteAsIndexRouteAndUpdateWithRoute(
   target: ExtendedRouteObject,
-  route: ExtendedRouteObject,
+  layout: ExtendedRouteObject,
 ): ExtendedRouteObject {
-  target.children = target.children ?? [];
+  target.children = target.children || [];
   target.children.push({
     index: true,
     element: target.element,
@@ -234,34 +312,36 @@ function swapTargetRouteAsIndexRouteAndUpdateWithRoute(
     errorElement: target.errorElement,
   });
 
-  target.element = route.element;
-  target.HydrateFallback = route.HydrateFallback;
-  target.action = route.action;
-  target.loader = route.loader;
-  target.handle = route.handle;
-  target.errorElement = route.errorElement;
+  Object.assign(target, {
+    element: layout.element,
+    HydrateFallback: layout.HydrateFallback,
+    action: layout.action,
+    loader: layout.loader,
+    handle: layout.handle,
+    errorElement: layout.errorElement,
+  });
 
   return target;
 }
 
 /**
  * Adds a route as an index route under a target layout route.
- * Used when a page needs to be nested under an existing layout.
  */
-function addRouteAsIndexRouteForTargetRoute(
+export function addRouteAsIndexRouteForTargetRoute(
   target: ExtendedRouteObject,
-  route: ExtendedRouteObject,
+  page: ExtendedRouteObject,
 ): ExtendedRouteObject {
-  target.children = target.children ?? [];
+  target.children = target.children || [];
   target.children.push({
     index: true,
-    element: route.element,
-    HydrateFallback: route.HydrateFallback,
-    action: route.action,
-    loader: route.loader,
-    handle: route.handle,
-    errorElement: route.errorElement,
+    element: page.element,
+    HydrateFallback: page.HydrateFallback,
+    action: page.action,
+    loader: page.loader,
+    handle: page.handle,
+    errorElement: page.errorElement,
   });
+
   return target;
 }
 
