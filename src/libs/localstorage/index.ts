@@ -1,4 +1,4 @@
-import { TUserItem } from "@/api/user/type";
+import { TUserItem } from "@/api/users/type";
 
 export const SessionUser = {
   set: (val: { user: TUserItem }) => localStorage.setItem("users", JSON.stringify(val)),

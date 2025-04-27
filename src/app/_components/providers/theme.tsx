@@ -1,42 +1,40 @@
-import { ThemeProvider as AdmiralThemeProvider, TThemeConfig } from "admiral";
-import { Link, Outlet } from "react-router";
+import { ConfigProvider, type ThemeConfig } from "antd";
+import { Outlet } from "react-router";
 
-const theme: TThemeConfig = {
+const theme: ThemeConfig = {
+  token: {
+    colorPrimary: "#4D9AC1", // Biru cerah buat primary color
+    colorLink: "#4D9AC1",
+    colorBgLayout: "#FFFFFF", // Latar belakang tetap putih
+    colorText: "#0B0A13", // Text warna hitam kebiruan
+  },
   components: {
     Menu: {
-      itemColor: "#B5F5EC",
-      itemSelectedColor: "#B5F5EC",
-      itemHoverBg: "#08979C",
-      itemHoverColor: "#B5F5EC",
-      itemSelectedBg: "#08979C",
+      itemColor: "#2A3E52", // Navy untuk warna item
+      itemSelectedColor: "#B5DBED", // Biru muda pas item selected
+      itemHoverBg: "#4D9AC1", // Hover pakai biru cerah
+      itemHoverColor: "#B5DBED",
+      itemSelectedBg: "#4D9AC1",
       fontSize: 14,
-      horizontalItemSelectedColor: "#08979C",
+      horizontalItemSelectedColor: "#4D9AC1",
     },
     Layout: {
-      headerColor: "#001213",
-      headerBg: "#FFF",
+      headerColor: "#FFFFFF",
+      headerBg: "#2A3E52", // Header dark navy
     },
-  },
-  token: {
-    colorPrimary: "#006D75",
-    colorLink: "#006D75",
-  },
-  admiral: {
-    Sidebar: {
-      colorBg: "#006D75",
-      colorText: "#B5F5EC",
-    },
-    Page: {
-      NavigationAs: ({ path, label }) => <Link to={path}>{label}</Link>,
+    Button: {
+      colorPrimary: "#4D9AC1",
+      colorPrimaryHover: "#2A3E52",
+      colorPrimaryActive: "#2A3E52",
     },
   },
 };
 
 const ThemeProvider: React.FC<React.PropsWithChildren> = () => {
   return (
-    <AdmiralThemeProvider theme={theme}>
+    <ConfigProvider theme={theme}>
       <Outlet />
-    </AdmiralThemeProvider>
+    </ConfigProvider>
   );
 };
 

@@ -1,11 +1,10 @@
 {
-  "name": "vite-admiral",
+  "name": "najm-course-backoffice",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "engines": {
-    "node": "20",
-    "pnpm": "8.14.1"
+    "node": "22"
   },
   "scripts": {
     "dev": "vite",
@@ -15,39 +14,43 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.5.1",
-    "@tanstack/react-query": "^5.59.14",
-    "antd": "5.16.2",
+    "@ant-design/icons": "^6.0.0",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@hookform/resolvers": "^5.0.1",
+    "@tanstack/react-query": "^5.74.4",
+    "antd": "^5.24.8",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-error-boundary": "^4.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-error-boundary": "^5.0.0",
+    "react-hook-form": "^7.56.1",
     "react-lazily": "^0.9.2",
     "react-responsive": "^10.0.0",
     "react-router": "^7.1.3",
-    "zod": "^3.23.8"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
     "@sentry/vite-plugin": "^3.0.0",
+    "@tailwindcss/vite": "^4.1.4",
     "@types/js-cookie": "^3.0.6",
-    "@types/node": "^22.7.5",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.1",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react-swc": "^3.7.1",
-    "admiral": "git+https://gitlab+deploy-token-15:gldt-zP9L2FNxM7yLmGqrDjMG@gitlab.dot.co.id/design-system/admiral#v2.0.0-beta.99",
     "eslint": "^9.12.0",
-    "eslint-plugin-react-hooks": "5.1.0-rc-fb9a90fa48-20240614",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.12",
-    "globals": "^15.11.0",
+    "globals": "^16.0.0",
     "husky": "^9.1.7",
     "prettier": "^3.4.2",
+    "tailwindcss": "^4.1.4",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.9.0",
-    "vite": "^5.4.9",
-    "vite-plugin-pwa": "^0.21.1"
+    "vite": "^6.3.3",
+    "vite-plugin-pwa": "^1.0.0"
   },
   "packageManager": "pnpm@8.14.1"
 }

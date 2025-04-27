@@ -1,21 +1,12 @@
----
-version: "3.5"
-services:
-    nexus-fe:
-        image: registry.gitlab.dot.co.id/playground/boilerplates/vite-admiral:develop
-        deploy:
-            placement:
-                constraints: [node.hostname == sandbox]
-            resources:
-                limits:
-                    cpus: "0.5"
-                    memory: 1G
-            restart_policy:
-                condition: on-failure
-        ports:
-        - 38293:8080
+version: "3.9"
 
-networks:
-    default:
-        name: docker-swarm-deployment-network
-        external: true
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    restart: unless-stopped

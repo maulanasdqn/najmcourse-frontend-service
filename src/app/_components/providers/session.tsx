@@ -1,37 +1,49 @@
-import { TLoginOidcParam } from "@/api/auth/type";
-import { useEffect, useState, createContext, useContext } from "react";
+import { TLoginParam } from "@/api/auth/type";
+import {
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+  PropsWithChildren,
+  FC,
+  useMemo,
+  useCallback,
+} from "react";
 import { SessionUser } from "@/libs/localstorage";
 import { SessionToken } from "@/libs/cookies";
-import { usePostLoginOidc } from "@/app/(public)/auth/oauth-callback/_hooks/use-post-login-oidc";
 import { useNavigate } from "react-router";
-import { TUserItem } from "@/api/user/type";
+import { TUserItem } from "@/api/users/type";
+import { usePostLogin } from "@/app/(public)/auth/login/_hooks/use-post-login";
 
 type Session = {
-  signin: (payload: TLoginOidcParam) => void;
-  signout: () => void;
+  signIn: (payload: TLoginParam) => void;
+  signOut: () => void;
   session?: {
-    access_token: string;
-    refresh_token: string;
+    token: {
+      access_token: string;
+      refresh_token: string;
+    };
     user?: TUserItem;
   };
   status?: "authenticated" | "authenticating" | "unauthenticated";
 };
 
 const SessionContext = createContext<Session>({
-  signin: () => {},
-  signout: () => {},
+  signIn: () => {},
+  signOut: () => {},
   session: undefined,
   status: undefined,
 });
 
-const SessionProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+const SessionProvider: FC<PropsWithChildren> = ({ children }) => {
   const navigate = useNavigate();
   const [sessionData, setSessionData] = useState<Session["session"]>();
   const [status, setStatus] = useState<Session["status"]>();
 
-  const { mutate: oidcMutate } = usePostLoginOidc();
+  const { mutate } = usePostLogin();
 
   useEffect(() => {
+    console.log("Executing useEffect");
     const session = SessionToken.get();
     const user = SessionUser.get();
     if (session) {
@@ -42,45 +54,41 @@ const SessionProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
   }, []);
 
-  const signin = (payload: TLoginOidcParam) => {
-    setStatus("authenticating");
-    oidcMutate(payload, {
-      onSuccess: (res) => {
-        setSessionData(res.data);
+  const signIn = useCallback(
+    (payload: TLoginParam) => {
+      setStatus("authenticating");
+      mutate(payload, {
+        onSuccess: (res) => {
+          setSessionData(res.data);
+          setStatus("authenticated");
+          SessionUser.set(res.data);
+          SessionToken.set(res.data);
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 600);
+        },
+        onError: () => {
+          setStatus("unauthenticated");
+        },
+      });
+    },
+    [mutate, navigate],
+  );
 
-        setStatus("authenticated");
-
-        SessionUser.set(res.data);
-
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 600);
-      },
-      onError: () => {
-        setStatus("unauthenticated");
-      },
-    });
-  };
-
-  const signout = () => {
+  const signOut = useCallback(() => {
     setStatus("unauthenticated");
     setSessionData(undefined);
     SessionUser.remove();
     SessionToken.remove();
     navigate("/auth/login");
-  };
-  return (
-    <SessionContext.Provider
-      value={{
-        session: sessionData,
-        status,
-        signin,
-        signout,
-      }}
-    >
-      {children}
-    </SessionContext.Provider>
+  }, [navigate]);
+
+  const contextValue = useMemo(
+    () => ({ session: sessionData, status, signIn, signOut }),
+    [sessionData, status, signIn, signOut],
   );
+
+  return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;
 };
 
 export const useSession = () => {

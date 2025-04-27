@@ -19,8 +19,7 @@ const mappingPublicRoutes = ["/auth/login", "/auth/oauth-callback"];
 export const middleware = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const session = SessionUser.get();
-  const userPermissions =
-    session?.user?.roles?.map((role) => role.permissions.map((perm) => perm.name))?.flat() || [];
+  const userPermissions = session?.user?.role.permissions.map((perm) => perm.name) || [];
 
   const pathname = url.pathname;
 

@@ -1,30 +1,24 @@
-export type TResponsePaginate<T> = {
-  status_code: number;
-  data: {
-    items: T[];
-    meta: {
-      page: number;
-      per_page: number;
-      total: number;
-      total_page: number;
-    };
+import { AxiosError } from "axios";
+
+export type TResponseList<T> = {
+  data: T[];
+  meta: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_page: number;
   };
   version: string;
 };
 
-export type TResponseData<T> = {
-  status_code: number;
+export type TResponseDetail<T> = {
   data: T;
   version: string;
 };
 
-export type TResponseError = {
-  status_code: number;
-  error_message: string;
-  stack_trace: string;
-  errors: {
-    key: string;
-    message: string;
-  }[];
+export type TMessageResponse = {
+  message: string;
   version: string;
 };
+
+export type TResponseError = AxiosError<TMessageResponse>;

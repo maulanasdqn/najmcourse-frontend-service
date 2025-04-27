@@ -1,17 +1,17 @@
-import Cookies from "js-cookie";
-
 export const SessionToken = {
-  set: (val: { access_token: string; refresh_token: string }) =>
-    Cookies.set("token", JSON.stringify(val)),
-  get: ():
-    | {
-        access_token: string;
-        refresh_token: string;
-      }
-    | undefined => {
-    const token = Cookies.get("token");
-    if (!token) return undefined;
-    return JSON.parse(token);
+  set: (val: { token: { access_token: string; refresh_token: string } }) => {
+    localStorage.setItem("token", JSON.stringify(val));
   },
-  remove: () => Cookies.remove("token"),
+  get: (): { token: { access_token: string; refresh_token: string } } | undefined => {
+    const token = localStorage.getItem("token");
+    if (!token) return undefined;
+    try {
+      return JSON.parse(token);
+    } catch {
+      return undefined;
+    }
+  },
+  remove: () => {
+    localStorage.removeItem("token");
+  },
 };

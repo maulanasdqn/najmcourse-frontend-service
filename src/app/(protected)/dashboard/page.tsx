@@ -1,20 +1,23 @@
 import { useSession } from "@/app/_components/providers/session";
-import { Page } from "admiral";
-import { Button } from "antd";
+import { Button, Typography } from "antd";
 import { FC, ReactElement } from "react";
 
 const Component: FC = (): ReactElement => {
-  const { signout } = useSession();
+  const { signOut, session } = useSession();
+
+  console.log(session);
+
   const handleLogout = () => {
-    signout();
+    signOut();
   };
+
   return (
-    <Page title="Dashboard">
-      <h1>Dashboard</h1>
+    <div style={{ padding: 24 }}>
+      <Typography.Title level={2}>Dashboard</Typography.Title>
       <Button type="primary" onClick={handleLogout}>
         Logout
       </Button>
-    </Page>
+    </div>
   );
 };
 

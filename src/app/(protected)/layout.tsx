@@ -1,17 +1,18 @@
 import type { FC, ReactElement } from "react";
-import { LayoutWithHeader } from "admiral";
-import { Outlet } from "react-router";
+import { Layout, Menu, Typography, Flex, Grid } from "antd";
+import { Outlet, useLocation, Link } from "react-router";
 import { SIDEBAR_ITEMS } from "@/commons/constants/sidebar";
 import { filterPermission } from "@/utils/permission";
-import { Flex, Grid, Typography } from "antd";
 import { useSession } from "../_components/providers/session";
+
+const { Header, Sider, Content } = Layout;
 
 const ProtectedLayout: FC = (): ReactElement => {
   const { session } = useSession();
-  const userPermissions =
-    session?.user?.roles?.map((role) => role.permissions?.map((perm) => perm.name)).flat() || [];
-
+  const location = useLocation();
   const { md } = Grid.useBreakpoint();
+
+  const userPermissions = session?.user?.role.permissions?.map((perm) => perm.name) || [];
 
   const filteredItems = filterPermission(
     SIDEBAR_ITEMS,
@@ -20,10 +21,46 @@ const ProtectedLayout: FC = (): ReactElement => {
       item.permissions.some((permission) => userPermissions.includes(permission)),
   );
 
+  const menuItems = filteredItems.map((item) => ({
+    key: item.key,
+    label: <Link to={"#"}>{item.label}</Link>,
+    icon: item.icon,
+  }));
+
   return (
-    <LayoutWithHeader
-      header={{
-        brandLogo: (
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider width={250} breakpoint="md" collapsedWidth="0" theme="light">
+        <div
+          style={{
+            height: 64,
+            margin: 16,
+            background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            Vite Admiral
+          </Typography.Title>
+        </div>
+        <Menu
+          mode="inline"
+          selectedKeys={[location.pathname]}
+          items={menuItems}
+          style={{ borderRight: 0 }}
+        />
+      </Sider>
+
+      <Layout>
+        <Header
+          style={{
+            padding: "0 24px",
+            background: md ? "#001529" : "#fff",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <Flex align="center" gap={8}>
             <Typography.Title
               level={4}
@@ -36,16 +73,13 @@ const ProtectedLayout: FC = (): ReactElement => {
               Vite Admiral
             </Typography.Title>
           </Flex>
-        ),
-      }}
-      sidebar={{
-        width: 250,
-        menu: filteredItems,
-        theme: "light",
-      }}
-    >
-      <Outlet />
-    </LayoutWithHeader>
+        </Header>
+
+        <Content style={{ margin: "24px 16px", overflow: "auto" }}>
+          <Outlet />
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 

@@ -1,17 +1,14 @@
-type TMetaPage = {
+export enum EMetaOrder {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+export type TMetaRequest = {
   page?: number;
-  perPage?: number;
-};
-
-export type TMetaResponse = TMetaPage & {
-  pageSize?: number;
-  total?: number;
-};
-
-export type TMetaRequest<T = unknown> = TMetaPage & {
+  per_page?: number;
   search?: string;
-  sort?: string;
-  order?: "asc" | "desc";
-  orderBy?: string;
-  filters?: T;
+  sort_by?: string;
+  order?: EMetaOrder;
+  filter?: string;
+  filter_by?: string;
 };

@@ -1,5 +1,5 @@
-import { TPermissionItem } from "@/api/permission/type";
-import { lazy, LazyExoticComponent } from "react";
+import { TPermissionItem } from "@/api/permissions/type";
+import { lazy, LazyExoticComponent, ReactNode } from "react";
 import { ActionFunction, LoaderFunction, RouteObject } from "react-router";
 
 /**
@@ -10,7 +10,7 @@ import { ActionFunction, LoaderFunction, RouteObject } from "react-router";
  * @property {ActionFunction} [action] - Optional form action handler
  */
 interface PageModuleExports {
-  default: () => JSX.Element;
+  default: () => ReactNode;
   loader?: LoaderFunction;
   action?: ActionFunction;
   permissions?: Array<string>;
@@ -22,7 +22,7 @@ interface PageModuleExports {
  * @property {Function} default - The loading component to render
  */
 interface LoadingModuleExports {
-  default: () => JSX.Element;
+  default: () => ReactNode;
 }
 
 /**
@@ -90,7 +90,7 @@ export function convertPagesToRoute(
           : undefined;
         return "permissions" in result
           ? result.permissions?.every(
-              (permission) => permissions?.some((item) => permission === item.key) || false,
+              (permission) => permissions?.some((item) => permission === item.name) || false,
             ) || false
           : true;
       },
@@ -353,8 +353,8 @@ export function addRouteAsIndexRouteForTargetRoute(
  */
 function createRoute(args: {
   segments: string[];
-  PageComponent: LazyExoticComponent<() => JSX.Element>;
-  LoadingComponent?: LazyExoticComponent<() => JSX.Element>;
+  PageComponent: LazyExoticComponent<() => ReactNode>;
+  LoadingComponent?: LazyExoticComponent<() => ReactNode>;
   loader?: LoaderFunction;
   action?: ActionFunction;
   guard?: () => Promise<boolean>;
@@ -492,7 +492,7 @@ export function addErrorElementToRoutes(
 ) {
   Object.entries(errorFiles).forEach(([filePath, importer]) => {
     const segments = getRouteSegmentsFromFilePath(filePath, (_, prevSegment) => prevSegment);
-    const ErrorBoundary = lazy(importer as () => Promise<{ default: () => JSX.Element }>);
+    const ErrorBoundary = lazy(importer as () => Promise<{ default: () => ReactNode }>);
     setRoute(segments, routes, (route) => {
       route.errorElement = <ErrorBoundary />;
       return route;
@@ -512,7 +512,7 @@ export function add404PageToRoutesChildren(
 ) {
   Object.entries(notFoundFiles).forEach(([filePath, importer]) => {
     const segments = getRouteSegmentsFromFilePath(filePath, (_, prevSegment) => prevSegment);
-    const NotFound = lazy(importer as () => Promise<{ default: () => JSX.Element }>);
+    const NotFound = lazy(importer as () => Promise<{ default: () => ReactNode }>);
     setRoute(segments, routes, (route) => {
       // add not found route if there is are children
       if (route.children) {
@@ -543,7 +543,7 @@ export function add404PageToRoutesChildren(
   });
 }
 
-function set404NonPage(routes: RouteObject, notFoundElement: JSX.Element) {
+function set404NonPage(routes: RouteObject, notFoundElement: ReactNode) {
   if (
     routes.path &&
     routes.children?.length &&
