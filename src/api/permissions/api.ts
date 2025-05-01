@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { api } from "@/libs/axios/api";
 import {
   TPermissionCreateRequest,
@@ -11,11 +12,15 @@ import { TMetaRequest } from "@/commons/types/meta";
 import { TMessageResponse } from "@/commons/types/response";
 
 export const getListPermission = async (params: TMetaRequest): Promise<TPermissionListResponse> => {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v !== undefined && v !== null && v !== ""),
+  );
   const { data } = await api({
     url: ENDPOINTS.PERMISSIONS.LIST,
     method: "GET",
-    params,
+    params: cleanParams,
   });
+
   return data;
 };
 

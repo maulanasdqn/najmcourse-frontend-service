@@ -12,3 +12,9 @@ export type TMetaRequest = {
   filter?: string;
   filter_by?: string;
 };
+
+export type TMetaResponse = {
+  page: number;
+  per_page: number;
+  total: number;
+};

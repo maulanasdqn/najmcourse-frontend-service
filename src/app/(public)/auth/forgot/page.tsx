@@ -1,21 +1,21 @@
 import { Button, Col, Form, Row, Typography } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { useLogin } from "./_hooks/use-login";
+import { MailOutlined } from "@ant-design/icons";
 import { ControlledInput } from "@/app/_components/ui/controlled-input";
-
+import { useForgot } from "./_hooks/use-forgot";
 const { Text, Title, Link } = Typography;
 
 export default function Component() {
-  const { form, state, handler } = useLogin();
-
+  const { form, state, handler } = useForgot();
   return (
     <section style={state.styles.section}>
       <Row style={state.styles.row} justify="center">
         <Col xs={24} md={12} style={state.styles.formWrapper}>
           <div style={state.styles.container}>
             <div style={state.styles.header}>
-              <Title style={state.styles.title}>Masuk</Title>
-              <Text style={state.styles.text}>Silahkan masuk dengan email dan password Anda.</Text>
+              <Title style={state.styles.title}>Lupa kata sandi</Title>
+              <Text style={state.styles.text}>
+                Masukan email Anda untuk mereset kata sandi Anda.
+              </Text>
             </div>
             <Form
               name="auth_login"
@@ -34,31 +34,21 @@ export default function Component() {
                 size="large"
               />
 
-              <ControlledInput
-                control={form.control}
-                name="password"
-                prefix={<LockOutlined />}
-                placeholder="Kata sandi"
-                type="password"
-                size="large"
-              />
-
               <Form.Item>
-                <Link href="/auth/forgot" style={{ float: "right" }}>
-                  Lupa kata sandi?
+                <Link href="/auth/login" style={{ float: "right" }}>
+                  Sudah ingat kata sandi? Masuk
                 </Link>
               </Form.Item>
 
               <Form.Item style={{ marginBottom: 0 }}>
                 <Button
-                  loading={state.isLoading}
                   size="large"
                   disabled={!form.formState.isValid}
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
                 >
-                  Masuk Sekarang
+                  Kirim Email
                 </Button>
               </Form.Item>
             </Form>

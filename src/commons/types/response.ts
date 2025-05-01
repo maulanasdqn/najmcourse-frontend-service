@@ -1,13 +1,9 @@
 import { AxiosError } from "axios";
+import { TMetaResponse } from "./meta";
 
 export type TResponseList<T> = {
   data: T[];
-  meta: {
-    page: number;
-    per_page: number;
-    total: number;
-    total_page: number;
-  };
+  meta: TMetaResponse;
   version: string;
 };
 

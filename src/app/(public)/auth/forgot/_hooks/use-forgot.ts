@@ -1,31 +1,30 @@
-import { loginSchema } from "@/api/auth/schema";
-import { TLoginParam } from "@/api/auth/type";
+import { forgotPasswordSchema } from "@/api/auth/schema";
+import { TForgotPasswordParam } from "@/api/auth/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "@/app/_components/providers/session";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../_hooks/use-auth";
+import { usePostForgot } from "./use-post-forgot";
 
-export const useLogin = () => {
+export const useForgot = () => {
   const { styles, token } = useAuth();
-  const session = useSession();
 
-  const form = useForm<TLoginParam>({
+  const { mutate } = usePostForgot();
+
+  const form = useForm<TForgotPasswordParam>({
     mode: "all",
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
   const onSubmit = form.handleSubmit((data) => {
-    session.signIn(data);
+    mutate(data);
   });
 
   const state = {
     styles,
     token,
-    isLoading: session.isLoading,
   };
 
   const handler = {

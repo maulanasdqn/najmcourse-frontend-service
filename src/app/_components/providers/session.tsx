@@ -16,6 +16,7 @@ import { TUserItem } from "@/api/users/type";
 import { usePostLogin } from "@/app/(public)/auth/login/_hooks/use-post-login";
 
 type Session = {
+  isLoading: boolean;
   signIn: (payload: TLoginParam) => void;
   signOut: () => void;
   session?: {
@@ -29,6 +30,7 @@ type Session = {
 };
 
 const SessionContext = createContext<Session>({
+  isLoading: false,
   signIn: () => {},
   signOut: () => {},
   session: undefined,
@@ -40,10 +42,9 @@ const SessionProvider: FC<PropsWithChildren> = ({ children }) => {
   const [sessionData, setSessionData] = useState<Session["session"]>();
   const [status, setStatus] = useState<Session["status"]>();
 
-  const { mutate } = usePostLogin();
+  const { mutate, isPending } = usePostLogin();
 
   useEffect(() => {
-    console.log("Executing useEffect");
     const session = SessionToken.get();
     const user = SessionUser.get();
     if (session) {
@@ -61,8 +62,15 @@ const SessionProvider: FC<PropsWithChildren> = ({ children }) => {
         onSuccess: (res) => {
           setSessionData(res.data);
           setStatus("authenticated");
-          SessionUser.set(res.data);
-          SessionToken.set(res.data);
+          SessionUser.set({
+            user: res.data.user,
+          });
+          SessionToken.set({
+            token: {
+              access_token: res.data.token.access_token,
+              refresh_token: res.data.token.refresh_token,
+            },
+          });
           setTimeout(() => {
             navigate("/dashboard");
           }, 600);
@@ -84,8 +92,8 @@ const SessionProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [navigate]);
 
   const contextValue = useMemo(
-    () => ({ session: sessionData, status, signIn, signOut }),
-    [sessionData, status, signIn, signOut],
+    () => ({ session: sessionData, status, signIn, signOut, isLoading: isPending }),
+    [sessionData, status, signIn, signOut, isPending],
   );
 
   return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;

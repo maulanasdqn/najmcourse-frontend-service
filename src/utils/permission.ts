@@ -20,7 +20,6 @@ type TPermissionChecker = {
  * const userPermissions = ['read', 'delete'];
  * const customCondition = true;
  * const hasAccess = checkPermission({ permissions, userPermissions, customCondition });
- * console.log(hasAccess); // Output: true
  */
 export const checkPermission = ({
   permissions,
@@ -54,9 +53,7 @@ const isPermissionWithChildren = (
   return "children" in permission;
 };
 
-export const filterPermission = <
-  T extends PermissionWithChildren | PermissionWithoutChildren,
->(
+export const filterPermission = <T extends PermissionWithChildren | PermissionWithoutChildren>(
   menus: T[],
   hasPermissionCB: (menu: T) => boolean,
 ): T[] => {

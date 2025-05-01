@@ -1,6 +1,6 @@
 import type { FC, ReactElement } from "react";
 import { Layout, Menu, Typography, Flex, Grid } from "antd";
-import { Outlet, useLocation, Link } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { SIDEBAR_ITEMS } from "@/commons/constants/sidebar";
 import { filterPermission } from "@/utils/permission";
 import { useSession } from "../_components/providers/session";
@@ -23,25 +23,27 @@ const ProtectedLayout: FC = (): ReactElement => {
 
   const menuItems = filteredItems.map((item) => ({
     key: item.key,
-    label: <Link to={"#"}>{item.label}</Link>,
+    label: item.label,
     icon: item.icon,
+    children: item.children?.map((child) => ({
+      key: child.key,
+      label: child.label,
+      icon: child.icon,
+    })),
   }));
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider width={250} breakpoint="md" collapsedWidth="0" theme="light">
-        <div
-          style={{
-            height: 64,
-            margin: 16,
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <Sider
+        className="bg-gray-200 shadow mb-4"
+        width={250}
+        breakpoint="md"
+        collapsedWidth="0"
+        theme="light"
+      >
+        <div className="flex items-center justify-center h-16 px-4 bg-white border-b border-gray-100 shadow">
           <Typography.Title level={4} style={{ margin: 0 }}>
-            Vite Admiral
+            {session?.user?.fullname}
           </Typography.Title>
         </div>
         <Menu
@@ -53,14 +55,7 @@ const ProtectedLayout: FC = (): ReactElement => {
       </Sider>
 
       <Layout>
-        <Header
-          style={{
-            padding: "0 24px",
-            background: md ? "#001529" : "#fff",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+        <Header className="bg-white shadow p-2 flex items-center justify-between">
           <Flex align="center" gap={8}>
             <Typography.Title
               level={4}
@@ -70,7 +65,7 @@ const ProtectedLayout: FC = (): ReactElement => {
                 whiteSpace: "nowrap",
               }}
             >
-              Vite Admiral
+              NAJM Course Backoffice
             </Typography.Title>
           </Flex>
         </Header>

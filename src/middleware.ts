@@ -10,11 +10,11 @@ const mappingRoutePermissions = [
   },
   {
     path: ROUTES.iam.users.list,
-    permissions: [PERMISSIONS.USERS.READ_USERS],
+    permissions: [PERMISSIONS.USERS.READ_LIST_USERS],
   },
 ];
 
-const mappingPublicRoutes = ["/auth/login", "/auth/oauth-callback"];
+const mappingPublicRoutes = ["/auth/login", "/auth/register", "/auth/forgot"];
 
 export const middleware = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);

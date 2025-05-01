@@ -3,9 +3,7 @@ import { Button, Typography } from "antd";
 import { FC, ReactElement } from "react";
 
 const Component: FC = (): ReactElement => {
-  const { signOut, session } = useSession();
-
-  console.log(session);
+  const { signOut } = useSession();
 
   const handleLogout = () => {
     signOut();
