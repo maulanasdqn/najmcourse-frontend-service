@@ -8,7 +8,6 @@ import {
 } from "./libs/react-router/file-based-routing";
 import { middleware } from "./middleware";
 import { ReactQueryProvider } from "./libs/react-query/react-query-provider";
-import "antd/dist/reset.css";
 import "./style.css";
 
 const files = import.meta.glob("./app/**/*(page|layout).tsx");
