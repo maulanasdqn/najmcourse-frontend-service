@@ -1,5 +1,5 @@
 import { deletePermission } from "@/api/permissions/api";
-import { useMutation } from "@/app/_hooks/request/use-mutation";
+import { useMutation } from "@tanstack/react-query";
 
 export const useDeletePermission = () => {
   return useMutation({
