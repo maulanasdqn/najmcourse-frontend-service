@@ -47,7 +47,10 @@ export const updateRole = async (
   const { data } = await api({
     url: generatePath(ENDPOINTS.ROLES.UPDATE, { id }),
     method: "PUT",
-    data: payload,
+    data: {
+      ...payload,
+      overwrite: true,
+    },
   });
   return data;
 };
