@@ -1,57 +1,106 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Input, Table, TablePaginationConfig, TableProps } from "antd";
+import { Input, Select, Table, TableProps, Pagination } from "antd";
 import { useUrlSearchParams } from "./hooks/use-url-search-params";
-import { useCallback } from "react";
-import { EMetaOrder, TMetaResponse } from "@/commons/types/meta";
-import type { FilterValue, SorterResult, TableCurrentDataSource } from "antd/es/table/interface";
+import { TMetaResponse, EMetaOrder } from "@/commons/types/meta";
 
 type Props<T> = TableProps<T> & {
   meta?: TMetaResponse;
+  filterOptions?: { label: string; value: string }[];
+  filterValues?: { label: string; value: string }[];
 };
 
-export const DataTable = <T extends Record<string, unknown>>({ meta, ...tableProps }: Props<T>) => {
+export const DataTable = <T extends Record<string, unknown>>({
+  meta,
+  filterOptions = [],
+  filterValues = [],
+  ...tableProps
+}: Props<T>) => {
   const { params, setParams } = useUrlSearchParams();
+  const page = Number(params.page);
+  const perPage = Number(params.per_page);
+  const total = meta?.total ?? 0;
 
-  const handleTableChange = useCallback(
-    (
-      pagination: TablePaginationConfig,
-      _filters: Record<string, FilterValue | null>,
-      sorter: SorterResult<T> | SorterResult<T>[],
-      _extra: TableCurrentDataSource<T>,
-    ) => {
-      setParams.setPage(pagination.current ?? 1);
-      setParams.setPerPage(pagination.pageSize ?? 10);
-
-      if (!Array.isArray(sorter) && sorter.field) {
-        setParams.setSortBy(sorter.field as string);
-        setParams.setOrder(sorter.order === "descend" ? EMetaOrder.DESC : EMetaOrder.ASC);
-      }
-    },
-    [setParams],
-  );
+  const perPageOptions = [5, 10, 20, 50, 100].map((val) => ({
+    label: `${val} / page`,
+    value: val,
+  }));
 
   return (
-    <section className="bg-white rounded-lg p-2">
-      <div className="flex mb-4">
+    <section className="bg-white rounded-lg">
+      <div className="flex flex-wrap gap-4 mb-6 items-center">
         <Input.Search
           size="large"
           placeholder="Search..."
-          className="mr-2 w-fit max-w-[200px]"
+          className="w-full max-w-[220px]"
           value={params.search}
-          onChange={(e) => setParams.setSearch(e.target.value)}
+          onChange={(e) => {
+            setParams.setSearch(e.target.value);
+            setParams.setPage(1);
+          }}
           allowClear
+        />
+
+        <Select
+          size="large"
+          placeholder="Filter by"
+          className="w-full sm:w-[200px]"
+          value={params.filter_by || undefined}
+          onChange={(val) => {
+            setParams.setFilterBy(val);
+            setParams.setPage(1);
+          }}
+          allowClear
+          options={filterOptions}
+        />
+
+        <Select
+          size="large"
+          placeholder="Filter value"
+          className="w-full sm:w-[220px]"
+          value={params.filter || undefined}
+          onChange={(val) => {
+            setParams.setFilter(val);
+            if (!val) setParams.setFilterBy("");
+            setParams.setPage(1);
+          }}
+          allowClear
+          options={filterValues}
         />
       </div>
 
       <Table<T>
-        {...tableProps}
-        pagination={{
-          current: meta?.page,
-          pageSize: meta?.per_page,
-          total: meta?.total,
+        pagination={false}
+        onChange={(_: unknown, __: unknown, sorter) => {
+          if (!Array.isArray(sorter) && sorter?.field && sorter?.order) {
+            setParams.setSortBy(String(sorter.field));
+            setParams.setOrder(sorter.order === "ascend" ? EMetaOrder.ASC : EMetaOrder.DESC);
+          } else {
+            setParams.setSortBy("");
+            setParams.setOrder(EMetaOrder.ASC);
+          }
         }}
-        onChange={handleTableChange}
+        {...tableProps}
       />
+
+      <div className="flex justify-between items-center mt-6">
+        <Select
+          size="middle"
+          value={perPage}
+          onChange={(val) => {
+            setParams.setPerPage(val);
+            setParams.setPage(1);
+          }}
+          options={perPageOptions}
+          className="w-[150px]"
+        />
+
+        <Pagination
+          current={page}
+          total={total}
+          pageSize={perPage}
+          onChange={(newPage) => setParams.setPage(newPage)}
+          showSizeChanger={false}
+        />
+      </div>
     </section>
   );
 };

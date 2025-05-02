@@ -4,6 +4,7 @@ import { FieldValues, useController, UseControllerProps } from "react-hook-form"
 type ControlledInputProps<T extends FieldValues> = UseControllerProps<T> &
   Omit<InputProps, "name" | "defaultValue" | "onChange" | "value" | "onBlur"> & {
     formItemProps?: FormItemProps;
+    label?: string;
   };
 
 export const ControlledInput = <T extends FieldValues>({
@@ -17,6 +18,7 @@ export const ControlledInput = <T extends FieldValues>({
   return (
     <Form.Item
       {...formItemProps}
+      label={inputProps.label}
       validateStatus={fieldState.error ? "error" : ""}
       help={fieldState.error?.message}
     >

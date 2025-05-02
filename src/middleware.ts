@@ -1,8 +1,8 @@
 import { ROUTES } from "./commons/constants/routes";
 import { LoaderFunctionArgs, redirect } from "react-router";
-import { filterPermission } from "./utils/permission";
 import { PERMISSIONS } from "./commons/constants/permissions";
 import { SessionUser } from "./libs/localstorage";
+import { SessionToken } from "./libs/cookies";
 
 const mappingRoutePermissions = [
   {
@@ -14,24 +14,21 @@ const mappingRoutePermissions = [
   },
 ];
 
-const mappingPublicRoutes = ["/auth/login", "/auth/register", "/auth/forgot"];
+const mappingPublicRoutes = ["/auth/login", "/auth/forgot"];
 
 export const middleware = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
-  const session = SessionUser.get();
-  const userPermissions = session?.user?.role.permissions.map((perm) => perm.name) || [];
-
   const pathname = url.pathname;
 
-  const allowedPermissions = filterPermission(
-    mappingRoutePermissions,
-    (route) =>
-      (session && route.path === pathname && route.permissions
-        ? route.permissions.some((permission) => permission ?? userPermissions?.some(permission))
-        : true) || false,
-  );
+  const session = SessionUser.get();
+  const session_token = SessionToken.get();
+  const token = session_token?.token?.access_token;
+  const userPermissions = session?.user?.role.permissions.map((perm) => perm.name) || [];
 
   if (mappingPublicRoutes.includes(pathname)) {
+    if (token) {
+      return redirect(ROUTES.dashboard);
+    }
     return null;
   }
 
@@ -39,8 +36,15 @@ export const middleware = async ({ request }: LoaderFunctionArgs) => {
     return redirect(ROUTES.auth.login);
   }
 
-  if (allowedPermissions.length === 0) {
-    return redirect(ROUTES.dashboard);
+  const matchedRoute = mappingRoutePermissions.find((route) => route.path === pathname);
+
+  if (matchedRoute) {
+    const allowed =
+      !matchedRoute.permissions ||
+      matchedRoute.permissions.some((perm) => userPermissions.includes(perm));
+    if (!allowed) {
+      return redirect(ROUTES.dashboard);
+    }
   }
 
   return null;

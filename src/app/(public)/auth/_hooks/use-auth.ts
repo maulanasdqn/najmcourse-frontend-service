@@ -10,7 +10,7 @@ export const useAuth = () => {
   const styles = {
     section: {
       height: "100vh",
-      backgroundColor: token.colorBgLayout,
+      backgroundColor: "#FFF",
     },
     illustrationWrapper: {
       backgroundColor: token.colorPrimaryBg,

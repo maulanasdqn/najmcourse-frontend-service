@@ -1,5 +1,5 @@
 import { FC, Fragment, PropsWithChildren, ReactNode, useMemo } from "react";
-import { useSession } from "../providers/session";
+import { useSession } from "../providers";
 
 type TProps = PropsWithChildren<{
   permissions: Array<string>;

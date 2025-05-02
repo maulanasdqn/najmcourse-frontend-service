@@ -1,8 +1,33 @@
+import { useEffect } from "react";
 import { EMetaOrder } from "@/commons/types/meta";
 import { useSearchParams } from "react-router";
 
 export const useUrlSearchParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    let updated = false;
+    const defaults: Record<string, string> = {
+      page: "1",
+      per_page: "10",
+      search: "",
+      sort_by: "",
+      order: EMetaOrder.ASC,
+      filter: "",
+      filter_by: "",
+    };
+
+    Object.entries(defaults).forEach(([key, defaultValue]) => {
+      if (!searchParams.has(key)) {
+        searchParams.set(key, defaultValue);
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      setSearchParams(searchParams);
+    }
+  }, [searchParams, setSearchParams]);
 
   const updateParams = (key: string, value: string | number | undefined) => {
     if (value === undefined || value === null || value === "") {

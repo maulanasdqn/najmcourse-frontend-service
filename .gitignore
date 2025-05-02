@@ -45,3 +45,7 @@ tsconfig.app.tsbuildinfo
 
 # vite build
 vite.config.ts.timestamp*
+
+
+# vitest
+coverage

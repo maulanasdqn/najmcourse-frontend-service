@@ -3,7 +3,7 @@ import { Layout, Menu, Typography, Grid } from "antd";
 import { Outlet } from "react-router";
 import { SIDEBAR_ITEMS } from "@/commons/constants/sidebar";
 import { filterPermission } from "@/utils/permission";
-import { useSession } from "../providers/session";
+import { useSession } from "../providers";
 
 const { Header, Sider, Content } = Layout;
 

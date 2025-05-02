@@ -1,18 +1,18 @@
-import { ConfigProvider, type ThemeConfig } from "antd";
-import { Outlet } from "react-router";
+import { ConfigProvider, type ThemeConfig, App as AntdApp } from "antd";
+import { FC, PropsWithChildren, ReactElement } from "react";
 
 const theme: ThemeConfig = {
   token: {
-    colorPrimary: "#4D9AC1", // Biru cerah buat primary color
+    colorPrimary: "#4D9AC1",
     colorLink: "#4D9AC1",
-    colorBgLayout: "#FFFFFF", // Latar belakang tetap putih
-    colorText: "#0B0A13", // Text warna hitam kebiruan
+    colorBgLayout: "rgb(249 250 251)",
+    colorText: "#0B0A13",
   },
   components: {
     Menu: {
-      itemColor: "#2A3E52", // Navy untuk warna item
-      itemSelectedColor: "#B5DBED", // Biru muda pas item selected
-      itemHoverBg: "#4D9AC1", // Hover pakai biru cerah
+      itemColor: "#2A3E52",
+      itemSelectedColor: "#B5DBED",
+      itemHoverBg: "#4D9AC1",
       itemHoverColor: "#B5DBED",
       itemSelectedBg: "#4D9AC1",
       fontSize: 14,
@@ -20,7 +20,7 @@ const theme: ThemeConfig = {
     },
     Layout: {
       headerColor: "#FFFFFF",
-      headerBg: "#2A3E52", // Header dark navy
+      headerBg: "#2A3E52",
     },
     Button: {
       colorPrimary: "#4D9AC1",
@@ -30,10 +30,10 @@ const theme: ThemeConfig = {
   },
 };
 
-const ThemeProvider: React.FC<React.PropsWithChildren> = () => {
+const ThemeProvider: FC<PropsWithChildren> = (props): ReactElement => {
   return (
     <ConfigProvider theme={theme}>
-      <Outlet />
+      <AntdApp>{props.children}</AntdApp>
     </ConfigProvider>
   );
 };

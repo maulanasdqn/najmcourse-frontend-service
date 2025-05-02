@@ -8,6 +8,7 @@ import {
 } from "./libs/react-router/file-based-routing";
 import { middleware } from "./middleware";
 import { ReactQueryProvider } from "./libs/react-query/react-query-provider";
+import "@ant-design/v5-patch-for-react-19";
 import "./style.css";
 
 const files = import.meta.glob("./app/**/*(page|layout).tsx");

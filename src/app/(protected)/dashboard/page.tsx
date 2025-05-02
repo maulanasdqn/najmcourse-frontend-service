@@ -1,4 +1,4 @@
-import { useSession } from "@/app/_components/providers/session";
+import { useSession } from "@/app/_components/providers";
 import { Button, Typography } from "antd";
 import { FC, ReactElement } from "react";
 

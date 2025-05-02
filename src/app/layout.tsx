@@ -3,9 +3,9 @@ import AntDProvider from "./_components/providers/theme";
 
 function MainLayout() {
   return (
-    <SessionProvider>
-      <AntDProvider />
-    </SessionProvider>
+    <AntDProvider>
+      <SessionProvider />
+    </AntDProvider>
   );
 }
 export default MainLayout;

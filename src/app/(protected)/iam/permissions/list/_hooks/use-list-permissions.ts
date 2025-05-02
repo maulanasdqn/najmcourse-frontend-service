@@ -1,10 +1,13 @@
 import { useUrlSearchParams } from "@/app/_components/ui/data-table/hooks/use-url-search-params";
 import { useGetListPermission } from "./use-get-list-permission";
-import { columns } from "../_constants/table-columns";
+import { useColumnPermission } from "../_hooks/use-column-permission";
 
 export const useListPermissions = () => {
   const { params } = useUrlSearchParams();
-  const { data, isLoading } = useGetListPermission(params);
+  const { data, isLoading, refetch } = useGetListPermission(params);
+  const { columns } = useColumnPermission({
+    refetch,
+  });
 
   return {
     isLoading,

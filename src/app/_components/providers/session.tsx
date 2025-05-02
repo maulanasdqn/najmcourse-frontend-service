@@ -1,43 +1,13 @@
 import { TLoginParam } from "@/api/auth/type";
-import {
-  useEffect,
-  useState,
-  createContext,
-  useContext,
-  PropsWithChildren,
-  FC,
-  useMemo,
-  useCallback,
-} from "react";
+import { useEffect, useState, FC, useMemo, useCallback, ReactElement } from "react";
 import { SessionUser } from "@/libs/localstorage";
 import { SessionToken } from "@/libs/cookies";
-import { useNavigate } from "react-router";
-import { TUserItem } from "@/api/users/type";
+import { Outlet, useNavigate } from "react-router";
 import { usePostLogin } from "@/app/(public)/auth/login/_hooks/use-post-login";
+import { Session, SessionContext } from "./context/session-context";
+import { message } from "antd";
 
-type Session = {
-  isLoading: boolean;
-  signIn: (payload: TLoginParam) => void;
-  signOut: () => void;
-  session?: {
-    token: {
-      access_token: string;
-      refresh_token: string;
-    };
-    user?: TUserItem;
-  };
-  status?: "authenticated" | "authenticating" | "unauthenticated";
-};
-
-const SessionContext = createContext<Session>({
-  isLoading: false,
-  signIn: () => {},
-  signOut: () => {},
-  session: undefined,
-  status: undefined,
-});
-
-const SessionProvider: FC<PropsWithChildren> = ({ children }) => {
+const SessionProvider: FC = (): ReactElement => {
   const navigate = useNavigate();
   const [sessionData, setSessionData] = useState<Session["session"]>();
   const [status, setStatus] = useState<Session["status"]>();
@@ -71,11 +41,11 @@ const SessionProvider: FC<PropsWithChildren> = ({ children }) => {
               refresh_token: res.data.token.refresh_token,
             },
           });
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 600);
+          message.success("Login Successful");
+          navigate(0);
         },
-        onError: () => {
+        onError: (err) => {
+          message.error(err?.response?.data?.message ?? "Login Failed");
           setStatus("unauthenticated");
         },
       });
@@ -96,11 +66,11 @@ const SessionProvider: FC<PropsWithChildren> = ({ children }) => {
     [sessionData, status, signIn, signOut, isPending],
   );
 
-  return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;
-};
-
-export const useSession = () => {
-  return useContext(SessionContext);
+  return (
+    <SessionContext.Provider value={contextValue}>
+      <Outlet />
+    </SessionContext.Provider>
+  );
 };
 
 export default SessionProvider;

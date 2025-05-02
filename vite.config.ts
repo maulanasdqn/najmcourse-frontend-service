@@ -22,9 +22,10 @@ export default defineConfig({
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        name: "My Awesome App",
-        short_name: "MyApp",
-        description: "My Awesome App description",
+        name: "NAJM Course Backoffice",
+        short_name: "NAJM",
+        description:
+          "NAJM Course Backoffice is a free and open source project to manage your courses",
         theme_color: "#ffffff",
         icons: [
           {
@@ -49,7 +50,7 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks(id: string) {
