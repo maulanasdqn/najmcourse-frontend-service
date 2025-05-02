@@ -81,26 +81,28 @@ export const DataTable = <T extends Record<string, unknown>>({
         {...tableProps}
       />
 
-      <div className="flex justify-between items-center mt-6">
-        <Select
-          size="middle"
-          value={perPage}
-          onChange={(val) => {
-            setParams.setPerPage(val);
-            setParams.setPage(1);
-          }}
-          options={perPageOptions}
-          className="w-[150px]"
-        />
+      {meta && (
+        <div className="flex justify-between items-center mt-6">
+          <Select
+            size="middle"
+            value={perPage}
+            onChange={(val) => {
+              setParams.setPerPage(val);
+              setParams.setPage(1);
+            }}
+            options={perPageOptions}
+            className="w-[150px]"
+          />
 
-        <Pagination
-          current={page}
-          total={total}
-          pageSize={perPage}
-          onChange={(newPage) => setParams.setPage(newPage)}
-          showSizeChanger={false}
-        />
-      </div>
+          <Pagination
+            current={page}
+            total={total}
+            pageSize={perPage}
+            onChange={(newPage) => setParams.setPage(newPage)}
+            showSizeChanger={false}
+          />
+        </div>
+      )}
     </section>
   );
 };

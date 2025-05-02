@@ -10,7 +10,7 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "types": ["vitest/globals", "@testing-library/jest-dom", "vitest"],
     "paths": {
       "@/*": ["./src/*"],
       "@protected": ["./src/app/(protected)/*"]

@@ -2,9 +2,14 @@
 import "react";
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach, beforeAll } from "vitest";
+import { afterEach, beforeAll, vi } from "vitest";
 
 beforeAll(() => {
+  vi.stubGlobal("getComputedStyle", () => ({
+    getPropertyValue: () => "",
+    getPropertyPriority: () => "",
+  }));
+
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: (query: any) => ({

@@ -19,6 +19,7 @@ export const Component = () => {
         </h1>
       </div>
       <DataTable
+        rowKey={"id"}
         filterOptions={[{ label: "Nama", value: "name" }]}
         filterValues={[
           { label: "Create Users", value: "Create Users" },

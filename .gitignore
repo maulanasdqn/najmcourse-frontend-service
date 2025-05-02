@@ -49,3 +49,4 @@ vite.config.ts.timestamp*
 
 # vitest
 coverage
+*storybook.log

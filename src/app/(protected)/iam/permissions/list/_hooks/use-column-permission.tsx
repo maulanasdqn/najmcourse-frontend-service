@@ -1,12 +1,16 @@
-import { TPermissionItem } from "@/api/permissions/type";
+import { TPermissionItem, TPermissionListResponse } from "@/api/permissions/type";
 import dayjs from "dayjs";
 import { Space, Button, Modal, message } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { generatePath, Link } from "react-router";
 import { useDeletePermission } from "./use-delete-permission";
+import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
+import { TResponseError } from "@/commons/types/response";
 
 type TUseColumnPermissionProps = {
-  refetch?: () => void;
+  refetch: (
+    options?: RefetchOptions | undefined,
+  ) => Promise<QueryObserverResult<TPermissionListResponse, TResponseError>>;
 };
 
 export const useColumnPermission = (props: TUseColumnPermissionProps) => {
@@ -22,7 +26,7 @@ export const useColumnPermission = (props: TUseColumnPermissionProps) => {
       onOk: () => {
         mutate(record.id, {
           onSuccess: () => {
-            props.refetch?.();
+            void props.refetch?.();
             message.success("Permission deleted successfully");
           },
         });
