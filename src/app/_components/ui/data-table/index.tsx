@@ -1,6 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Input, Select, Table, TableProps, Pagination } from "antd";
 import { useUrlSearchParams } from "./hooks/use-url-search-params";
 import { TMetaResponse, EMetaOrder } from "@/commons/types/meta";
+import debounce from "just-debounce-it";
+import { useEffect, useMemo, useState } from "react";
 
 type Props<T> = TableProps<T> & {
   meta?: TMetaResponse;
@@ -18,6 +21,20 @@ export const DataTable = <T extends Record<string, unknown>>({
   const page = Number(params.page);
   const perPage = Number(params.per_page);
   const total = meta?.total ?? 0;
+  const [inputValue, setInputValue] = useState(params.search || "");
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setParams.setSearch(value);
+        setParams.setPage(1);
+      }, 500),
+    [],
+  );
+
+  useEffect(() => {
+    debouncedSearch(inputValue);
+  }, [inputValue]);
 
   const perPageOptions = [5, 10, 20, 50, 100].map((val) => ({
     label: `${val} / page`,
@@ -31,11 +48,8 @@ export const DataTable = <T extends Record<string, unknown>>({
           size="large"
           placeholder="Search..."
           className="w-full max-w-[220px]"
-          value={params.search}
-          onChange={(e) => {
-            setParams.setSearch(e.target.value);
-            setParams.setPage(1);
-          }}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           allowClear
         />
 

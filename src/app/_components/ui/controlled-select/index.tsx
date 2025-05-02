@@ -24,11 +24,15 @@ export const ControlledSelect = <T extends FieldValues>({
       help={fieldState.error?.message}
     >
       <Select
-        placeholder={selectProps.placeholder}
         {...field}
         {...selectProps}
-        value={field.value || undefined}
-        onChange={field.onChange}
+        mode={selectProps.mode}
+        placeholder={selectProps.placeholder}
+        value={field.value ?? (selectProps.mode === "multiple" ? [] : undefined)}
+        onChange={(value) => {
+          field.onChange(value);
+        }}
+        onBlur={field.onBlur}
       />
     </Form.Item>
   );
