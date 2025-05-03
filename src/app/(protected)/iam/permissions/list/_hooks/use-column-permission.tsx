@@ -6,6 +6,9 @@ import { generatePath, Link } from "react-router";
 import { useDeletePermission } from "./use-delete-permission";
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
 import { TResponseError } from "@/commons/types/response";
+import { Guard } from "@/app/_components/guard";
+import { PERMISSIONS } from "@/commons/constants/permissions";
+import { ROUTES } from "@/commons/constants/routes";
 
 type TUseColumnPermissionProps = {
   refetch: (
@@ -58,18 +61,24 @@ export const useColumnPermission = (props: TUseColumnPermissionProps) => {
       key: "action",
       render: (_: unknown, record: TPermissionItem) => (
         <Space>
-          <Link to={generatePath("/iam/permissions/:id/detail", { id: record.id })}>
-            <Button type="text" icon={<EyeOutlined />} />
-          </Link>
-          <Link to={generatePath("/iam/permissions/:id/update", { id: record.id })}>
-            <Button type="text" icon={<EditOutlined />} />
-          </Link>
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
-          />
+          <Guard fallback="-" permissions={[PERMISSIONS.PERMISSIONS.READ_DETAIL_PERMISSIONS]}>
+            <Link to={generatePath(ROUTES.iam.permissions.detail, { id: record.id })}>
+              <Button type="text" icon={<EyeOutlined />} />
+            </Link>
+          </Guard>
+          <Guard fallback="-" permissions={[PERMISSIONS.PERMISSIONS.UPDATE_PERMISSIONS]}>
+            <Link to={generatePath(ROUTES.iam.permissions.update, { id: record.id })}>
+              <Button type="text" icon={<EditOutlined />} />
+            </Link>
+          </Guard>
+          <Guard fallback="-" permissions={[PERMISSIONS.PERMISSIONS.DELETE_PERMISSIONS]}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDelete(record)}
+            />
+          </Guard>
         </Space>
       ),
     },

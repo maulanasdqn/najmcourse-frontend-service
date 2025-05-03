@@ -30,4 +30,19 @@ export const ROUTES = {
       delete: "/iam/permissions/:id/delete",
     },
   },
+  exams: {
+    sessions: {
+      list: "/exams/sessions/list",
+      create: "/exams/sessions/create",
+      detail: "/exams/sessions/:id/detail",
+      update: "/exams/sessions/:id/update",
+    },
+    tests: {
+      list: "/exams/tests/list",
+      create: "/exams/tests/create",
+      detail: "/exams/tests/:id/detail",
+      update: "/exams/tests/:id/update",
+      delete: "/exams/tests/:id/delete",
+    },
+  },
 };

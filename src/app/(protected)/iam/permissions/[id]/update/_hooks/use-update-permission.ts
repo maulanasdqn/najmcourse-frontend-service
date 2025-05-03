@@ -7,6 +7,7 @@ import { message } from "antd";
 import { useNavigate, useParams } from "react-router";
 import { useGetDetailPermission } from "../../_hooks/use-get-detail-permissions";
 import { useEffect } from "react";
+import { ROUTES } from "@/commons/constants/routes";
 
 export const useUpdatePermission = () => {
   const params = useParams();
@@ -39,7 +40,7 @@ export const useUpdatePermission = () => {
         onSuccess: () => {
           form.reset();
           message.success("Permission updated successfully");
-          navigate("/iam/permissions/list");
+          navigate(ROUTES.iam.permissions.list);
         },
       },
     );

@@ -6,6 +6,7 @@ import { message } from "antd";
 import { useNavigate } from "react-router";
 import { usePostCreateUser } from "./use-post-create-user";
 import { useGetListRole } from "@/app/(protected)/iam/roles/list/_hooks/use-get-list-role";
+import { ROUTES } from "@/commons/constants/routes";
 
 export const useCreateUser = () => {
   const { data: roles, isLoading } = useGetListRole({
@@ -35,7 +36,7 @@ export const useCreateUser = () => {
       onSuccess: () => {
         form.reset();
         message.success("User created successfully");
-        navigate("/iam/Users/list");
+        navigate(ROUTES.iam.users.list);
       },
     });
   });

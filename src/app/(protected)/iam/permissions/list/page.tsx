@@ -2,6 +2,9 @@ import { DataTable } from "@/app/_components/ui/data-table";
 import { useListPermissions } from "./_hooks/use-list-permissions";
 import { Button } from "antd";
 import { Link } from "react-router";
+import { Guard } from "@/app/_components/guard";
+import { PERMISSIONS } from "@/commons/constants/permissions";
+import { ROUTES } from "@/commons/constants/routes";
 
 export const Component = () => {
   const { dataSource, isLoading, columns, meta } = useListPermissions();
@@ -11,11 +14,13 @@ export const Component = () => {
       <div className="flex w-full justify-between mb-6">
         <h1 className="text-2xl mb-6">List Permissions</h1>
         <h1 className="text-2xl mb-6">
-          <Link to="/iam/permissions/create">
-            <Button size="large" type="primary">
-              + Create Permission
-            </Button>
-          </Link>
+          <Guard permissions={[PERMISSIONS.PERMISSIONS.CREATE_PERMISSIONS]}>
+            <Link to={ROUTES.iam.permissions.create}>
+              <Button size="large" type="primary">
+                + Create Permission
+              </Button>
+            </Link>
+          </Guard>
         </h1>
       </div>
       <DataTable

@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router";
 import { useGetDetailUser } from "../../_hooks/use-get-detail-user";
 import { useEffect } from "react";
 import { useGetListRole } from "@/app/(protected)/iam/roles/list/_hooks/use-get-list-role";
+import { ROUTES } from "@/commons/constants/routes";
 
 export const useUpdateUser = () => {
   const { data: roles } = useGetListRole({
@@ -68,7 +69,7 @@ export const useUpdateUser = () => {
         onSuccess: () => {
           form.reset();
           message.success("User updated successfully");
-          navigate("/iam/users/list");
+          navigate(ROUTES.iam.users.list);
         },
       },
     );

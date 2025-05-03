@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { usePostCreatePermission } from "./use-post-create-permission";
 import { message } from "antd";
 import { useNavigate } from "react-router";
+import { ROUTES } from "@/commons/constants/routes";
 
 export const useCreatePermission = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export const useCreatePermission = () => {
       onSuccess: () => {
         form.reset();
         message.success("Permission created successfully");
-        navigate("/iam/permissions/list");
+        navigate(ROUTES.iam.permissions.list);
       },
     });
   });

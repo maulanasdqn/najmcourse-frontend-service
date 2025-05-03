@@ -6,6 +6,7 @@ import { message } from "antd";
 import { useNavigate } from "react-router";
 import { useGetListPermission } from "@/app/(protected)/iam/permissions/list/_hooks/use-get-list-permission";
 import { usePostCreateRole } from "./use-post-create-role";
+import { ROUTES } from "@/commons/constants/routes";
 
 export const useCreateRole = () => {
   const { data: permissions, isLoading } = useGetListPermission({
@@ -28,7 +29,7 @@ export const useCreateRole = () => {
       onSuccess: () => {
         form.reset();
         message.success("Role created successfully");
-        navigate("/iam/roles/list");
+        navigate(ROUTES.iam.roles.list);
       },
     });
   });

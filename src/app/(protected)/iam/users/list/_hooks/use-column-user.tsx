@@ -6,6 +6,9 @@ import { generatePath, Link } from "react-router";
 import { useDeleteUser } from "./use-delete-user";
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
 import { TResponseError } from "@/commons/types/response";
+import { Guard } from "@/app/_components/guard";
+import { PERMISSIONS } from "@/commons/constants/permissions";
+import { ROUTES } from "@/commons/constants/routes";
 
 type TUseColumnUserProps = {
   refetch: (
@@ -87,18 +90,24 @@ export const useColumnUser = (props: TUseColumnUserProps) => {
       key: "action",
       render: (_: unknown, record: TUserItem) => (
         <Space>
-          <Link to={generatePath("/iam/users/:id/detail", { id: record.id })}>
-            <Button type="text" icon={<EyeOutlined />} />
-          </Link>
-          <Link to={generatePath("/iam/users/:id/update", { id: record.id })}>
-            <Button type="text" icon={<EditOutlined />} />
-          </Link>
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
-          />
+          <Guard fallback="-" permissions={[PERMISSIONS.USERS.READ_DETAIL_USERS]}>
+            <Link to={generatePath(ROUTES.iam.users.detail, { id: record.id })}>
+              <Button type="text" icon={<EyeOutlined />} />
+            </Link>
+          </Guard>
+          <Guard fallback="-" permissions={[PERMISSIONS.USERS.UPDATE_USERS]}>
+            <Link to={generatePath(ROUTES.iam.users.update, { id: record.id })}>
+              <Button type="text" icon={<EditOutlined />} />
+            </Link>
+          </Guard>
+          <Guard fallback="-" permissions={[PERMISSIONS.USERS.DELETE_USERS]}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDelete(record)}
+            />
+          </Guard>
         </Space>
       ),
     },

@@ -6,6 +6,9 @@ import { generatePath, Link } from "react-router";
 import { useDeleteRole } from "./use-delete-role";
 import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
 import { TResponseError } from "@/commons/types/response";
+import { Guard } from "@/app/_components/guard";
+import { PERMISSIONS } from "@/commons/constants/permissions";
+import { ROUTES } from "@/commons/constants/routes";
 
 type TUseColumnRoleProps = {
   refetch: (
@@ -65,18 +68,24 @@ export const useColumnRole = (props: TUseColumnRoleProps) => {
       key: "action",
       render: (_: unknown, record: TRoleItem) => (
         <Space>
-          <Link to={generatePath("/iam/roles/:id/detail", { id: record.id })}>
-            <Button type="text" icon={<EyeOutlined />} />
-          </Link>
-          <Link to={generatePath("/iam/roles/:id/update", { id: record.id })}>
-            <Button type="text" icon={<EditOutlined />} />
-          </Link>
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
-          />
+          <Guard fallback="-" permissions={[PERMISSIONS.ROLES.READ_DETAIL_ROLES]}>
+            <Link to={generatePath(ROUTES.iam.roles.detail, { id: record.id })}>
+              <Button type="text" icon={<EyeOutlined />} />
+            </Link>
+          </Guard>
+          <Guard fallback="-" permissions={[PERMISSIONS.ROLES.UPDATE_ROLES]}>
+            <Link to={generatePath(ROUTES.iam.roles.update, { id: record.id })}>
+              <Button type="text" icon={<EditOutlined />} />
+            </Link>
+          </Guard>
+          <Guard fallback="-" permissions={[PERMISSIONS.ROLES.DELETE_ROLES]}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDelete(record)}
+            />
+          </Guard>
         </Space>
       ),
     },

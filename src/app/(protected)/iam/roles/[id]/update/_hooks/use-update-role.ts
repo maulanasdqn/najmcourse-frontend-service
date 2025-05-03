@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router";
 import { useGetDetailRole } from "../../_hooks/use-get-detail-role";
 import { useEffect } from "react";
 import { useGetListPermission } from "@/app/(protected)/iam/permissions/list/_hooks/use-get-list-permission";
+import { ROUTES } from "@/commons/constants/routes";
 
 export const useUpdateRole = () => {
   const { data: permissions } = useGetListPermission({
@@ -46,7 +47,7 @@ export const useUpdateRole = () => {
         onSuccess: () => {
           form.reset();
           message.success("Role updated successfully");
-          navigate("/iam/roles/list");
+          navigate(ROUTES.iam.roles.list);
         },
       },
     );
