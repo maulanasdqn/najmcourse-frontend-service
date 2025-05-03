@@ -30,6 +30,11 @@ const SessionProvider: FC = (): ReactElement => {
       setStatus("authenticating");
       mutate(payload, {
         onSuccess: (res) => {
+          if (res.data.user?.role.name === "Student") {
+            message.error("You are blocked from accessing this page");
+            setStatus("unauthenticated");
+            return;
+          }
           setSessionData(res.data);
           setStatus("authenticated");
           SessionUser.set({
@@ -42,7 +47,12 @@ const SessionProvider: FC = (): ReactElement => {
             },
           });
           message.success("Login Successful");
-          navigate(0);
+          navigate("/dashboard", {
+            replace: true,
+            state: {
+              from: location.pathname,
+            },
+          });
         },
         onError: (err) => {
           message.error(err?.response?.data?.message ?? "Login Failed");

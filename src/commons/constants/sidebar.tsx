@@ -31,7 +31,7 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
     key: "exams",
     label: "Exams",
     icon: <BookOutlined />,
-    permissions: [],
+    permissions: [PERMISSIONS.SESSIONS.READ_LIST_SESSIONS, PERMISSIONS.TESTS.READ_LIST_TESTS],
     children: [
       {
         key: ROUTES.exams.sessions.list,
@@ -51,7 +51,11 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
     key: "iam",
     label: "IAM",
     icon: <UserOutlined />,
-    permissions: [],
+    permissions: [
+      PERMISSIONS.USERS.READ_LIST_USERS,
+      PERMISSIONS.ROLES.READ_LIST_ROLES,
+      PERMISSIONS.PERMISSIONS.READ_LIST_PERMISSIONS,
+    ],
     children: [
       {
         key: ROUTES.iam.users.list,

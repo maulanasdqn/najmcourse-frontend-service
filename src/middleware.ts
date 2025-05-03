@@ -36,6 +36,11 @@ export const middleware = async ({ request }: LoaderFunctionArgs) => {
     return redirect(ROUTES.auth.login);
   }
 
+  if (session?.user.role.name === "Student") {
+    const redirectUrl = `${ROUTES.auth.login}?error=student_blocked`;
+    return redirect(redirectUrl);
+  }
+
   const matchedRoute = mappingRoutePermissions.find((route) => route.path === pathname);
 
   if (matchedRoute) {

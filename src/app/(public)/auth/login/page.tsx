@@ -14,8 +14,8 @@ export default function Component() {
         <Col xs={24} md={12} style={state.styles.formWrapper}>
           <div style={state.styles.container}>
             <div style={state.styles.header}>
-              <Title style={state.styles.title}>Masuk</Title>
-              <Text style={state.styles.text}>Silahkan masuk dengan email dan password Anda.</Text>
+              <Title style={state.styles.title}>NAJM Course Backoffice</Title>
+              <Text style={state.styles.text}>If you have an account, please sign in.</Text>
             </div>
             <Form
               name="auth_login"
@@ -45,7 +45,7 @@ export default function Component() {
 
               <Form.Item>
                 <Link href="/auth/forgot" style={{ float: "right" }}>
-                  Lupa kata sandi?
+                  Forgot password? Click here
                 </Link>
               </Form.Item>
 
@@ -58,7 +58,7 @@ export default function Component() {
                   htmlType="submit"
                   style={{ width: "100%" }}
                 >
-                  Masuk Sekarang
+                  Sign in now
                 </Button>
               </Form.Item>
             </Form>
