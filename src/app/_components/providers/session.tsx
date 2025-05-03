@@ -47,12 +47,7 @@ const SessionProvider: FC = (): ReactElement => {
             },
           });
           message.success("Login Successful");
-          navigate("/dashboard", {
-            replace: true,
-            state: {
-              from: location.pathname,
-            },
-          });
+          navigate(0);
         },
         onError: (err) => {
           message.error(err?.response?.data?.message ?? "Login Failed");

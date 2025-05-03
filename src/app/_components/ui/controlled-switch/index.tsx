@@ -1,32 +1,38 @@
-import { Form, Switch, FormItemProps, SwitchProps } from "antd";
+import { Form, FormItemProps, Switch } from "antd";
 import { FieldValues, useController, UseControllerProps } from "react-hook-form";
 
-type ControlledSwitchProps<T extends FieldValues> = UseControllerProps<T> &
-  Omit<SwitchProps, "checked" | "onChange"> & {
-    formItemProps?: FormItemProps;
-    label?: string;
-  };
+type ControlledSwitchProps<T extends FieldValues> = UseControllerProps<T> & {
+  formItemProps?: FormItemProps;
+  label?: string;
+  onChange?: (checked: boolean) => void;
+};
 
 export const ControlledSwitch = <T extends FieldValues>({
   name,
   control,
   formItemProps,
-  ...switchProps
+  label,
+  onChange: customOnChange,
 }: ControlledSwitchProps<T>) => {
   const {
-    field: { value, onChange, ...restField },
+    field: { value, onChange },
     fieldState,
   } = useController({ name, control });
 
   return (
     <Form.Item
       {...formItemProps}
-      label={switchProps.label}
+      label={label}
       validateStatus={fieldState.error ? "error" : ""}
       help={fieldState.error?.message}
-      valuePropName="checked"
     >
-      <Switch {...restField} {...switchProps} checked={value} onChange={onChange} />
+      <Switch
+        checked={value}
+        onChange={(val) => {
+          onChange(val);
+          customOnChange?.(val);
+        }}
+      />
     </Form.Item>
   );
 };
