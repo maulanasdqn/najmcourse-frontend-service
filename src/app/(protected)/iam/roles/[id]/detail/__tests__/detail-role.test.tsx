@@ -36,6 +36,10 @@ describe("Detail Role Page", () => {
         data: {
           id: "Role-id-1",
           name: "User",
+          permissions: [
+            { id: "1", name: "Create Users" },
+            { id: "2", name: "Delete Users" },
+          ],
           created_at: "2025-05-01T10:00:00Z",
           updated_at: "2025-05-02T14:30:00Z",
         },
@@ -66,5 +70,38 @@ describe("Detail Role Page", () => {
     const backButton = screen.getByRole("button");
     fireEvent.click(backButton);
     expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
+
+  it("Test renders permission badges", () => {
+    renderPage();
+    expect(screen.getByText("Create Users")).toBeInTheDocument();
+    expect(screen.getByText("Delete Users")).toBeInTheDocument();
+  });
+
+  it("Test renders fallback when permission is empty", () => {
+    // @ts-expect-error "stupid typesystem"
+    (useGetDetailRole as unknown as vi.Mock).mockReturnValueOnce({
+      data: {
+        data: {
+          id: "Role-id-2",
+          name: "Admin",
+          permissions: [],
+          created_at: null,
+          updated_at: null,
+        },
+      },
+    });
+    renderPage();
+    expect(screen.getByText("Role-id-2")).toBeInTheDocument();
+    expect(screen.getByText("Admin")).toBeInTheDocument();
+    const dashes = screen.getAllByText("-");
+    expect(dashes.length).toBeGreaterThan(0);
+  });
+
+  it("Test does not crash if data is undefined", () => {
+    // @ts-expect-error "stupid typesystem"
+    (useGetDetailRole as unknown as vi.Mock).mockReturnValueOnce({ data: undefined });
+    renderPage();
+    expect(screen.getByText("Detail Role")).toBeInTheDocument();
   });
 });

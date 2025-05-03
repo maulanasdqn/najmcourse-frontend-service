@@ -53,32 +53,36 @@ export const DataTable = <T extends Record<string, unknown>>({
           allowClear
         />
 
-        <Select
-          size="large"
-          placeholder="Filter by"
-          className="w-full sm:w-[200px]"
-          value={params.filter_by || undefined}
-          onChange={(val) => {
-            setParams.setFilterBy(val);
-            setParams.setPage(1);
-          }}
-          allowClear
-          options={filterOptions}
-        />
+        {filterOptions.length > 0 && (
+          <Select
+            size="large"
+            placeholder="Filter by"
+            className="w-full sm:w-[200px]"
+            value={params.filter_by || undefined}
+            onChange={(val) => {
+              setParams.setFilterBy(val);
+              setParams.setPage(1);
+            }}
+            allowClear
+            options={filterOptions}
+          />
+        )}
 
-        <Select
-          size="large"
-          placeholder="Filter value"
-          className="w-full sm:w-[220px]"
-          value={params.filter || undefined}
-          onChange={(val) => {
-            setParams.setFilter(val);
-            if (!val) setParams.setFilterBy("");
-            setParams.setPage(1);
-          }}
-          allowClear
-          options={filterValues}
-        />
+        {filterValues.length > 0 && (
+          <Select
+            size="large"
+            placeholder="Filter value"
+            className="w-full sm:w-[220px]"
+            value={params.filter || undefined}
+            onChange={(val) => {
+              setParams.setFilter(val);
+              if (!val) setParams.setFilterBy("");
+              setParams.setPage(1);
+            }}
+            allowClear
+            options={filterValues}
+          />
+        )}
       </div>
 
       <Table<T>

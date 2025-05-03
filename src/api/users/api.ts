@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { api } from "@/libs/axios/api";
 import { generatePath } from "react-router";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
@@ -8,12 +9,16 @@ import {
   TUserUpdateRequest,
   TGetUsersParams,
 } from "./type";
+import { TMessageResponse } from "@/commons/types/response";
 
-export const getListUsers = async (params: TGetUsersParams): Promise<TUserListResponse> => {
+export const getListUser = async (params: TGetUsersParams): Promise<TUserListResponse> => {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v !== undefined && v !== null && v !== ""),
+  );
   const { data } = await api({
     url: ENDPOINTS.USERS.LIST,
     method: "GET",
-    params,
+    params: cleanParams,
   });
   return data;
 };
@@ -26,7 +31,7 @@ export const getDetailUser = async (id: string): Promise<TUserDetailResponse> =>
   return data;
 };
 
-export const createUser = async (payload: TUserCreateRequest): Promise<TUserDetailResponse> => {
+export const createUser = async (payload: TUserCreateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.USERS.CREATE,
     method: "POST",
@@ -38,7 +43,7 @@ export const createUser = async (payload: TUserCreateRequest): Promise<TUserDeta
 export const updateUser = async (
   id: string,
   payload: TUserUpdateRequest,
-): Promise<TUserDetailResponse> => {
+): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.USERS.UPDATE, { id }),
     method: "PUT",

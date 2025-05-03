@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Descriptions, Button, Badge } from "antd";
+import { Descriptions, Button, Tag } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router";
 import { useGetDetailRole } from "../_hooks/use-get-detail-role";
@@ -21,14 +21,13 @@ export const Component = () => {
         <Descriptions.Item label="ID">{role?.id}</Descriptions.Item>
         <Descriptions.Item label="Name">{role?.name}</Descriptions.Item>
         <Descriptions.Item label="Permissions">
-          {(role?.permissions ?? []).map((permission) => (
-            <Badge
-              key={permission.id}
-              className="bg-gray-100 text-gray-800 p-2 mx-2 rounded"
-              count={permission.name}
-              style={{ backgroundColor: "#f0f0f0", color: "#000" }}
-            />
-          ))}
+          {(role?.permissions ?? []).length > 0
+            ? role?.permissions.map((permission) => (
+                <Tag key={permission.id} color="default">
+                  {permission.name}
+                </Tag>
+              ))
+            : "-"}
         </Descriptions.Item>
         <Descriptions.Item label="Created At">
           {role?.created_at ? dayjs(role.created_at).format("DD/MM/YYYY HH:mm") : "-"}

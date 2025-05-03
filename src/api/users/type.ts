@@ -1,12 +1,14 @@
 import { TResponseDetail, TResponseList } from "@/commons/types/response";
 import { TRoleItem } from "../roles/type";
+import { createUserSchema, updateUserSchema } from "./schema";
+import { z } from "zod";
 
 export type TUserItem = {
   id: string;
   role: TRoleItem;
   fullname: string;
   email: string;
-  avatar: string | null;
+  avatar?: string | null;
   phone_number: string;
   referred_by: string | null;
   referral_code: string | null;
@@ -17,11 +19,13 @@ export type TUserItem = {
   religion: string | null;
   gender: string | null;
   birthdate: string | null;
+  updated_at: string;
+  created_at: string;
 };
 
-export type TUserCreateRequest = Omit<TUserItem, "id" | "created_at" | "updated_at" | "roles">;
+export type TUserCreateRequest = z.infer<typeof createUserSchema>;
 
-export type TUserUpdateRequest = Omit<TUserItem, "created_at" | "updated_at" | "roles">;
+export type TUserUpdateRequest = z.infer<typeof updateUserSchema>;
 
 export type TGetUsersParams = {
   page?: number;

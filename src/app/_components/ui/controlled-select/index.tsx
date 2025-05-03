@@ -1,5 +1,6 @@
 import { Form, Select, FormItemProps, SelectProps } from "antd";
 import { FieldValues, useController, UseControllerProps } from "react-hook-form";
+import { match } from "ts-pattern";
 
 type ControlledSelectProps<T extends FieldValues> = UseControllerProps<T> &
   Omit<SelectProps, "name" | "defaultValue" | "onChange" | "value" | "onBlur"> & {
@@ -16,6 +17,10 @@ export const ControlledSelect = <T extends FieldValues>({
 }: ControlledSelectProps<T>) => {
   const { field, fieldState } = useController({ name, control });
 
+  const selectValue = match(selectProps.mode)
+    .with("multiple", () => (field.value?.length ? field.value : null))
+    .otherwise(() => (field.value === "" ? undefined : (field.value ?? undefined)));
+
   return (
     <Form.Item
       {...formItemProps}
@@ -28,10 +33,8 @@ export const ControlledSelect = <T extends FieldValues>({
         {...selectProps}
         mode={selectProps.mode}
         placeholder={selectProps.placeholder}
-        value={field.value ?? (selectProps.mode === "multiple" ? [] : undefined)}
-        onChange={(value) => {
-          field.onChange(value);
-        }}
+        value={selectValue}
+        onChange={field.onChange}
         onBlur={field.onBlur}
       />
     </Form.Item>
