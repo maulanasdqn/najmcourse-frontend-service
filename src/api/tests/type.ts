@@ -1,9 +1,18 @@
 import { TResponseList, TResponseDetail } from "@/commons/types/response";
 import { TQuestionItem } from "../questions/type";
 
-export type TTestItem = {
+export type TTestListItem = {
   id: string;
-  title: string;
+  name: string;
+  description: string;
+  question_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TTestDetailItem = {
+  id: string;
+  name: string;
   description: string;
   questions: TQuestionItem[];
   created_at: string;
@@ -11,17 +20,17 @@ export type TTestItem = {
 };
 
 export type TTestCreateRequest = {
-  title: string;
+  name: string;
   description: string;
   question_ids: string[];
 };
 
 export type TTestUpdateRequest = {
-  title: string;
+  name: string;
   description: string;
   question_ids: string[];
 };
 
-export type TTestListResponse = TResponseList<TTestItem>;
+export type TTestListResponse = TResponseList<TTestListItem>;
 
-export type TTestDetailResponse = TResponseDetail<TTestItem>;
+export type TTestDetailResponse = TResponseDetail<TTestDetailItem>;

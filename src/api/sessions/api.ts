@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { api } from "@/libs/axios/api";
 import { generatePath } from "react-router";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
@@ -8,12 +9,16 @@ import {
   TSessionUpdateRequest,
 } from "./type";
 import { TMetaRequest } from "@/commons/types/meta";
+import { TMessageResponse } from "@/commons/types/response";
 
-export const getListSessions = async (params?: TMetaRequest): Promise<TSessionListResponse> => {
+export const getListSession = async (params: TMetaRequest): Promise<TSessionListResponse> => {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v !== undefined && v !== null && v !== ""),
+  );
   const { data } = await api({
     url: ENDPOINTS.SESSIONS.LIST,
     method: "GET",
-    params,
+    params: cleanParams,
   });
   return data;
 };
@@ -26,9 +31,7 @@ export const getDetailSession = async (id: string): Promise<TSessionDetailRespon
   return data;
 };
 
-export const createSession = async (
-  payload: TSessionCreateRequest,
-): Promise<TSessionDetailResponse> => {
+export const createSession = async (payload: TSessionCreateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.SESSIONS.CREATE,
     method: "POST",
@@ -37,24 +40,16 @@ export const createSession = async (
   return data;
 };
 
-export const updateSession = async (
-  payload: TSessionUpdateRequest,
-): Promise<TSessionDetailResponse> => {
+export const updateSession = async (payload: TSessionUpdateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.SESSIONS.UPDATE, { id: payload.id }),
     method: "PUT",
-    data: {
-      name: payload.name,
-      description: payload.description,
-      category: payload.category,
-      student_type: payload.student_type,
-      tests: payload.tests,
-    },
+    data: payload,
   });
   return data;
 };
 
-export const deleteSession = async (id: string): Promise<TSessionDetailResponse> => {
+export const deleteSession = async (id: string): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.SESSIONS.DELETE, { id }),
     method: "DELETE",
