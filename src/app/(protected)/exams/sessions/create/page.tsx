@@ -156,7 +156,12 @@ export const Component = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button loading={state.isLoading} disabled={!form.formState.isValid} type="primary">
+          <Button
+            htmlType="submit"
+            loading={state.isLoading}
+            disabled={!form.formState.isValid}
+            type="primary"
+          >
             Submit
           </Button>
         </Form.Item>
