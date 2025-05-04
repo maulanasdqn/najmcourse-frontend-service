@@ -1,4 +1,4 @@
-import { TSessionItem, TSessionListResponse } from "@/api/sessions/type";
+import { TSessionListItem, TSessionListResponse } from "@/api/sessions/type";
 import dayjs from "dayjs";
 import { Space, Button, Modal, message, Tag } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -19,7 +19,7 @@ type TUseColumnSessionProps = {
 export const useColumnSession = (props: TUseColumnSessionProps) => {
   const { mutate } = useDeleteSession();
 
-  const handleDelete = (record: TSessionItem) => {
+  const handleDelete = (record: TSessionListItem) => {
     Modal.confirm({
       title: "Are you sure you want to delete this Session?",
       content: record.name,
@@ -88,7 +88,7 @@ export const useColumnSession = (props: TUseColumnSessionProps) => {
     {
       title: "Action",
       key: "action",
-      render: (_: unknown, record: TSessionItem) => (
+      render: (_: unknown, record: TSessionListItem) => (
         <Space>
           <Guard fallback="-" permissions={[PERMISSIONS.SESSIONS.READ_DETAIL_SESSIONS]}>
             <Link to={generatePath(ROUTES.exams.sessions.detail, { id: record.id })}>

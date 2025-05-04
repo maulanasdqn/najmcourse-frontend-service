@@ -1,8 +1,9 @@
 import { TResponseList, TResponseDetail } from "@/commons/types/response";
 import { z } from "zod";
-import { createSessionSchema, updateSessionSchema } from "./schema";
+import { sessionSchema } from "./schema";
+import { TTestDetailItem } from "../tests/type";
 
-export type TSessionItem = {
+export type TSessionListItem = {
   id: string;
   name: string;
   category: string;
@@ -16,25 +17,7 @@ export type TSessionItem = {
 };
 
 export type TSessionDetailTestItem = {
-  test: {
-    id: string;
-    name: string;
-    questions: Array<{
-      id: string;
-      question: string;
-      discussion: string;
-      options: Array<{
-        id: string;
-        label: string;
-        created_at: string;
-        updated_at: string;
-      }>;
-      created_at: string;
-      updated_at: string;
-    }>;
-    created_at: string;
-    updated_at: string;
-  };
+  test: TTestDetailItem;
   weight: number;
   multiplier: number;
   start_date: string;
@@ -54,12 +37,11 @@ export type TSessionDetailItem = {
   updated_at: string;
 };
 
-export type TSessionCreateRequest = z.infer<typeof createSessionSchema>;
+export type TSessionCreateRequest = z.infer<typeof sessionSchema>;
 
-export type TSessionUpdateRequest = z.infer<typeof updateSessionSchema> & {
+export type TSessionUpdateRequest = z.infer<typeof sessionSchema> & {
   id: string;
 };
 
-export type TSessionListResponse = TResponseList<TSessionItem>;
-
+export type TSessionListResponse = TResponseList<TSessionListItem>;
 export type TSessionDetailResponse = TResponseDetail<TSessionDetailItem>;

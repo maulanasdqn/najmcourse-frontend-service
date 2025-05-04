@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import debounce from "just-debounce-it";
 import { Input, Select, Table, TableProps, Pagination } from "antd";
 import { useUrlSearchParams } from "./hooks/use-url-search-params";
 import { TMetaResponse, EMetaOrder } from "@/commons/types/meta";
-import debounce from "just-debounce-it";
-import { useEffect, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 
-type Props<T> = TableProps<T> & {
+type TDataTableProps<T> = TableProps<T> & {
   meta?: TMetaResponse;
   filterOptions?: { label: string; value: string }[];
   filterValues?: { label: string; value: string }[];
@@ -16,7 +16,7 @@ export const DataTable = <T extends Record<string, unknown>>({
   filterOptions = [],
   filterValues = [],
   ...tableProps
-}: Props<T>) => {
+}: TDataTableProps<T>): ReactElement => {
   const { params, setParams } = useUrlSearchParams();
   const page = Number(params.page);
   const perPage = Number(params.per_page);

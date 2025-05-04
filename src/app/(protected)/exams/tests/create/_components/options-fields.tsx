@@ -1,4 +1,4 @@
-import { TTestCreateRequest } from "@/api/tests/type";
+import { TTestRequest } from "@/api/tests/type";
 import { ControlledInput } from "@/app/_components/ui/controlled-input";
 import { ControlledSwitch } from "@/app/_components/ui/controlled-switch";
 import { Button } from "antd";
@@ -8,7 +8,7 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ControlledUploadFile } from "@/app/_components/ui/controlled-upload-file";
 
 type TProps = {
-  form: UseFormReturn<TTestCreateRequest>;
+  form: UseFormReturn<TTestRequest>;
   index: number;
 };
 

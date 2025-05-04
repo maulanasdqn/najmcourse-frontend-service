@@ -3,8 +3,9 @@ import { TOptionItem } from "../options/type";
 
 export type TQuestionItem = {
   id: string;
-  label: string;
-  options: TOptionItem[];
+  question: string;
+  discussion: string;
+  options: Array<TOptionItem>;
   created_at: string;
   updated_at: string;
 };

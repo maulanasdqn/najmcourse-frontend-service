@@ -99,20 +99,38 @@ export const Component = () => {
               placeholder="Input start date"
               name={`tests.${index}.start_date`}
               showTime={{ format: "HH:mm" }}
-              disabledDate={(currentDate) => currentDate < dayjs().startOf("minute")}
+              disabledDate={(currentDate) => {
+                return currentDate.isBefore(dayjs().startOf("day"));
+              }}
+              disabledTime={(currentDate) => {
+                const now = dayjs();
+                if (!currentDate || !currentDate.isSame(now, "day")) return {};
+
+                return {
+                  disabledHours: () =>
+                    Array.from({ length: 24 }, (_, i) => i).filter((h) => h < now.hour()),
+                  disabledMinutes: (selectedHour) => {
+                    if (selectedHour === now.hour()) {
+                      return Array.from({ length: 60 }, (_, i) => i).filter(
+                        (m) => m < now.minute(),
+                      );
+                    }
+                    return [];
+                  },
+                };
+              }}
             />
+
             <ControlledDatePicker
               label="End Date"
               control={form.control}
               placeholder="Input end date"
               name={`tests.${index}.end_date`}
               showTime={{ format: "HH:mm" }}
+              format="YYYY-MM-DD HH:mm"
               disabledDate={(currentDate) => {
                 const start = dayjs(form.watch("tests")[index]?.start_date);
-                return (
-                  currentDate.isBefore(dayjs().startOf("minute")) ||
-                  currentDate.isBefore(start.startOf("day"))
-                );
+                return currentDate.isBefore(start.startOf("day"));
               }}
               disabledTime={(currentDate) => {
                 const start = dayjs(form.watch("tests")[index]?.start_date);

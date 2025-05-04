@@ -44,5 +44,12 @@ export const ROUTES = {
       update: "/exams/tests/:id/update",
       delete: "/exams/tests/:id/delete",
     },
+    accurations: {
+      list: "/exams/accurations/list",
+      create: "/exams/accurations/create",
+      detail: "/exams/accurations/:id/detail",
+      update: "/exams/accurations/:id/update",
+      delete: "/exams/accurations/:id/delete",
+    },
   },
 };

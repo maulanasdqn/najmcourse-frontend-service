@@ -1,12 +1,16 @@
+import type { ReactElement } from "react";
+import type { DatePickerProps } from "antd";
 import { Form, FormItemProps, DatePicker } from "antd";
 import { FieldValues, useController, UseControllerProps } from "react-hook-form";
-import type { DatePickerProps } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Jakarta");
 
-type ControlledDatePickerProps<T extends FieldValues> = UseControllerProps<T> &
+type TControlledDatePickerProps<T extends FieldValues> = UseControllerProps<T> &
   Omit<DatePickerProps, "name" | "value" | "onChange" | "onBlur"> & {
     formItemProps?: FormItemProps;
     label?: string;
@@ -18,7 +22,7 @@ export const ControlledDatePicker = <T extends FieldValues>({
   formItemProps,
   label,
   ...datePickerProps
-}: ControlledDatePickerProps<T>) => {
+}: TControlledDatePickerProps<T>): ReactElement => {
   const {
     field: { value, onChange, onBlur },
     fieldState,
@@ -35,7 +39,7 @@ export const ControlledDatePicker = <T extends FieldValues>({
         {...datePickerProps}
         format="YYYY-MM-DD HH:mm"
         value={value ? dayjs(value) : undefined}
-        onChange={(date) => onChange(date ? date.utc().format("YYYY-MM-DDTHH:mm:ss[Z]") : "")}
+        onChange={(date) => onChange(date ? date.tz("Asia/Jakarta").format() : "")}
         onBlur={onBlur}
         style={{ width: "100%" }}
       />

@@ -13,15 +13,13 @@ export const Component = () => {
     <section className="px-8 bg-white py-6 rounded-lg">
       <div className="flex w-full justify-between mb-6">
         <h1 className="text-2xl mb-6">List Users</h1>
-        <h1 className="text-2xl mb-6">
-          <Guard permissions={[PERMISSIONS.USERS.CREATE_USERS]}>
-            <Link to={ROUTES.iam.users.create}>
-              <Button size="large" type="primary">
-                + Create User
-              </Button>
-            </Link>
-          </Guard>
-        </h1>
+        <Guard permissions={[PERMISSIONS.USERS.CREATE_USERS]}>
+          <Link to={ROUTES.iam.users.create}>
+            <Button size="large" type="primary">
+              + Create User
+            </Button>
+          </Link>
+        </Guard>
       </div>
       <DataTable
         scroll={{ x: "1400px" }}

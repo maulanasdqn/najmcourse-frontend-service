@@ -37,7 +37,7 @@ const ProtectedLayout: FC = (): ReactElement => {
       <Sider className="bg-gray-200" width={250} breakpoint="md" collapsedWidth="0" theme="light">
         <div className="flex items-center justify-center h-16 px-4 bg-white border-b border-gray-100 shadow">
           <Typography.Title level={4} style={{ margin: 0 }}>
-            {session?.user?.fullname}
+            {session?.user?.role?.name}
           </Typography.Title>
         </div>
         <Menu

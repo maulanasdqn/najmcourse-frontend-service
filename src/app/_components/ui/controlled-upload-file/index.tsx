@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ReactElement, useState } from "react";
 import { Form, FormItemProps, Upload, UploadProps, Button, Image } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FieldValues, useController, UseControllerProps } from "react-hook-form";
-import { useState } from "react";
 import { postUploadFile } from "@/api/storage/api";
 
 type ControlledUploadFileProps<T extends FieldValues> = UseControllerProps<T> &
@@ -17,7 +17,7 @@ export const ControlledUploadFile = <T extends FieldValues>({
   formItemProps,
   label,
   ...uploadProps
-}: ControlledUploadFileProps<T>) => {
+}: ControlledUploadFileProps<T>): ReactElement => {
   const {
     field: { value, onChange },
     fieldState,

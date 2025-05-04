@@ -1,5 +1,5 @@
-import { createTestSchema } from "@/api/tests/schema";
-import { TTestCreateRequest } from "@/api/tests/type";
+import { testSchema } from "@/api/tests/schema";
+import { TTestRequest } from "@/api/tests/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { usePostCreateTest } from "./use-post-create-test";
@@ -15,9 +15,9 @@ export const useCreateTest = () => {
   });
   const navigate = useNavigate();
   const { mutate, isPending } = usePostCreateTest();
-  const form = useForm<TTestCreateRequest>({
+  const form = useForm<TTestRequest>({
     mode: "all",
-    resolver: zodResolver(createTestSchema),
+    resolver: zodResolver(testSchema),
   });
 
   const fields = useFieldArray({

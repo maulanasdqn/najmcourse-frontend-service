@@ -5,8 +5,13 @@ import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/ico
 import { useNavigate } from "react-router";
 import { ControlledSelect } from "@/app/_components/ui/controlled-select";
 import { ControlledDatePicker } from "@/app/_components/ui/controlled-date-picker";
-import dayjs from "dayjs";
 import { ControlledSwitch } from "@/app/_components/ui/controlled-switch";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Jakarta");
 
 export const Component = () => {
   const { form, state, fields, handler, options } = useCreateSession();
@@ -94,21 +99,41 @@ export const Component = () => {
               name={`tests.${index}.multiplier`}
             />
             <ControlledDatePicker
-              label="Start Date"
+              label="End Date"
               control={form.control}
-              placeholder="Input start date"
-              name={`tests.${index}.start_date`}
-              format="YYYY-MM-DDTHH:mm:ss[Z]"
+              placeholder="Input end date"
+              name={`tests.${index}.end_date`}
               showTime={{ format: "HH:mm" }}
-              disabledDate={(currentDate) => currentDate < dayjs().startOf("minute")}
+              format="YYYY-MM-DD HH:mm"
+              disabledDate={(currentDate) => {
+                const start = dayjs(form.watch("tests")[index]?.start_date);
+                return currentDate.isBefore(start.startOf("day"));
+              }}
+              disabledTime={(currentDate) => {
+                const start = dayjs(form.watch("tests")[index]?.start_date);
+                if (!start || !currentDate.isSame(start, "day")) return {};
+                const startHour = start.hour();
+                const startMinute = start.minute();
+                return {
+                  disabledHours: () =>
+                    Array.from({ length: 24 }, (_, i) => i).filter((h) => h < startHour),
+                  disabledMinutes: (selectedHour) => {
+                    if (selectedHour === startHour) {
+                      return Array.from({ length: 60 }, (_, i) => i).filter((m) => m < startMinute);
+                    }
+                    return [];
+                  },
+                };
+              }}
             />
+
             <ControlledDatePicker
               label="End Date"
               control={form.control}
               placeholder="Input end date"
               name={`tests.${index}.end_date`}
               showTime={{ format: "HH:mm" }}
-              format="YYYY-MM-DDTHH:mm:ss[Z]"
+              format="YYYY-MM-DDTHH:mm"
               disabledDate={(currentDate) => {
                 const start = dayjs(form.watch("tests")[index]?.start_date);
                 return (

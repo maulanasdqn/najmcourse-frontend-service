@@ -2,12 +2,7 @@
 import { api } from "@/libs/axios/api";
 import { generatePath } from "react-router";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
-import {
-  TTestCreateRequest,
-  TTestDetailResponse,
-  TTestListResponse,
-  TTestUpdateRequest,
-} from "./type";
+import { TTestRequest, TTestDetailResponse, TTestListResponse } from "./type";
 import { TMetaRequest } from "@/commons/types/meta";
 import { TMessageResponse } from "@/commons/types/response";
 
@@ -31,7 +26,7 @@ export const getDetailTest = async (id: string): Promise<TTestDetailResponse> =>
   return data;
 };
 
-export const createTest = async (payload: TTestCreateRequest): Promise<TMessageResponse> => {
+export const createTest = async (payload: TTestRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.TESTS.CREATE,
     method: "POST",
@@ -40,10 +35,7 @@ export const createTest = async (payload: TTestCreateRequest): Promise<TMessageR
   return data;
 };
 
-export const updateTest = async (
-  id: string,
-  payload: TTestUpdateRequest,
-): Promise<TMessageResponse> => {
+export const updateTest = async (id: string, payload: TTestRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.TESTS.UPDATE, { id }),
     method: "PUT",

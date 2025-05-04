@@ -20,14 +20,7 @@ export const Component = () => {
           icon={<ArrowLeftOutlined size={30} />}
           onClick={() => navigate(-1)}
         />
-        <h2
-          style={{
-            marginBottom: "0px",
-          }}
-          className="text-xl font-semibold mb-0"
-        >
-          Create User
-        </h2>
+        <h2 className="text-xl font-semibold">Create User</h2>
       </div>
 
       <Form name="user_create" onFinish={handler.onSubmit} layout="vertical">

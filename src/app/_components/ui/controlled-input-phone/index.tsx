@@ -1,7 +1,8 @@
+import type { ReactElement } from "react";
 import { Form, Input, FormItemProps } from "antd";
 import { FieldValues, useController, UseControllerProps } from "react-hook-form";
 
-type ControlledManualPhoneProps<T extends FieldValues> = UseControllerProps<T> & {
+type TControlledInputPhoneProps<T extends FieldValues> = UseControllerProps<T> & {
   formItemProps?: FormItemProps;
   label?: string;
   placeholder?: string;
@@ -13,7 +14,7 @@ export const ControlledInputPhone = <T extends FieldValues>({
   formItemProps,
   label,
   placeholder,
-}: ControlledManualPhoneProps<T>) => {
+}: TControlledInputPhoneProps<T>): ReactElement => {
   const {
     field: { value, onChange },
     fieldState,

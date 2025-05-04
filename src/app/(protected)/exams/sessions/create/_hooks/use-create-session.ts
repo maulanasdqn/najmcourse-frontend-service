@@ -1,4 +1,4 @@
-import { createSessionSchema } from "@/api/sessions/schema";
+import { sessionSchema } from "@/api/sessions/schema";
 import { TSessionCreateRequest } from "@/api/sessions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -9,15 +9,18 @@ import { ROUTES } from "@/commons/constants/routes";
 import { useGetListTest } from "@/app/(protected)/exams/tests/list/_hooks/use-get-list-test";
 
 export const useCreateSession = () => {
+  const navigate = useNavigate();
+
   const { data: tests, isLoading } = useGetListTest({
     page: 1,
     per_page: 100,
   });
-  const navigate = useNavigate();
+
   const { mutate, isPending } = usePostCreateSession();
+
   const form = useForm<TSessionCreateRequest>({
     mode: "all",
-    resolver: zodResolver(createSessionSchema),
+    resolver: zodResolver(sessionSchema),
   });
 
   const fields = useFieldArray({
@@ -49,10 +52,6 @@ export const useCreateSession = () => {
     {
       label: "Polri",
       value: "POLRI",
-    },
-    {
-      label: "Staff / Admin",
-      value: "-",
     },
   ];
 

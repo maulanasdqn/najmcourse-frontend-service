@@ -8,7 +8,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { TSessionCreateRequest } from "@/api/sessions/type";
 import { vi } from "vitest";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createSessionSchema } from "@/api/sessions/schema";
+import { sessionSchema } from "@/api/sessions/schema";
 
 const mockNavigate = vi.fn();
 const mockParams = { id: "Session-id-123" };
@@ -39,7 +39,7 @@ const TestWrapper = ({
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
   const form = useForm<TSessionCreateRequest>({
-    resolver: zodResolver(createSessionSchema),
+    resolver: zodResolver(sessionSchema),
     defaultValues: { name: "" },
     mode: "all",
   });

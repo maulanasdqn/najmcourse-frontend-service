@@ -1,7 +1,8 @@
+import type { ReactElement } from "react";
 import { Form, FormItemProps, Switch } from "antd";
 import { FieldValues, useController, UseControllerProps } from "react-hook-form";
 
-type ControlledSwitchProps<T extends FieldValues> = UseControllerProps<T> & {
+type TControlledSwitchProps<T extends FieldValues> = UseControllerProps<T> & {
   formItemProps?: FormItemProps;
   label?: string;
   onChange?: (checked: boolean) => void;
@@ -13,7 +14,7 @@ export const ControlledSwitch = <T extends FieldValues>({
   formItemProps,
   label,
   onChange: customOnChange,
-}: ControlledSwitchProps<T>) => {
+}: TControlledSwitchProps<T>): ReactElement => {
   const {
     field: { value, onChange },
     fieldState,

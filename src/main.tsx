@@ -10,6 +10,12 @@ import { middleware } from "./middleware";
 import { ReactQueryProvider } from "./libs/react-query/react-query-provider";
 import "@ant-design/v5-patch-for-react-19";
 import "./style.css";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Jakarta");
 
 const files = import.meta.glob("./app/**/*(page|layout).tsx");
 const errorFiles = import.meta.glob("./app/**/*error.tsx");

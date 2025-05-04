@@ -1,4 +1,4 @@
-import { createSessionSchema } from "@/api/sessions/schema";
+import { sessionSchema } from "@/api/sessions/schema";
 import { TSessionCreateRequest } from "@/api/sessions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -11,17 +11,22 @@ import { useGetDetailSession } from "../../_hooks/use-get-detail-session";
 import { useEffect } from "react";
 
 export const useUpdateSession = () => {
+  const params = useParams();
+
+  const navigate = useNavigate();
+
   const { data: tests, isLoading } = useGetListTest({
     page: 1,
     per_page: 100,
   });
-  const params = useParams();
+
   const { data: detail } = useGetDetailSession(params.id ?? "");
-  const navigate = useNavigate();
+
   const { mutate, isPending } = usePutUpdateSession();
+
   const form = useForm<TSessionCreateRequest>({
     mode: "all",
-    resolver: zodResolver(createSessionSchema),
+    resolver: zodResolver(sessionSchema),
   });
 
   const fields = useFieldArray({

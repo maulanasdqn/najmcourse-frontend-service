@@ -8,6 +8,7 @@ import {
   BookOutlined,
   ClockCircleOutlined,
   FormOutlined,
+  HolderOutlined,
   IdcardOutlined,
 } from "@ant-design/icons";
 
@@ -44,6 +45,12 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
         label: <Link to={ROUTES.exams.tests.list}>Tests</Link>,
         permissions: [PERMISSIONS.TESTS.READ_LIST_TESTS],
         icon: <FormOutlined />,
+      },
+      {
+        key: ROUTES.exams.accurations.list,
+        label: <Link to={ROUTES.exams.accurations.list}>Test Accurations</Link>,
+        permissions: [PERMISSIONS.TESTS.READ_LIST_TESTS],
+        icon: <HolderOutlined />,
       },
     ],
   },
