@@ -4,9 +4,11 @@ import { ControlledInput } from "@/app/_components/ui/controlled-input";
 import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router";
 import { OptionsFields } from "./_components/options-fields";
+import { ControlledUploadFile } from "@/app/_components/ui/controlled-upload-file";
 
 export const Component = () => {
   const { form, state, fields, handler } = useCreateTest();
+  console.log(form.watch());
   const navigate = useNavigate();
 
   return (
@@ -50,23 +52,24 @@ export const Component = () => {
               name={`questions.${index}.question`}
               placeholder="Input question text"
             />
-            <ControlledInput
-              label="Question Image URL"
-              control={form.control}
-              name={`questions.${index}.question_image_url`}
-              placeholder="Input question image URL"
-            />
+
             <ControlledInput
               label="Discussion"
               control={form.control}
               name={`questions.${index}.discussion`}
               placeholder="Input discussion text"
             />
-            <ControlledInput
-              label="Discussion Image URL"
+
+            <ControlledUploadFile
+              label="Question With Image"
+              control={form.control}
+              name={`questions.${index}.question_image_url`}
+            />
+
+            <ControlledUploadFile
+              label="Discussion With Image"
               control={form.control}
               name={`questions.${index}.discussion_image_url`}
-              placeholder="Input discussion image URL"
             />
 
             <Form.Item label="Options" className="px-2">

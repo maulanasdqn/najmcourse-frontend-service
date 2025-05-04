@@ -5,6 +5,7 @@ import { Button } from "antd";
 import { FC } from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { ControlledUploadFile } from "@/app/_components/ui/controlled-upload-file";
 
 type TProps = {
   form: UseFormReturn<TTestCreateRequest>;
@@ -39,11 +40,10 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
             name={`questions.${index}.options.${optIndex}.label`}
             placeholder="Option label"
           />
-          <ControlledInput
-            label="Image URL"
+          <ControlledUploadFile
+            label="Option Label With Image"
             control={form.control}
             name={`questions.${index}.options.${optIndex}.image_url`}
-            placeholder="Image URL"
           />
           <ControlledInput
             label="Points (Only used for category Psikologi)"
