@@ -18,6 +18,7 @@ export const ControlledInput = <T extends FieldValues>({
   return (
     <Form.Item
       {...formItemProps}
+      required={inputProps.required}
       label={inputProps.label}
       validateStatus={fieldState.error ? "error" : ""}
       help={fieldState.error?.message}

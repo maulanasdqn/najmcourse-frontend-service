@@ -8,7 +8,6 @@ import { ControlledUploadFile } from "@/app/_components/ui/controlled-upload-fil
 
 export const Component = () => {
   const { form, state, fields, handler } = useCreateTest();
-  console.log(form.watch());
   const navigate = useNavigate();
 
   return (
@@ -32,6 +31,7 @@ export const Component = () => {
 
       <Form name="test_create" onFinish={handler.onSubmit} layout="vertical">
         <ControlledInput
+          required
           label="Name"
           control={form.control}
           placeholder="Input test name"
@@ -41,7 +41,15 @@ export const Component = () => {
         {fields.fields.map((field, index) => (
           <div key={field.question} className="mb-4 p-4 border border-gray-100 rounded bg-gray-50">
             <div className="flex justify-end mb-2">
-              <Button danger icon={<DeleteOutlined />} onClick={() => fields.remove(index)}>
+              <Button
+                style={{
+                  backgroundColor: "#f56565",
+                  color: "white",
+                }}
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => fields.remove(index)}
+              >
                 Remove Question
               </Button>
             </div>
@@ -72,7 +80,7 @@ export const Component = () => {
               name={`questions.${index}.discussion_image_url`}
             />
 
-            <Form.Item label="Options" className="px-2">
+            <Form.Item required label="Options" className="px-2">
               <OptionsFields form={form} index={index} />
             </Form.Item>
           </div>

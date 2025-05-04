@@ -41,7 +41,7 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
             placeholder="Option label"
           />
           <ControlledUploadFile
-            label="Option Label With Image"
+            label="Label With Image"
             control={form.control}
             name={`questions.${index}.options.${optIndex}.image_url`}
           />
@@ -58,6 +58,10 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
             onChange={() => setCorrectOption(optIndex)}
           />
           <Button
+            style={{
+              backgroundColor: "#f56565",
+              color: "white",
+            }}
             danger
             icon={<DeleteOutlined />}
             type="text"
