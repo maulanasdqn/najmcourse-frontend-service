@@ -9,29 +9,29 @@ export const testSchema = z.object({
     .array(
       z
         .object({
-          question: z.string().optional(),
-          question_image_url: z.string().optional(),
-          discussion: z.string().optional(),
-          discussion_image_url: z.string().optional(),
+          question: z.string().trim().optional().nullable(),
+          question_image_url: z.string().trim().optional().nullable(),
+          discussion: z.string().trim().optional().nullable(),
+          discussion_image_url: z.string().trim().optional().nullable(),
           options: z
             .array(
               z
                 .object({
-                  label: z.string().optional(),
+                  label: z.string().trim().optional().nullable(),
                   is_correct: z.boolean(),
-                  image_url: z.string().optional(),
+                  image_url: z.string().trim().optional().nullable(),
                   points: z.number().optional(),
                 })
-                .refine((val) => val.label ?? val.image_url, {
+                .refine((val) => val.label?.trim() || val.image_url?.trim(), {
                   message: "Option must have label or image",
                 }),
             )
             .min(1, { message: "At least one option is required" }),
         })
-        .refine((val) => val.question ?? val.question_image_url, {
+        .refine((val) => val.question?.trim() || val.question_image_url?.trim(), {
           message: "Question must have text or image",
         })
-        .refine((val) => val.discussion ?? val.discussion_image_url, {
+        .refine((val) => val.discussion?.trim() || val.discussion_image_url?.trim(), {
           message: "Discussion must have text or image",
         }),
     )

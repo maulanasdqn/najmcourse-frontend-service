@@ -33,7 +33,7 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
   return (
     <div className="flex flex-col gap-y-4">
       {fields.fields.map((opt, optIndex) => (
-        <div key={opt.id} className="p-2 mt-2 bg-white border-gray-100 rounded border">
+        <div key={opt.id} className="p-4 mt-2 bg-white border-gray-100 rounded border">
           <ControlledInput
             label="Label"
             control={form.control}

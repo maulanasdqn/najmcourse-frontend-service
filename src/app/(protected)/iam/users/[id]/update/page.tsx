@@ -67,7 +67,7 @@ export const Component = () => {
         <Form.Item>
           <Button
             loading={state.isLoading}
-            disabled={!form.formState.isValid && !form.formState.isDirty}
+            disabled={!form.formState.isValid || !form.formState.isDirty || state.isLoading}
             type="primary"
             htmlType="submit"
           >

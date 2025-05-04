@@ -13,15 +13,13 @@ export const Component = () => {
     <section className="px-8 bg-white py-6 rounded-lg">
       <div className="flex w-full justify-between mb-6">
         <h1 className="text-2xl mb-6">List Roles</h1>
-        <h1 className="text-2xl mb-6">
-          <Guard permissions={[PERMISSIONS.ROLES.CREATE_ROLES]}>
-            <Link to={ROUTES.iam.roles.create}>
-              <Button size="large" type="primary">
-                + Create Role
-              </Button>
-            </Link>
-          </Guard>
-        </h1>
+        <Guard permissions={[PERMISSIONS.ROLES.CREATE_ROLES]}>
+          <Link to={ROUTES.iam.roles.create}>
+            <Button size="large" type="primary">
+              + Create Role
+            </Button>
+          </Link>
+        </Guard>
       </div>
       <DataTable
         rowKey={"id"}

@@ -3,12 +3,15 @@ import { useCreateTest } from "./_hooks/use-create-test";
 import { ControlledInput } from "@/app/_components/ui/controlled-input";
 import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router";
-import { OptionsFields } from "./_components/options-fields";
+import { OptionsFields } from "../_components/options-fields";
 import { ControlledUploadFile } from "@/app/_components/ui/controlled-upload-file";
 
 export const Component = () => {
   const { form, state, fields, handler } = useCreateTest();
   const navigate = useNavigate();
+
+  console.log(form.formState.errors);
+  console.log(form.watch());
 
   return (
     <div className="bg-white px-6 py-4 rounded-lg shadow">
