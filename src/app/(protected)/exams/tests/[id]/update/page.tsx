@@ -1,13 +1,13 @@
 import { Form, Button } from "antd";
-import { useCreateTest } from "./_hooks/use-create-test";
+import { useUpdateTest } from "./_hooks/use-update-test";
 import { ControlledInput } from "@/app/_components/ui/controlled-input";
 import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router";
-import { OptionsFields } from "../_components/options-fields";
+import { OptionsFields } from "../../_components/options-fields";
 import { ControlledUploadFile } from "@/app/_components/ui/controlled-upload-file";
 
 export const Component = () => {
-  const { form, state, fields, handler } = useCreateTest();
+  const { form, state, fields, handler } = useUpdateTest();
   const navigate = useNavigate();
 
   return (
@@ -26,14 +26,14 @@ export const Component = () => {
             }}
             className="text-xl font-semibold mb-0"
           >
-            Create Test
+            Update Test
           </h2>
         </div>
         <Button
           onClick={handler.onSubmit}
           type="primary"
           htmlType="button"
-          disabled={!form.formState.isValid || state.isLoading}
+          disabled={!form.formState.isValid || !form.formState.isDirty || state.isLoading}
           loading={state.isLoading}
         >
           Submit
@@ -120,7 +120,7 @@ export const Component = () => {
           <Button
             type="primary"
             htmlType="submit"
-            disabled={!form.formState.isValid}
+            disabled={!form.formState.isValid || !form.formState.isDirty || state.isLoading}
             loading={state.isLoading}
           >
             Submit

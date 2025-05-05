@@ -1,4 +1,4 @@
-import { TTestRequest } from "@/api/tests/type";
+import { TTestCreateRequest } from "@/api/tests/type";
 import { ControlledInput } from "@/app/_components/ui/controlled-input";
 import { ControlledSwitch } from "@/app/_components/ui/controlled-switch";
 import { Button } from "antd";
@@ -8,7 +8,7 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ControlledUploadFile } from "@/app/_components/ui/controlled-upload-file";
 
 type TProps = {
-  form: UseFormReturn<TTestRequest>;
+  form: UseFormReturn<TTestCreateRequest>;
   index: number;
 };
 
@@ -81,7 +81,7 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
             label: "",
             image_url: "",
             is_correct: false,
-            points: 0,
+            points: "0",
           })
         }
       >

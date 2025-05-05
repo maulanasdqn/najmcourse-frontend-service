@@ -2,7 +2,12 @@
 import { api } from "@/libs/axios/api";
 import { generatePath } from "react-router";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
-import { TTestRequest, TTestDetailResponse, TTestListResponse } from "./type";
+import {
+  TTestCreateRequest,
+  TTestDetailResponse,
+  TTestListResponse,
+  TTestUpdateRequest,
+} from "./type";
 import { TMetaRequest } from "@/commons/types/meta";
 import { TMessageResponse } from "@/commons/types/response";
 
@@ -26,20 +31,41 @@ export const getDetailTest = async (id?: string): Promise<TTestDetailResponse> =
   return data;
 };
 
-export const createTest = async (payload: TTestRequest): Promise<TMessageResponse> => {
+export const createTest = async (payload: TTestCreateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.TESTS.CREATE,
     method: "POST",
-    data: payload,
+    data: {
+      ...payload,
+      questions: payload.questions.map((question) => ({
+        ...question,
+        options: question.options.map((option) => ({
+          ...option,
+          points: parseInt(option.points ?? ""),
+        })),
+      })),
+    },
   });
   return data;
 };
 
-export const updateTest = async (id: string, payload: TTestRequest): Promise<TMessageResponse> => {
+export const updateTest = async (
+  id: string,
+  payload: TTestUpdateRequest,
+): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.TESTS.UPDATE, { id }),
     method: "PUT",
-    data: payload,
+    data: {
+      ...payload,
+      questions: payload.questions.map((question) => ({
+        ...question,
+        options: question.options.map((option) => ({
+          ...option,
+          points: parseInt(option.points ?? ""),
+        })),
+      })),
+    },
   });
   return data;
 };

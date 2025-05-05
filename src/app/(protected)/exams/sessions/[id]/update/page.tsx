@@ -14,21 +14,32 @@ export const Component = () => {
 
   return (
     <div className="bg-white px-6 py-4 rounded-lg shadow">
-      <div className="flex items-center gap-x-2 mb-6">
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-x-2 mb-6">
+          <Button
+            className="flex justify-center items-center"
+            type="text"
+            icon={<ArrowLeftOutlined size={30} />}
+            onClick={() => navigate(-1)}
+          />
+          <h2
+            style={{
+              marginBottom: "0px",
+            }}
+            className="text-xl font-semibold mb-0"
+          >
+            Update Session
+          </h2>
+        </div>
         <Button
-          className="flex justify-center items-center"
-          type="text"
-          icon={<ArrowLeftOutlined size={30} />}
-          onClick={() => navigate(-1)}
-        />
-        <h2
-          style={{
-            marginBottom: "0px",
-          }}
-          className="text-xl font-semibold mb-0"
+          onClick={handler.onSubmit}
+          type="primary"
+          htmlType="button"
+          disabled={!form.formState.isValid || !form.formState.isDirty || state.isLoading}
+          loading={state.isLoading}
         >
-          Update Session
-        </h2>
+          Submit
+        </Button>
       </div>
 
       <Form name="session_update" onFinish={handler.onSubmit} layout="vertical">

@@ -1,5 +1,5 @@
-import { testSchema } from "@/api/tests/schema";
-import { TTestRequest } from "@/api/tests/type";
+import { createTestSchema } from "@/api/tests/schema";
+import { TTestCreateRequest } from "@/api/tests/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { usePostCreateTest } from "./use-post-create-test";
@@ -15,9 +15,9 @@ export const useCreateTest = () => {
   });
   const navigate = useNavigate();
   const { mutate, isPending } = usePostCreateTest();
-  const form = useForm<TTestRequest>({
+  const form = useForm<TTestCreateRequest>({
     mode: "all",
-    resolver: zodResolver(testSchema),
+    resolver: zodResolver(createTestSchema),
   });
 
   const fields = useFieldArray({
@@ -49,10 +49,6 @@ export const useCreateTest = () => {
     {
       label: "Polri",
       value: "POLRI",
-    },
-    {
-      label: "Staff / Admin",
-      value: "-",
     },
   ];
 

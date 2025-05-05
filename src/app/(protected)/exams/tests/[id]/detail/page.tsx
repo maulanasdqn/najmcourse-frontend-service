@@ -22,7 +22,6 @@ export const Component = () => {
       <Descriptions bordered column={1}>
         <Descriptions.Item label="ID">{test?.id}</Descriptions.Item>
         <Descriptions.Item label="Name">{test?.name}</Descriptions.Item>
-        <Descriptions.Item label="Description">{test?.description}</Descriptions.Item>
         <Descriptions.Item label="Registered Questions">
           <Collapse accordion>
             {test?.questions?.map((question, index) => (

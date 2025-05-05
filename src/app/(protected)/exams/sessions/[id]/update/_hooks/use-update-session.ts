@@ -67,6 +67,7 @@ export const useUpdateSession = () => {
           end_date: test.end_date,
         })),
       });
+      form.trigger();
     }
   }, [detail, form]);
 
