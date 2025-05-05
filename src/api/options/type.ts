@@ -5,6 +5,7 @@ export type TOptionItem = {
   label: string;
   is_correct: boolean;
   image_url: string | null;
+  points: number;
   created_at: string;
   updated_at: string;
 };

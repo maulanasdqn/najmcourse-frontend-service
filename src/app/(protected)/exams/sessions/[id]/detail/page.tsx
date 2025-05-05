@@ -1,58 +1,63 @@
 import dayjs from "dayjs";
-import { Descriptions, Button, Tag } from "antd";
+import { Descriptions, Button, Tag, Collapse } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router";
 import { useGetDetailSession } from "../_hooks/use-get-detail-session";
+
+const { Panel } = Collapse;
 
 export const Component = () => {
   const params = useParams();
   const navigate = useNavigate();
   const { data } = useGetDetailSession(params.id ?? "");
+  const session = data?.data;
+
   return (
     <div className="bg-white px-6 py-4 rounded-lg shadow">
       <div className="flex items-center gap-2 mb-4">
         <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} />
-        <h2
-          style={{
-            marginBottom: "0px",
-          }}
-          className="text-xl font-semibold"
-        >
-          Detail Session
-        </h2>
+        <h2 className="text-xl font-semibold mb-0">Detail Session</h2>
       </div>
 
       <Descriptions bordered column={1}>
-        <Descriptions.Item label="ID">{data?.data?.id}</Descriptions.Item>
+        <Descriptions.Item label="ID">{session?.id}</Descriptions.Item>
         <Descriptions.Item label="Status">
-          <Tag color={data?.data?.is_active ? "green" : "red"}>
-            {data?.data?.is_active ? "Active" : "Inactive"}
+          <Tag color={session?.is_active ? "green" : "red"}>
+            {session?.is_active ? "Active" : "Inactive"}
           </Tag>
         </Descriptions.Item>
-        <Descriptions.Item label="Name">{data?.data?.name}</Descriptions.Item>
-        <Descriptions.Item label="Category">{data?.data?.category}</Descriptions.Item>
-        <Descriptions.Item label="Student Type">{data?.data?.student_type}</Descriptions.Item>
-        <Descriptions.Item label="Description">{data?.data?.description}</Descriptions.Item>
+        <Descriptions.Item label="Name">{session?.name}</Descriptions.Item>
+        <Descriptions.Item label="Category">{session?.category}</Descriptions.Item>
+        <Descriptions.Item label="Student Type">{session?.student_type}</Descriptions.Item>
+        <Descriptions.Item label="Description">{session?.description}</Descriptions.Item>
         <Descriptions.Item label="Registered Tests">
-          {data?.data?.tests?.map((test) => (
-            <Descriptions key={test.test.id} bordered column={1}>
-              <Descriptions.Item label="Test ID">{test.test.id}</Descriptions.Item>
-              <Descriptions.Item label="Weight (Bobot)">{test.weight}</Descriptions.Item>
-              <Descriptions.Item label="Multiplier (Pengkali)">{test.multiplier}</Descriptions.Item>
-              <Descriptions.Item label="Start Date">
-                {dayjs(test.start_date).format("DD/MM/YYYY HH:mm")}
-              </Descriptions.Item>
-              <Descriptions.Item label="End Date">
-                {dayjs(test.end_date).format("DD/MM/YYYY HH:mm")}
-              </Descriptions.Item>
-            </Descriptions>
-          ))}
+          <Collapse accordion>
+            {session?.tests?.map((test, index) => (
+              <Panel header={`Test ${index + 1}`} key={test.test.id}>
+                <p>
+                  <strong>Test ID:</strong> {test.test.id}
+                </p>
+                <p>
+                  <strong>Weight (Bobot):</strong> {Math.round(test.weight * 100)}%
+                </p>
+                <p>
+                  <strong>Multiplier (Pengkali):</strong> {test.multiplier}
+                </p>
+                <p>
+                  <strong>Start Date:</strong> {dayjs(test.start_date).format("DD/MM/YYYY HH:mm")}
+                </p>
+                <p>
+                  <strong>End Date:</strong> {dayjs(test.end_date).format("DD/MM/YYYY HH:mm")}
+                </p>
+              </Panel>
+            ))}
+          </Collapse>
         </Descriptions.Item>
         <Descriptions.Item label="Created At">
-          {dayjs(data?.data?.created_at).format("DD/MM/YYYY HH:mm")}
+          {dayjs(session?.created_at).format("DD/MM/YYYY HH:mm")}
         </Descriptions.Item>
         <Descriptions.Item label="Updated At">
-          {dayjs(data?.data?.updated_at).format("DD/MM/YYYY HH:mm")}
+          {dayjs(session?.updated_at).format("DD/MM/YYYY HH:mm")}
         </Descriptions.Item>
       </Descriptions>
     </div>

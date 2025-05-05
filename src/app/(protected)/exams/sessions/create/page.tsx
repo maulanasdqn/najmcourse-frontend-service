@@ -86,17 +86,51 @@ export const Component = () => {
               name={`tests.${index}.test_id`}
               options={options.tests}
             />
-            <ControlledInput
+            <ControlledSelect
               label="Weight (Bobot)"
               control={form.control}
-              placeholder="Input weight"
+              placeholder="Select weight"
               name={`tests.${index}.weight`}
+              options={Array.from({ length: 20 }, (_, i) => {
+                const value = (i + 1) * 5;
+                return {
+                  label: `${value}%`,
+                  value: value / 100,
+                };
+              })}
             />
             <ControlledInput
               label="Multiplier (Pengkali)"
               control={form.control}
               placeholder="Input multiplier"
               name={`tests.${index}.multiplier`}
+            />
+            <ControlledDatePicker
+              label="Start Date"
+              control={form.control}
+              placeholder="Input start date"
+              name={`tests.${index}.start_date`}
+              showTime={{ format: "HH:mm" }}
+              disabledDate={(currentDate) => {
+                return currentDate.isBefore(dayjs().startOf("day"));
+              }}
+              disabledTime={(currentDate) => {
+                const now = dayjs();
+                if (!currentDate || !currentDate.isSame(now, "day")) return {};
+
+                return {
+                  disabledHours: () =>
+                    Array.from({ length: 24 }, (_, i) => i).filter((h) => h < now.hour()),
+                  disabledMinutes: (selectedHour) => {
+                    if (selectedHour === now.hour()) {
+                      return Array.from({ length: 60 }, (_, i) => i).filter(
+                        (m) => m < now.minute(),
+                      );
+                    }
+                    return [];
+                  },
+                };
+              }}
             />
             <ControlledDatePicker
               label="End Date"
@@ -108,38 +142,6 @@ export const Component = () => {
               disabledDate={(currentDate) => {
                 const start = dayjs(form.watch("tests")[index]?.start_date);
                 return currentDate.isBefore(start.startOf("day"));
-              }}
-              disabledTime={(currentDate) => {
-                const start = dayjs(form.watch("tests")[index]?.start_date);
-                if (!start || !currentDate.isSame(start, "day")) return {};
-                const startHour = start.hour();
-                const startMinute = start.minute();
-                return {
-                  disabledHours: () =>
-                    Array.from({ length: 24 }, (_, i) => i).filter((h) => h < startHour),
-                  disabledMinutes: (selectedHour) => {
-                    if (selectedHour === startHour) {
-                      return Array.from({ length: 60 }, (_, i) => i).filter((m) => m < startMinute);
-                    }
-                    return [];
-                  },
-                };
-              }}
-            />
-
-            <ControlledDatePicker
-              label="End Date"
-              control={form.control}
-              placeholder="Input end date"
-              name={`tests.${index}.end_date`}
-              showTime={{ format: "HH:mm" }}
-              format="YYYY-MM-DDTHH:mm"
-              disabledDate={(currentDate) => {
-                const start = dayjs(form.watch("tests")[index]?.start_date);
-                return (
-                  currentDate.isBefore(dayjs().startOf("minute")) ||
-                  currentDate.isBefore(start.startOf("day"))
-                );
               }}
               disabledTime={(currentDate) => {
                 const start = dayjs(form.watch("tests")[index]?.start_date);

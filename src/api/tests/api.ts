@@ -18,7 +18,7 @@ export const getListTest = async (params: TMetaRequest): Promise<TTestListRespon
   return data;
 };
 
-export const getDetailTest = async (id: string): Promise<TTestDetailResponse> => {
+export const getDetailTest = async (id?: string): Promise<TTestDetailResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.TESTS.DETAIL, { id }),
     method: "GET",

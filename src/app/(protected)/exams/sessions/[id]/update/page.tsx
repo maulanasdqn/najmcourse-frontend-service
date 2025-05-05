@@ -81,12 +81,20 @@ export const Component = () => {
               name={`tests.${index}.test_id`}
               options={options.tests}
             />
-            <ControlledInput
+            <ControlledSelect
               label="Weight (Bobot)"
               control={form.control}
-              placeholder="Input weight"
+              placeholder="Select weight"
               name={`tests.${index}.weight`}
+              options={Array.from({ length: 20 }, (_, i) => {
+                const value = (i + 1) * 5;
+                return {
+                  label: `${value}%`,
+                  value: value / 100,
+                };
+              })}
             />
+
             <ControlledInput
               label="Multiplier (Pengkali)"
               control={form.control}
