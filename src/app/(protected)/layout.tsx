@@ -1,5 +1,5 @@
 import type { FC, ReactElement } from "react";
-import { Layout, Menu, Typography, Flex, Grid } from "antd";
+import { Layout, Menu, Typography, Flex, Grid, Image } from "antd";
 import { Outlet, useLocation } from "react-router";
 import { SIDEBAR_ITEMS } from "@/commons/constants/sidebar";
 import { filterPermission } from "@/utils/permission";
@@ -50,7 +50,14 @@ const ProtectedLayout: FC = (): ReactElement => {
 
       <Layout>
         <Header className="bg-white shadow p-2 flex items-center justify-between">
-          <Flex align="center" gap={8}>
+          <Flex
+            align="center"
+            gap={8}
+            justify="space-between"
+            style={{
+              width: "100%",
+            }}
+          >
             <Typography.Title
               level={4}
               style={{
@@ -61,6 +68,19 @@ const ProtectedLayout: FC = (): ReactElement => {
             >
               NAJM Course Backoffice
             </Typography.Title>
+            <div className="flex items-center gap-x-2">
+              <span className="text-white text-lg">{session?.user?.fullname}</span>
+              <Image
+                style={{
+                  borderRadius: "50%",
+                }}
+                width={30}
+                src={
+                  session?.user?.avatar ??
+                  "https://png.pngtree.com/png-vector/20190629/ourmid/pngtree-office-work-user-icon-avatar-png-image_1527655.jpg"
+                }
+              />
+            </div>
           </Flex>
         </Header>
 
