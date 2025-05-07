@@ -2,10 +2,13 @@ import { Button, Col, Form, Row, Typography } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import { ControlledInput } from "@/app/_components/ui/controlled-input";
 import { useForgot } from "./_hooks/use-forgot";
+import { FC, ReactElement } from "react";
+
 const { Text, Title, Link } = Typography;
 
-export default function Component() {
+export const Component: FC = (): ReactElement => {
   const { form, state, handler } = useForgot();
+
   return (
     <section style={state.styles.section}>
       <Row style={state.styles.row} justify="center">
@@ -79,4 +82,6 @@ export default function Component() {
       </Row>
     </section>
   );
-}
+};
+
+export default Component;

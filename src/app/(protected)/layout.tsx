@@ -47,7 +47,6 @@ const ProtectedLayout: FC = (): ReactElement => {
           style={{ borderRight: 0 }}
         />
       </Sider>
-
       <Layout>
         <Header className="bg-white shadow p-2 flex items-center justify-between">
           <Flex
@@ -83,9 +82,10 @@ const ProtectedLayout: FC = (): ReactElement => {
             </div>
           </Flex>
         </Header>
-
         <Content style={{ margin: "24px 16px", overflow: "auto" }}>
-          <Outlet />
+          <section className="px-8 bg-white py-6 rounded-lg">
+            <Outlet />
+          </section>
         </Content>
       </Layout>
     </Layout>

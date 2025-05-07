@@ -2,10 +2,11 @@ import { Button, Col, Form, Row, Typography } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useLogin } from "./_hooks/use-login";
 import { ControlledInput } from "@/app/_components/ui/controlled-input";
+import { FC, ReactElement } from "react";
 
 const { Text, Title, Link } = Typography;
 
-export default function Component() {
+export const Component: FC = (): ReactElement => {
   const { form, state, handler } = useLogin();
 
   return (
@@ -33,7 +34,6 @@ export default function Component() {
                 type="email"
                 size="large"
               />
-
               <ControlledInput
                 control={form.control}
                 name="password"
@@ -42,13 +42,11 @@ export default function Component() {
                 type="password"
                 size="large"
               />
-
               <Form.Item>
                 <Link href="/auth/forgot" style={{ float: "right" }}>
                   Forgot password? Click here
                 </Link>
               </Form.Item>
-
               <Form.Item style={{ marginBottom: 0 }}>
                 <Button
                   loading={state.isLoading}
@@ -64,7 +62,6 @@ export default function Component() {
             </Form>
           </div>
         </Col>
-
         <Col xs={0} md={12} style={state.styles.illustrationWrapper}>
           <svg
             width="300"
@@ -89,4 +86,6 @@ export default function Component() {
       </Row>
     </section>
   );
-}
+};
+
+export default Component;
