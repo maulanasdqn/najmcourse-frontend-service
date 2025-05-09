@@ -1,41 +1,16 @@
-import { Form, Button } from "antd";
+import { PageHeadDetail } from "@/app/(protected)/_components/page-head-detail/page-head-detail";
+import { FC, ReactElement } from "react";
+import { FormProvider } from "react-hook-form";
 import { useCreatePermission } from "./_hooks/use-create-permission";
-import { ControlledInput } from "@/app/_components/ui/controlled-input";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router";
+import { FormFields } from "../_components/form-fields";
 
-export const Component = () => {
-  const { form, handler } = useCreatePermission();
-  const navigate = useNavigate();
-
+export const Component: FC = (): ReactElement => {
+  const { form, state, handler } = useCreatePermission();
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow">
-      <div className="flex items-center gap-x-2 mb-6">
-        <Button
-          className="flex justify-center items-center"
-          type="text"
-          icon={<ArrowLeftOutlined size={30} />}
-          onClick={() => navigate(-1)}
-        />
-        <h2
-          style={{
-            marginBottom: "0px",
-          }}
-          className="text-xl font-semibold mb-0"
-        >
-          Create Permission
-        </h2>
-      </div>
-
-      <Form name="permission_create" onFinish={handler.onSubmit} layout="vertical">
-        <ControlledInput label="Name" control={form.control} placeholder="Input name" name="name" />
-        <Form.Item>
-          <Button disabled={!form.formState.isValid} type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+    <FormProvider {...form}>
+      <PageHeadDetail title="Create Permission" />
+      <FormFields isLoading={state.isLoading} onSubmit={handler.onSubmit} />
+    </FormProvider>
   );
 };
 

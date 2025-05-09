@@ -1,35 +1,31 @@
 import dayjs from "dayjs";
-import { Descriptions, Button, Tag, Collapse } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router";
+import { Descriptions, Tag, Collapse } from "antd";
+import { useParams } from "react-router";
 import { useGetDetailSession } from "../_hooks/use-get-detail-session";
+import { FC, Fragment, ReactElement } from "react";
+import { PageHeadDetail } from "@/app/(protected)/_components/page-head-detail/page-head-detail";
 
 const { Panel } = Collapse;
 
-export const Component = () => {
+export const Component: FC = (): ReactElement => {
   const params = useParams();
-  const navigate = useNavigate();
   const { data } = useGetDetailSession(params.id ?? "");
   const session = data?.data;
 
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow">
-      <div className="flex items-center gap-2 mb-4">
-        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} />
-        <h2 className="text-xl font-semibold mb-0">Detail Session</h2>
-      </div>
-
+    <Fragment>
+      <PageHeadDetail title="Detail Session" />
       <Descriptions bordered column={1}>
-        <Descriptions.Item label="ID">{session?.id}</Descriptions.Item>
+        <Descriptions.Item label="ID">{session?.id ?? "-"}</Descriptions.Item>
         <Descriptions.Item label="Status">
           <Tag color={session?.is_active ? "green" : "red"}>
             {session?.is_active ? "Active" : "Inactive"}
           </Tag>
         </Descriptions.Item>
-        <Descriptions.Item label="Name">{session?.name}</Descriptions.Item>
-        <Descriptions.Item label="Category">{session?.category}</Descriptions.Item>
-        <Descriptions.Item label="Student Type">{session?.student_type}</Descriptions.Item>
-        <Descriptions.Item label="Description">{session?.description}</Descriptions.Item>
+        <Descriptions.Item label="Name">{session?.name ?? "-"}</Descriptions.Item>
+        <Descriptions.Item label="Category">{session?.category ?? "-"}</Descriptions.Item>
+        <Descriptions.Item label="Student Type">{session?.student_type ?? "-"}</Descriptions.Item>
+        <Descriptions.Item label="Description">{session?.description ?? "-"}</Descriptions.Item>
         <Descriptions.Item label="Registered Tests">
           <Collapse accordion>
             {session?.tests?.map((test, index) => (
@@ -60,7 +56,7 @@ export const Component = () => {
           {dayjs(session?.updated_at).format("DD/MM/YYYY HH:mm")}
         </Descriptions.Item>
       </Descriptions>
-    </div>
+    </Fragment>
   );
 };
 

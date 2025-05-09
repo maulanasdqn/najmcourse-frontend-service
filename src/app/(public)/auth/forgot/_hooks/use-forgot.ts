@@ -1,5 +1,5 @@
 import { forgotPasswordSchema } from "@/api/auth/schema";
-import { TForgotPasswordParam } from "@/api/auth/type";
+import { TForgotPasswordRequest } from "@/api/auth/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../_hooks/use-auth";
@@ -10,7 +10,7 @@ export const useForgot = () => {
 
   const { mutate } = usePostForgot();
 
-  const form = useForm<TForgotPasswordParam>({
+  const form = useForm<TForgotPasswordRequest>({
     mode: "all",
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {

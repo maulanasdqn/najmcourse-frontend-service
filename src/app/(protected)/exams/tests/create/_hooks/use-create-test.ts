@@ -1,23 +1,19 @@
-import { createTestSchema } from "@/api/tests/schema";
-import { TTestCreateRequest } from "@/api/tests/type";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { TTestUpdateRequest } from "@/api/tests/type";
 import { useFieldArray, useForm } from "react-hook-form";
 import { usePostCreateTest } from "./use-post-create-test";
 import { message } from "antd";
 import { useNavigate } from "react-router";
 import { ROUTES } from "@/commons/constants/routes";
-import { useGetListTest } from "@/app/(protected)/exams/tests/list/_hooks/use-get-list-test";
+import { testCreateSchema } from "@/api/tests/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const useCreateTest = () => {
-  const { data: tests, isLoading } = useGetListTest({
-    page: 1,
-    per_page: 100,
-  });
   const navigate = useNavigate();
   const { mutate, isPending } = usePostCreateTest();
-  const form = useForm<TTestCreateRequest>({
+
+  const form = useForm<TTestUpdateRequest>({
     mode: "all",
-    resolver: zodResolver(createTestSchema),
+    resolver: zodResolver(testCreateSchema),
   });
 
   const fields = useFieldArray({
@@ -30,50 +26,21 @@ export const useCreateTest = () => {
     mutate(data, {
       onSuccess: () => {
         form.reset();
-        message.success("Test created successfully");
+        message.success("Test updated successfully");
         navigate(ROUTES.exams.tests.list);
       },
+      onError: (err) => void message.error(err?.response?.data?.message),
     });
   });
-
-  const categories = [
-    { label: "Akademik", value: "Akademik" },
-    {
-      label: "Psikologi",
-      value: "Psikologi",
-    },
-  ];
-
-  const studentTypes = [
-    { label: "TNI", value: "TNI" },
-    {
-      label: "Polri",
-      value: "POLRI",
-    },
-  ];
-
-  const options = {
-    categories,
-    studentTypes,
-    tests: tests?.data.map((test) => ({
-      label: test.name,
-      value: test.id,
-    })),
-  };
 
   const handler = {
     onSubmit,
   };
 
-  const state = {
-    isLoading: isLoading || isPending,
-  };
-
   return {
     form,
-    state,
     fields,
-    options,
     handler,
+    isLoading: isPending,
   };
 };

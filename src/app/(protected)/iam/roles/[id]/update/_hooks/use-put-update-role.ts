@@ -1,4 +1,4 @@
-import { updateRole } from "@/api/roles/api";
+import { putUpdateRole } from "@/api/roles/api";
 import { TRoleUpdateRequest } from "@/api/roles/type";
 import { TMessageResponse, TResponseError } from "@/commons/types/response";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
@@ -11,6 +11,6 @@ export const usePutUpdateRole = (): UseMutationResult<
 > => {
   return useMutation({
     mutationKey: ["put-update-Role"],
-    mutationFn: async (payload) => await updateRole(payload.id, payload),
+    mutationFn: async (payload) => await putUpdateRole(payload.id, payload),
   });
 };

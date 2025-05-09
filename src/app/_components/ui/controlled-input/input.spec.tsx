@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import { ControlledInput } from "./index";
+import { ControlledInput } from "./input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,7 +53,7 @@ const WrapperWithValidation = () => {
   );
 };
 
-describe("Controlled Input", () => {
+describe("Controlled Input Component", () => {
   it("Test should render input with correct placeholder", () => {
     render(<Wrapper />);
     expect(screen.getByPlaceholderText("Enter username")).toBeInTheDocument();

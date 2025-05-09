@@ -1,9 +1,24 @@
+import { TTokenItem } from "@/api/auth/type";
+import Cookies from "js-cookie";
+
+const TOKEN_KEY = "token";
+
+type TStoredToken =
+  | {
+      token?: TTokenItem;
+    }
+  | undefined;
+
 export const SessionToken = {
-  set: (val: { token: { access_token: string; refresh_token: string } }) => {
-    localStorage.setItem("token", JSON.stringify(val));
+  set: (val: TStoredToken) => {
+    Cookies.set(TOKEN_KEY, JSON.stringify(val), {
+      secure: true,
+      sameSite: "Strict",
+      expires: 7,
+    });
   },
-  get: (): { token: { access_token: string; refresh_token: string } } | undefined => {
-    const token = localStorage.getItem("token");
+  get: (): TStoredToken => {
+    const token = Cookies.get(TOKEN_KEY);
     if (!token) return undefined;
     try {
       return JSON.parse(token);
@@ -12,6 +27,6 @@ export const SessionToken = {
     }
   },
   remove: () => {
-    localStorage.removeItem("token");
+    Cookies.remove(TOKEN_KEY);
   },
 };

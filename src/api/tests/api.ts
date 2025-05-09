@@ -1,24 +1,32 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { api } from "@/libs/axios/api";
+import { cleanParams } from "@/utils/clean-params";
 import { generatePath } from "react-router";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
-import {
+import type { TMetaRequest } from "@/commons/types/meta";
+import type { TMessageResponse } from "@/commons/types/response";
+import type {
   TTestCreateRequest,
   TTestDetailResponse,
   TTestListResponse,
   TTestUpdateRequest,
 } from "./type";
-import { TMetaRequest } from "@/commons/types/meta";
-import { TMessageResponse } from "@/commons/types/response";
+
+const transformTestPayload = (payload: TTestCreateRequest | TTestUpdateRequest) => ({
+  ...payload,
+  questions: payload.questions.map((question) => ({
+    ...question,
+    options: question.options.map((option) => ({
+      ...option,
+      points: parseInt(option.points ?? "") || 0,
+    })),
+  })),
+});
 
 export const getListTest = async (params: TMetaRequest): Promise<TTestListResponse> => {
-  const cleanParams = Object.fromEntries(
-    Object.entries(params).filter(([_, v]) => v !== undefined && v !== null && v !== ""),
-  );
   const { data } = await api({
     url: ENDPOINTS.TESTS.LIST,
     method: "GET",
-    params: cleanParams,
+    params: cleanParams(params),
   });
   return data;
 };
@@ -31,41 +39,20 @@ export const getDetailTest = async (id?: string): Promise<TTestDetailResponse> =
   return data;
 };
 
-export const createTest = async (payload: TTestCreateRequest): Promise<TMessageResponse> => {
+export const postCreateTest = async (payload: TTestCreateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.TESTS.CREATE,
     method: "POST",
-    data: {
-      ...payload,
-      questions: payload.questions.map((question) => ({
-        ...question,
-        options: question.options.map((option) => ({
-          ...option,
-          points: parseInt(option.points ?? ""),
-        })),
-      })),
-    },
+    data: transformTestPayload(payload),
   });
   return data;
 };
 
-export const updateTest = async (
-  id: string,
-  payload: TTestUpdateRequest,
-): Promise<TMessageResponse> => {
+export const putUpdateTest = async (payload: TTestUpdateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
-    url: generatePath(ENDPOINTS.TESTS.UPDATE, { id }),
+    url: generatePath(ENDPOINTS.TESTS.UPDATE, { id: payload.id }),
     method: "PUT",
-    data: {
-      ...payload,
-      questions: payload.questions.map((question) => ({
-        ...question,
-        options: question.options.map((option) => ({
-          ...option,
-          points: parseInt(option.points ?? ""),
-        })),
-      })),
-    },
+    data: transformTestPayload(payload),
   });
   return data;
 };

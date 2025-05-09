@@ -1,7 +1,7 @@
-import { TResponseList, TResponseDetail } from "@/commons/types/response";
-import { TQuestionItem } from "../questions/type";
-import { createTestSchema, updateTestSchema } from "./schema";
 import { z } from "zod";
+import { testCreateSchema, testUpdateSchema } from "./schema";
+import type { TQuestionItem } from "../questions/type";
+import type { TResponseList, TResponseDetail } from "@/commons/types/response";
 
 export type TTestListItem = {
   id: string;
@@ -19,9 +19,9 @@ export type TTestDetailItem = {
   updated_at: string;
 };
 
-export type TTestCreateRequest = z.infer<typeof createTestSchema>;
+export type TTestCreateRequest = z.infer<typeof testCreateSchema>;
 
-export type TTestUpdateRequest = z.infer<typeof updateTestSchema>;
+export type TTestUpdateRequest = z.infer<typeof testUpdateSchema>;
 
 export type TTestListResponse = TResponseList<TTestListItem>;
 

@@ -1,22 +1,21 @@
-import { TLoginParam } from "@/api/auth/type";
-import { TUserItem } from "@/api/users/type";
+import { TLoginItem, TLoginRequest } from "@/api/auth/type";
 import { createContext } from "react";
 
-export type Session = {
+export enum ESessionStatus {
+  Authenticated = "authenticated",
+  Authenticating = "authenticating",
+  Unauthenticated = "unauthenticated",
+}
+
+export type TSessionContext = {
   isLoading: boolean;
-  signIn: (payload: TLoginParam) => void;
+  signIn: (payload: TLoginRequest) => void;
   signOut: () => void;
-  session?: {
-    token: {
-      access_token: string;
-      refresh_token: string;
-    };
-    user?: TUserItem;
-  };
-  status?: "authenticated" | "authenticating" | "unauthenticated";
+  session?: TLoginItem;
+  status?: ESessionStatus;
 };
 
-export const SessionContext = createContext<Session>({
+export const SessionContext = createContext<TSessionContext>({
   isLoading: false,
   signIn: () => {},
   signOut: () => {},

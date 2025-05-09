@@ -2,7 +2,7 @@ import { DataTable } from "@/app/_components/ui/data-table";
 import { useListRole } from "./_hooks/use-list-role";
 import { PERMISSIONS } from "@/commons/constants/permissions";
 import { ROUTES } from "@/commons/constants/routes";
-import { PageHeadList } from "@/app/(protected)/_components/page-head-list";
+import { PageHeadList } from "@/app/(protected)/_components/page-head-list/page-head-list";
 import { Fragment } from "react/jsx-runtime";
 import { FC, ReactElement } from "react";
 

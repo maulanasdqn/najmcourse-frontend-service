@@ -1,23 +1,20 @@
-import { createUserSchema } from "@/api/users/schema";
+import { userCreateSchema } from "@/api/users/schema";
 import { TUserCreateRequest } from "@/api/users/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { message } from "antd";
 import { useNavigate } from "react-router";
 import { usePostCreateUser } from "./use-post-create-user";
-import { useGetListRole } from "@/app/(protected)/iam/roles/list/_hooks/use-get-list-role";
 import { ROUTES } from "@/commons/constants/routes";
 
 export const useCreateUser = () => {
-  const { data: roles, isLoading } = useGetListRole({
-    page: 1,
-    per_page: 100,
-  });
   const navigate = useNavigate();
+
   const { mutate, isPending } = usePostCreateUser();
+
   const form = useForm<TUserCreateRequest>({
     mode: "all",
-    resolver: zodResolver(createUserSchema),
+    resolver: zodResolver(userCreateSchema),
     defaultValues: {
       email: "",
       fullname: "",
@@ -38,31 +35,12 @@ export const useCreateUser = () => {
         message.success("User created successfully");
         navigate(ROUTES.iam.users.list);
       },
+      onError: (err) => void message.error(err?.response?.data?.message),
     });
   });
 
   const state = {
-    isLoading: isLoading || isPending,
-  };
-
-  const studentTypes = [
-    { label: "TNI", value: "TNI" },
-    {
-      label: "Polri",
-      value: "POLRI",
-    },
-    {
-      label: "Staff / Admin",
-      value: "-",
-    },
-  ];
-
-  const options = {
-    roles: roles?.data.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })),
-    studentTypes,
+    isLoading: isPending,
   };
 
   const handler = {
@@ -73,6 +51,5 @@ export const useCreateUser = () => {
     form,
     state,
     handler,
-    options,
   };
 };

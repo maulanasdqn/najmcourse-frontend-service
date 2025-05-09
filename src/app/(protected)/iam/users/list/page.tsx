@@ -1,6 +1,6 @@
 import { DataTable } from "@/app/_components/ui/data-table";
 import { useListUser } from "./_hooks/use-list-user";
-import { PageHeadList } from "@/app/(protected)/_components/page-head-list";
+import { PageHeadList } from "@/app/(protected)/_components/page-head-list/page-head-list";
 import { Fragment } from "react/jsx-runtime";
 import { ROUTES } from "@/commons/constants/routes";
 import { PERMISSIONS } from "@/commons/constants/permissions";

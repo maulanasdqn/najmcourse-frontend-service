@@ -8,7 +8,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { TSessionCreateRequest } from "@/api/sessions/type";
 import { vi } from "vitest";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { sessionSchema } from "@/api/sessions/schema";
+import { sessionCreateSchema } from "@/api/sessions/schema";
 
 vi.mock("react-router", async () => {
   const actual: any = await vi.importActual("react-router");
@@ -28,7 +28,7 @@ const TestWrapper = ({
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
   const form = useForm<TSessionCreateRequest>({
-    resolver: zodResolver(sessionSchema),
+    resolver: zodResolver(sessionCreateSchema),
     defaultValues: { name: "" },
     mode: "all",
   });
@@ -53,11 +53,6 @@ const TestWrapper = ({
     fields,
     state: {
       isLoading: false,
-    },
-    options: {
-      categories: [],
-      studentTypes: [],
-      tests: [],
     },
   });
 

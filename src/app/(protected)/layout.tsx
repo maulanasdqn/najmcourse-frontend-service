@@ -17,8 +17,9 @@ const ProtectedLayout: FC = (): ReactElement => {
   const filteredItems = filterPermission(
     SIDEBAR_ITEMS,
     (item) =>
-      item.permissions === undefined ||
-      item.permissions.some((permission) => userPermissions.includes(permission)),
+      item.flag !== false &&
+      (item.permissions === undefined ||
+        item.permissions.some((permission) => userPermissions.includes(permission))),
   );
 
   const menuItems = filteredItems.map((item) => ({

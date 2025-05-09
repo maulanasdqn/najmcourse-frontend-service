@@ -1,4 +1,4 @@
-import { createPermissionSchema } from "@/api/permissions/schema";
+import { permissionCreateSchema } from "@/api/permissions/schema";
 import { TPermissionCreateRequest } from "@/api/permissions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,10 +9,12 @@ import { ROUTES } from "@/commons/constants/routes";
 
 export const useCreatePermission = () => {
   const navigate = useNavigate();
-  const { mutate } = usePostCreatePermission();
+
+  const { mutate, isPending } = usePostCreatePermission();
+
   const form = useForm<TPermissionCreateRequest>({
     mode: "all",
-    resolver: zodResolver(createPermissionSchema),
+    resolver: zodResolver(permissionCreateSchema),
   });
 
   const onSubmit = form.handleSubmit((data) => {
@@ -22,6 +24,7 @@ export const useCreatePermission = () => {
         message.success("Permission created successfully");
         navigate(ROUTES.iam.permissions.list);
       },
+      onError: (err) => void message.error(err?.response?.data?.message),
     });
   });
 
@@ -29,8 +32,13 @@ export const useCreatePermission = () => {
     onSubmit,
   };
 
+  const state = {
+    isLoading: isPending,
+  };
+
   return {
     form,
+    state,
     handler,
   };
 };

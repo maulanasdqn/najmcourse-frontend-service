@@ -1,5 +1,5 @@
-import { updatePermissionSchema } from "@/api/permissions/schema";
-import { TPermissionCreateRequest } from "@/api/permissions/type";
+import { permissionUpdateSchema } from "@/api/permissions/schema";
+import { TPermissionUpdateRequest } from "@/api/permissions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { usePutUpdatePermission } from "./use-put-update-permission";
@@ -13,37 +13,31 @@ export const useUpdatePermission = () => {
   const params = useParams();
   const navigate = useNavigate();
   const { mutate, isPending } = usePutUpdatePermission();
-  const { data, isLoading } = useGetDetailPermission(params.id ?? "");
-  const form = useForm<TPermissionCreateRequest>({
+  const { data, isLoading } = useGetDetailPermission(params.id);
+
+  const form = useForm<TPermissionUpdateRequest>({
     mode: "all",
-    resolver: zodResolver(updatePermissionSchema),
+    resolver: zodResolver(permissionUpdateSchema),
     defaultValues: {
       name: "",
     },
   });
 
   useEffect(() => {
-    if (data) {
-      form.reset({
-        name: data.data.name,
-      });
+    if (data?.data) {
+      form.reset(data.data);
     }
-  }, [data, form]);
+  }, [data?.data, form]);
 
   const onSubmit = form.handleSubmit((data) => {
-    mutate(
-      {
-        id: params.id ?? "",
-        name: data.name,
+    mutate(data, {
+      onSuccess: () => {
+        form.reset();
+        message.success("Permission updated successfully");
+        navigate(ROUTES.iam.permissions.list);
       },
-      {
-        onSuccess: () => {
-          form.reset();
-          message.success("Permission updated successfully");
-          navigate(ROUTES.iam.permissions.list);
-        },
-      },
-    );
+      onError: (err) => void message.error(err?.response?.data?.message),
+    });
   });
 
   const state = {

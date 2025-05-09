@@ -1,29 +1,26 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { api } from "@/libs/axios/api";
+import { cleanParams } from "@/utils/clean-params";
 import { generatePath } from "react-router";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
-import {
+import type { TMetaRequest } from "@/commons/types/meta";
+import type { TMessageResponse } from "@/commons/types/response";
+import type {
   TSessionCreateRequest,
   TSessionDetailResponse,
   TSessionListResponse,
   TSessionUpdateRequest,
 } from "./type";
-import { TMetaRequest } from "@/commons/types/meta";
-import { TMessageResponse } from "@/commons/types/response";
 
 export const getListSession = async (params: TMetaRequest): Promise<TSessionListResponse> => {
-  const cleanParams = Object.fromEntries(
-    Object.entries(params).filter(([_, v]) => v !== undefined && v !== null && v !== ""),
-  );
   const { data } = await api({
     url: ENDPOINTS.SESSIONS.LIST,
     method: "GET",
-    params: cleanParams,
+    params: cleanParams(params),
   });
   return data;
 };
 
-export const getDetailSession = async (id: string): Promise<TSessionDetailResponse> => {
+export const getDetailSession = async (id?: string): Promise<TSessionDetailResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.SESSIONS.DETAIL, { id }),
     method: "GET",
@@ -31,7 +28,9 @@ export const getDetailSession = async (id: string): Promise<TSessionDetailRespon
   return data;
 };
 
-export const createSession = async (payload: TSessionCreateRequest): Promise<TMessageResponse> => {
+export const postCreateSession = async (
+  payload: TSessionCreateRequest,
+): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.SESSIONS.CREATE,
     method: "POST",
@@ -40,7 +39,9 @@ export const createSession = async (payload: TSessionCreateRequest): Promise<TMe
   return data;
 };
 
-export const updateSession = async (payload: TSessionUpdateRequest): Promise<TMessageResponse> => {
+export const putUpdateSession = async (
+  payload: TSessionUpdateRequest,
+): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.SESSIONS.UPDATE, { id: payload.id }),
     method: "PUT",

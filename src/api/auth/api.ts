@@ -1,19 +1,18 @@
 import { api } from "@/libs/axios/api";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
-import {
-  TLoginParam,
+import type { TMessageResponse } from "@/commons/types/response";
+import type {
+  TLoginRequest,
+  TSendOtpRequest,
+  TRegisterRequest,
+  TVerifyEmailRequest,
+  TNewPasswordRequest,
+  TForgotPasswordRequest,
   TLoginResponse,
-  TRegisterParam,
-  TRegisterResponse,
-  TForgotPasswordParam,
-  TNewPasswordParam,
-  TSendOtpParam,
-  TVerifyEmailParam,
   TRefreshTokenResponse,
 } from "./type";
-import { TMessageResponse } from "@/commons/types/response";
 
-export const postLogin = async (payload: TLoginParam): Promise<TLoginResponse> => {
+export const postLogin = async (payload: TLoginRequest): Promise<TLoginResponse> => {
   const { data } = await api({
     url: ENDPOINTS.AUTH.LOGIN,
     method: "POST",
@@ -22,7 +21,7 @@ export const postLogin = async (payload: TLoginParam): Promise<TLoginResponse> =
   return data;
 };
 
-export const postRegister = async (payload: TRegisterParam): Promise<TRegisterResponse> => {
+export const postRegister = async (payload: TRegisterRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.AUTH.REGISTER,
     method: "POST",
@@ -32,7 +31,7 @@ export const postRegister = async (payload: TRegisterParam): Promise<TRegisterRe
 };
 
 export const postForgotPassword = async (
-  payload: TForgotPasswordParam,
+  payload: TForgotPasswordRequest,
 ): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.AUTH.FORGOT_PASSWORD,
@@ -42,7 +41,7 @@ export const postForgotPassword = async (
   return data;
 };
 
-export const postNewPassword = async (payload: TNewPasswordParam): Promise<TMessageResponse> => {
+export const postNewPassword = async (payload: TNewPasswordRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.AUTH.NEW_PASSWORD,
     method: "POST",
@@ -51,7 +50,7 @@ export const postNewPassword = async (payload: TNewPasswordParam): Promise<TMess
   return data;
 };
 
-export const postSendOtp = async (payload: TSendOtpParam): Promise<TMessageResponse> => {
+export const postSendOtp = async (payload: TSendOtpRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.AUTH.SEND_OTP,
     method: "POST",
@@ -60,7 +59,7 @@ export const postSendOtp = async (payload: TSendOtpParam): Promise<TMessageRespo
   return data;
 };
 
-export const postVerifyEmail = async (payload: TVerifyEmailParam): Promise<TMessageResponse> => {
+export const postVerifyEmail = async (payload: TVerifyEmailRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.AUTH.VERIFY_EMAIL,
     method: "POST",

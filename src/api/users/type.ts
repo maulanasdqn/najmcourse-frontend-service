@@ -1,7 +1,7 @@
-import { TResponseDetail, TResponseList } from "@/commons/types/response";
-import { TRoleItem } from "../roles/type";
-import { createUserSchema, updateUserSchema } from "./schema";
 import { z } from "zod";
+import { userCreateSchema, userUpdateSchema } from "./schema";
+import type { TRoleItem } from "../roles/type";
+import type { TResponseDetail, TResponseList } from "@/commons/types/response";
 
 export type TUserItem = {
   id: string;
@@ -23,17 +23,9 @@ export type TUserItem = {
   created_at: string;
 };
 
-export type TUserCreateRequest = z.infer<typeof createUserSchema>;
+export type TUserCreateRequest = z.infer<typeof userCreateSchema>;
 
-export type TUserUpdateRequest = z.infer<typeof updateUserSchema>;
-
-export type TGetUsersParams = {
-  page?: number;
-  limit?: number;
-  sort?: string;
-  order?: string;
-  search?: string;
-};
+export type TUserUpdateRequest = z.infer<typeof userUpdateSchema>;
 
 export type TUserListResponse = TResponseList<TUserItem>;
 

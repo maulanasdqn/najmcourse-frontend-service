@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Component } from "../page";
 import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUpdateSession } from "../_hooks/use-update-session";
 import { useFieldArray, useForm } from "react-hook-form";
-import { TSessionCreateRequest } from "@/api/sessions/type";
-import { vi } from "vitest";
+import { TSessionUpdateRequest } from "@/api/sessions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { sessionSchema } from "@/api/sessions/schema";
+import { sessionUpdateSchema } from "@/api/sessions/schema";
 
 const mockNavigate = vi.fn();
 const mockParams = { id: "Session-id-123" };
@@ -38,8 +38,8 @@ const TestWrapper = ({
   isValid?: boolean;
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
-  const form = useForm<TSessionCreateRequest>({
-    resolver: zodResolver(sessionSchema),
+  const form = useForm<TSessionUpdateRequest>({
+    resolver: zodResolver(sessionUpdateSchema),
     defaultValues: { name: "" },
     mode: "all",
   });
@@ -62,13 +62,10 @@ const TestWrapper = ({
     state: {
       isLoading: false,
     },
-    options: {
-      categories: [],
-      studentTypes: [],
-      tests: [],
-    },
     handler: {
       onSubmit,
+      onAddTest: vi.fn(),
+      onRemoveTest: vi.fn(),
     },
   });
 

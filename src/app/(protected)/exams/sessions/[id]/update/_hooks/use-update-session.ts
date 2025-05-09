@@ -1,32 +1,24 @@
-import { sessionSchema } from "@/api/sessions/schema";
-import { TSessionCreateRequest } from "@/api/sessions/type";
+import { sessionUpdateSchema } from "@/api/sessions/schema";
+import { TSessionUpdateRequest } from "@/api/sessions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { usePutUpdateSession } from "./use-put-update-session";
 import { message } from "antd";
 import { useNavigate, useParams } from "react-router";
 import { ROUTES } from "@/commons/constants/routes";
-import { useGetListTest } from "@/app/(protected)/exams/tests/list/_hooks/use-get-list-test";
 import { useGetDetailSession } from "../../_hooks/use-get-detail-session";
 import { useEffect } from "react";
 
 export const useUpdateSession = () => {
   const params = useParams();
-
   const navigate = useNavigate();
 
-  const { data: tests, isLoading } = useGetListTest({
-    page: 1,
-    per_page: 100,
-  });
-
-  const { data: detail } = useGetDetailSession(params.id ?? "");
-
   const { mutate, isPending } = usePutUpdateSession();
+  const { data: detail, isLoading: isLoadingDetail } = useGetDetailSession(params.id);
 
-  const form = useForm<TSessionCreateRequest>({
+  const form = useForm<TSessionUpdateRequest>({
     mode: "all",
-    resolver: zodResolver(sessionSchema),
+    resolver: zodResolver(sessionUpdateSchema),
   });
 
   const fields = useFieldArray({
@@ -36,24 +28,34 @@ export const useUpdateSession = () => {
   });
 
   const onSubmit = form.handleSubmit((data) => {
-    mutate(
-      {
-        id: params.id ?? "",
-        ...data,
+    mutate(data, {
+      onSuccess: () => {
+        form.reset();
+        message.success("Session updated successfully");
+        navigate(ROUTES.exams.sessions.list);
       },
-      {
-        onSuccess: () => {
-          form.reset();
-          message.success("Session updated successfully");
-          navigate(ROUTES.exams.sessions.list);
-        },
-      },
-    );
+      onError: (err) => void message.error(err?.response?.data?.message),
+    });
   });
 
+  const onAddTest = () => {
+    fields.append({
+      test_id: "",
+      weight: 0,
+      multiplier: 0,
+      start_date: "",
+      end_date: "",
+    });
+  };
+
+  const onRemoveTest = (index: number) => {
+    fields.remove(index);
+  };
+
   useEffect(() => {
-    if (detail) {
+    if (detail?.data) {
       form.reset({
+        id: detail.data.id,
         name: detail.data.name,
         category: detail.data.category,
         student_type: detail.data.student_type,
@@ -61,7 +63,7 @@ export const useUpdateSession = () => {
         is_active: detail.data.is_active,
         tests: detail.data.tests.map((test) => ({
           test_id: test.test.id,
-          weight: test.weight,
+          weight: Number((test.weight * 10).toFixed(1)),
           multiplier: test.multiplier,
           start_date: test.start_date,
           end_date: test.end_date,
@@ -69,50 +71,22 @@ export const useUpdateSession = () => {
       });
       form.trigger();
     }
-  }, [detail, form]);
-
-  const categories = [
-    { label: "Akademik", value: "Akademik" },
-    {
-      label: "Psikologi",
-      value: "Psikologi",
-    },
-  ];
-
-  const studentTypes = [
-    { label: "TNI", value: "TNI" },
-    {
-      label: "Polri",
-      value: "POLRI",
-    },
-    {
-      label: "Staff / Admin",
-      value: "-",
-    },
-  ];
-
-  const options = {
-    categories,
-    studentTypes,
-    tests: tests?.data.map((test) => ({
-      label: test.name,
-      value: test.id,
-    })),
-  };
+  }, [detail?.data, form]);
 
   const handler = {
     onSubmit,
+    onAddTest,
+    onRemoveTest,
   };
 
   const state = {
-    isLoading: isLoading || isPending,
+    isLoading: isLoadingDetail || isPending,
   };
 
   return {
     form,
     state,
     fields,
-    options,
     handler,
   };
 };

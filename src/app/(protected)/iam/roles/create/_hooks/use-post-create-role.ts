@@ -1,4 +1,4 @@
-import { createRole } from "@/api/roles/api";
+import { postCreateRole } from "@/api/roles/api";
 import { TRoleCreateRequest } from "@/api/roles/type";
 import { TMessageResponse, TResponseError } from "@/commons/types/response";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
@@ -11,6 +11,6 @@ export const usePostCreateRole = (): UseMutationResult<
 > => {
   return useMutation({
     mutationKey: ["post-create-Role"],
-    mutationFn: async (payload) => await createRole(payload),
+    mutationFn: async (payload) => await postCreateRole(payload),
   });
 };

@@ -3,7 +3,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { z } from "zod";
 dayjs.extend(isSameOrAfter);
 
-export const sessionSchema = z.object({
+export const sessionCreateSchema = z.object({
   category: z
     .string({ required_error: "Category is required" })
     .min(1, { message: "Category must be at least 1 character" }),
@@ -37,10 +37,8 @@ export const sessionSchema = z.object({
           (data) => {
             const now = dayjs().tz("Asia/Jakarta");
             const start = dayjs(data.start_date).tz("Asia/Jakarta");
-
             if (start.isBefore(now, "day")) return false;
             if (start.isSame(now, "day") && start.isBefore(now)) return false;
-
             return true;
           },
           {
@@ -61,4 +59,10 @@ export const sessionSchema = z.object({
         ),
     )
     .min(1, { message: "At least one test must be provided" }),
+});
+
+export const sessionUpdateSchema = sessionCreateSchema.extend({
+  id: z
+    .string({ required_error: "ID is required" })
+    .min(1, { message: "ID must be at least 1 character" }),
 });

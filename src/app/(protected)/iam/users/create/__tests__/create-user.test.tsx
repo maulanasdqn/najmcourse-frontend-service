@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { TUserCreateRequest } from "@/api/users/type";
 import { vi } from "vitest";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createUserSchema } from "@/api/users/schema";
+import { userCreateSchema } from "@/api/users/schema";
 
 vi.mock("react-router", async () => {
   const actual: any = await vi.importActual("react-router");
@@ -28,7 +28,7 @@ const TestWrapper = ({
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
   const form = useForm<TUserCreateRequest>({
-    resolver: zodResolver(createUserSchema),
+    resolver: zodResolver(userCreateSchema),
     defaultValues: { fullname: "" },
     mode: "all",
   });
@@ -43,10 +43,6 @@ const TestWrapper = ({
     },
     handler: {
       onSubmit,
-    },
-    options: {
-      roles: [],
-      studentTypes: [],
     },
     state: {
       isLoading: false,

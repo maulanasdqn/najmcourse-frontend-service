@@ -1,5 +1,5 @@
 import { loginSchema } from "@/api/auth/schema";
-import { TLoginParam } from "@/api/auth/type";
+import { TLoginRequest } from "@/api/auth/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "@/app/_components/providers";
 import { useForm } from "react-hook-form";
@@ -9,7 +9,7 @@ export const useLogin = () => {
   const { styles, token } = useAuth();
   const session = useSession();
 
-  const form = useForm<TLoginParam>({
+  const form = useForm<TLoginRequest>({
     mode: "all",
     resolver: zodResolver(loginSchema),
     defaultValues: {

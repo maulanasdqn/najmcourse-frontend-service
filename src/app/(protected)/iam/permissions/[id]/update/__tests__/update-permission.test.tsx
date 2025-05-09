@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Component } from "../page";
 import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUpdatePermission } from "../_hooks/use-update-permission";
 import { useForm } from "react-hook-form";
-import { TPermissionCreateRequest } from "@/api/permissions/type";
-import { vi } from "vitest";
+import { TPermissionUpdateRequest } from "@/api/permissions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createPermissionSchema } from "@/api/permissions/schema";
+import { permissionUpdateSchema } from "@/api/permissions/schema";
 
 const mockNavigate = vi.fn();
 const mockParams = { id: "permission-id-123" };
@@ -38,8 +38,8 @@ const TestWrapper = ({
   isValid?: boolean;
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
-  const form = useForm<TPermissionCreateRequest>({
-    resolver: zodResolver(createPermissionSchema),
+  const form = useForm<TPermissionUpdateRequest>({
+    resolver: zodResolver(permissionUpdateSchema),
     defaultValues: { name: "" },
     mode: "all",
   });

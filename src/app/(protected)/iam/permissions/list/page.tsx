@@ -3,7 +3,7 @@ import { useListPermissions } from "./_hooks/use-list-permissions";
 import { PERMISSIONS } from "@/commons/constants/permissions";
 import { ROUTES } from "@/commons/constants/routes";
 import { Fragment } from "react/jsx-runtime";
-import { PageHeadList } from "@/app/(protected)/_components/page-head-list";
+import { PageHeadList } from "@/app/(protected)/_components/page-head-list/page-head-list";
 import { FC, ReactElement } from "react";
 
 export const Component: FC = (): ReactElement => {

@@ -1,4 +1,4 @@
-import { createPermission } from "@/api/permissions/api";
+import { postCreatePermission } from "@/api/permissions/api";
 import { TPermissionCreateRequest } from "@/api/permissions/type";
 import { TMessageResponse, TResponseError } from "@/commons/types/response";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
@@ -11,6 +11,6 @@ export const usePostCreatePermission = (): UseMutationResult<
 > => {
   return useMutation({
     mutationKey: ["post-create-permission"],
-    mutationFn: async (payload) => await createPermission(payload),
+    mutationFn: async (payload) => await postCreatePermission(payload),
   });
 };

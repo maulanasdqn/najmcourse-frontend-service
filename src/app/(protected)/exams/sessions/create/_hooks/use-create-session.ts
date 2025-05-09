@@ -1,4 +1,4 @@
-import { sessionSchema } from "@/api/sessions/schema";
+import { sessionCreateSchema } from "@/api/sessions/schema";
 import { TSessionCreateRequest } from "@/api/sessions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -6,21 +6,15 @@ import { usePostCreateSession } from "./use-post-create-session";
 import { message } from "antd";
 import { useNavigate } from "react-router";
 import { ROUTES } from "@/commons/constants/routes";
-import { useGetListTest } from "@/app/(protected)/exams/tests/list/_hooks/use-get-list-test";
 
 export const useCreateSession = () => {
   const navigate = useNavigate();
-
-  const { data: tests, isLoading } = useGetListTest({
-    page: 1,
-    per_page: 100,
-  });
 
   const { mutate, isPending } = usePostCreateSession();
 
   const form = useForm<TSessionCreateRequest>({
     mode: "all",
-    resolver: zodResolver(sessionSchema),
+    resolver: zodResolver(sessionCreateSchema),
   });
 
   const fields = useFieldArray({
@@ -36,47 +30,22 @@ export const useCreateSession = () => {
         message.success("Session created successfully");
         navigate(ROUTES.exams.sessions.list);
       },
+      onError: (err) => void message.error(err?.response?.data?.message),
     });
   });
-
-  const categories = [
-    { label: "Akademik", value: "Akademik" },
-    {
-      label: "Psikologi",
-      value: "Psikologi",
-    },
-  ];
-
-  const studentTypes = [
-    { label: "TNI", value: "TNI" },
-    {
-      label: "Polri",
-      value: "POLRI",
-    },
-  ];
-
-  const options = {
-    categories,
-    studentTypes,
-    tests: tests?.data.map((test) => ({
-      label: test.name,
-      value: test.id,
-    })),
-  };
 
   const handler = {
     onSubmit,
   };
 
   const state = {
-    isLoading: isLoading || isPending,
+    isLoading: isPending,
   };
 
   return {
     form,
     state,
     fields,
-    options,
     handler,
   };
 };

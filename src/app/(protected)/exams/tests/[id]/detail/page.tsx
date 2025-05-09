@@ -1,27 +1,23 @@
 import dayjs from "dayjs";
-import { Descriptions, Button, Image, Collapse } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router";
+import { Descriptions, Image, Collapse } from "antd";
+import { useParams } from "react-router";
 import { useGetDetailTest } from "../_hooks/use-get-detail-test";
+import { FC, Fragment, ReactElement } from "react";
+import { PageHeadDetail } from "@/app/(protected)/_components/page-head-detail/page-head-detail";
 
 const { Panel } = Collapse;
 
-export const Component = () => {
+export const Component: FC = (): ReactElement => {
   const params = useParams();
-  const navigate = useNavigate();
   const { data } = useGetDetailTest(params.id);
   const test = data?.data;
 
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow">
-      <div className="flex items-center gap-2 mb-4">
-        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} />
-        <h2 className="text-xl font-semibold mb-0">Detail Test</h2>
-      </div>
-
+    <Fragment>
+      <PageHeadDetail title="Detail Test" />
       <Descriptions bordered column={1}>
-        <Descriptions.Item label="ID">{test?.id}</Descriptions.Item>
-        <Descriptions.Item label="Name">{test?.name}</Descriptions.Item>
+        <Descriptions.Item label="ID">{test?.id ?? "-"}</Descriptions.Item>
+        <Descriptions.Item label="Name">{test?.name ?? "-"}</Descriptions.Item>
         <Descriptions.Item label="Registered Questions">
           <Collapse accordion>
             {test?.questions?.map((question, index) => (
@@ -80,7 +76,7 @@ export const Component = () => {
           {dayjs(test?.updated_at).format("DD/MM/YYYY HH:mm")}
         </Descriptions.Item>
       </Descriptions>
-    </div>
+    </Fragment>
   );
 };
 

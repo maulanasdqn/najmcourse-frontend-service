@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Meta, StoryObj } from "@storybook/react";
-import { ControlledInput } from "./";
+import { ControlledInput } from "./input";
 import { useForm } from "react-hook-form";
 import { Form } from "antd";
+import { TControlledInputProps } from "./type";
 
 type FormValues = {
   username: string;
@@ -14,15 +14,21 @@ const meta: Meta<typeof ControlledInput<FormValues>> = {
   tags: ["autodocs"],
   argTypes: {
     placeholder: { control: "text" },
+    label: { control: "text" },
     disabled: { control: "boolean" },
     size: { control: "radio", options: ["small", "middle", "large"] },
-    label: { control: "text" },
+    allowClear: { control: "boolean" },
+    maxLength: { control: "number" },
+    bordered: { control: "boolean" },
+    status: { control: "radio", options: ["error", "warning", ""] },
+    type: { control: "radio", options: ["text", "password", "email", "number"] },
+    autoFocus: { control: "boolean" },
   },
 };
 
 export default meta;
 
-const Template = (args: any) => {
+const Template = (args: TControlledInputProps<FormValues>) => {
   const { control } = useForm<FormValues>({
     defaultValues: {
       username: args.defaultValue ?? "",
@@ -40,6 +46,7 @@ const Template = (args: any) => {
 export const Default: StoryObj = {
   render: () =>
     Template({
+      name: "username",
       placeholder: "Enter username",
     }),
 };
@@ -47,6 +54,7 @@ export const Default: StoryObj = {
 export const WithDefaultValue: StoryObj = {
   render: () =>
     Template({
+      name: "username",
       placeholder: "Enter username",
       defaultValue: "john_doe",
     }),
@@ -55,6 +63,7 @@ export const WithDefaultValue: StoryObj = {
 export const Disabled: StoryObj = {
   render: () =>
     Template({
+      name: "username",
       placeholder: "This field is disabled",
       disabled: true,
     }),
@@ -63,6 +72,7 @@ export const Disabled: StoryObj = {
 export const SmallSize: StoryObj = {
   render: () =>
     Template({
+      name: "username",
       placeholder: "Small input",
       size: "small",
     }),
@@ -71,6 +81,7 @@ export const SmallSize: StoryObj = {
 export const LargeSize: StoryObj = {
   render: () =>
     Template({
+      name: "username",
       placeholder: "Large input",
       size: "large",
     }),
@@ -79,8 +90,36 @@ export const LargeSize: StoryObj = {
 export const Labeled: StoryObj = {
   render: () =>
     Template({
+      name: "username",
       placeholder: "Labeled field input",
       size: "middle",
-      label: "Userna    me",
+      label: "Username",
+    }),
+};
+
+export const PasswordType: StoryObj = {
+  render: () =>
+    Template({
+      name: "username",
+      placeholder: "Enter password",
+      label: "Password",
+      type: "password",
+    }),
+};
+
+export const AllProps: StoryObj = {
+  render: () =>
+    Template({
+      name: "username",
+      placeholder: "Full props input",
+      label: "Full Control",
+      defaultValue: "john_doe",
+      size: "large",
+      allowClear: true,
+      maxLength: 20,
+      bordered: true,
+      status: "",
+      type: "text",
+      autoFocus: false,
     }),
 };

@@ -1,5 +1,7 @@
-import { TResponseList, TResponseDetail } from "@/commons/types/response";
-import { TOptionItem } from "../options/type";
+import { z } from "zod";
+import { questionCreateSchema, questionUpdateSchema } from "./schema";
+import type { TOptionItem } from "../options/type";
+import type { TResponseList, TResponseDetail } from "@/commons/types/response";
 
 export type TQuestionItem = {
   id: string;
@@ -12,16 +14,9 @@ export type TQuestionItem = {
   updated_at: string;
 };
 
-export type TQuestionCreateRequest = {
-  label: string;
-  option_ids: string[];
-};
+export type TQuestionCreateRequest = z.infer<typeof questionCreateSchema>;
 
-export type TQuestionUpdateRequest = {
-  id: string;
-  label: string;
-  option_ids: string[];
-};
+export type TQuestionUpdateRequest = z.infer<typeof questionUpdateSchema>;
 
 export type TQuestionListResponse = TResponseList<TQuestionItem>;
 

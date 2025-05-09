@@ -1,6 +1,6 @@
 import { Button, Col, Form, Row, Typography } from "antd";
 import { MailOutlined } from "@ant-design/icons";
-import { ControlledInput } from "@/app/_components/ui/controlled-input";
+import { ControlledInput } from "@/app/_components/ui/controlled-input/input";
 import { useForgot } from "./_hooks/use-forgot";
 import { FC, ReactElement } from "react";
 

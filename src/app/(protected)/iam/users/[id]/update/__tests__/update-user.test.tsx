@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { TUserUpdateRequest } from "@/api/users/type";
 import { vi } from "vitest";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateUserSchema } from "@/api/users/schema";
+import { userUpdateSchema } from "@/api/users/schema";
 
 const mockNavigate = vi.fn();
 const mockParams = { id: "User-id-123" };
@@ -39,7 +39,7 @@ const TestWrapper = ({
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
   const form = useForm<TUserUpdateRequest>({
-    resolver: zodResolver(updateUserSchema),
+    resolver: zodResolver(userUpdateSchema),
     defaultValues: { fullname: "" },
     mode: "all",
   });
@@ -57,10 +57,6 @@ const TestWrapper = ({
     },
     handler: {
       onSubmit,
-    },
-    options: {
-      roles: [],
-      studentTypes: [],
     },
   });
 

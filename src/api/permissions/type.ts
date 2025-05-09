@@ -1,4 +1,6 @@
-import { TResponseDetail, TResponseList } from "@/commons/types/response";
+import { z } from "zod";
+import { permissionCreateSchema, permissionUpdateSchema } from "./schema";
+import type { TResponseDetail, TResponseList } from "@/commons/types/response";
 
 export type TPermissionItem = {
   id: string;
@@ -7,14 +9,9 @@ export type TPermissionItem = {
   updated_at: string;
 };
 
-export type TPermissionCreateRequest = {
-  name: string;
-};
+export type TPermissionCreateRequest = z.infer<typeof permissionCreateSchema>;
 
-export type TPermissionUpdateRequest = {
-  id: string;
-  name: string;
-};
+export type TPermissionUpdateRequest = z.infer<typeof permissionUpdateSchema>;
 
 export type TPermissionListResponse = TResponseList<TPermissionItem>;
 

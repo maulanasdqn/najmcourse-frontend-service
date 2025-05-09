@@ -1,5 +1,5 @@
 import { ConfigProvider, type ThemeConfig, App as AntdApp } from "antd";
-import { FC, PropsWithChildren, ReactElement } from "react";
+import type { FC, PropsWithChildren, ReactElement } from "react";
 
 const theme: ThemeConfig = {
   token: {
@@ -30,7 +30,7 @@ const theme: ThemeConfig = {
   },
 };
 
-const ThemeProvider: FC<PropsWithChildren> = (props): ReactElement => {
+export const ThemeProvider: FC<PropsWithChildren> = (props): ReactElement => {
   return (
     <ConfigProvider theme={theme}>
       <AntdApp>{props.children}</AntdApp>

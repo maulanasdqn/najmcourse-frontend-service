@@ -1,65 +1,37 @@
-import { TUserItem } from "../users/type";
+import { z } from "zod";
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  newPasswordSchema,
+  registerSchema,
+  sendOtpSchema,
+  verifyEmailSchema,
+} from "./schema";
+import type { TUserItem } from "../users/type";
+import type { TResponseDetail } from "@/commons/types/response";
 
-export type TLoginParam = {
-  email: string;
-  password: string;
+export type TTokenItem = {
+  access_token: string;
+  refresh_token: string;
 };
 
-export type TLoginResponse = {
-  data: {
-    token: {
-      access_token: string;
-      refresh_token: string;
-    };
-    user: TUserItem;
-  };
-  version: string;
+export type TLoginItem = {
+  token?: TTokenItem;
+  user?: TUserItem;
 };
 
-export type TRegisterParam = {
-  email: string;
-  fullname: string;
-  password: string;
-  phone_number: string;
-  student_type: string;
-  referral_code?: string | null;
-  referred_by?: string | null;
-};
+export type TRefreshTokenResponse = TResponseDetail<TTokenItem>;
 
-export type TRegisterResponse = {
-  data: {
-    token: {
-      access_token: string;
-      refresh_token: string;
-    };
-    user: TUserItem;
-  };
-  version: string;
-};
+export type TLoginResponse = TResponseDetail<TLoginItem>;
 
-export type TForgotPasswordParam = {
-  email: string;
-};
+export type TLoginRequest = z.infer<typeof loginSchema>;
 
-export type TNewPasswordParam = {
-  email: string;
-  otp: string;
-  password: string;
-};
+export type TRegisterRequest = z.infer<typeof registerSchema>;
 
-export type TSendOtpParam = {
-  email: string;
-};
+export type TForgotPasswordRequest = z.infer<typeof forgotPasswordSchema>;
 
-export type TVerifyEmailParam = {
-  email: string;
-  otp: string;
-};
+export type TNewPasswordRequest = z.infer<typeof newPasswordSchema>;
 
-export type TRefreshTokenResponse = {
-  data: {
-    access_token: string;
-    refresh_token: string;
-  };
-  version: string;
-};
+export type TSendOtpRequest = z.infer<typeof sendOtpSchema>;
+
+export type TVerifyEmailRequest = z.infer<typeof verifyEmailSchema>;

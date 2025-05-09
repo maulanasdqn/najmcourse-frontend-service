@@ -1,5 +1,5 @@
 import { postForgotPassword } from "@/api/auth/api";
-import { TForgotPasswordParam } from "@/api/auth/type";
+import { TForgotPasswordRequest } from "@/api/auth/type";
 import { TMessageResponse, TResponseError } from "@/commons/types/response";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { notification } from "antd";
@@ -7,7 +7,7 @@ import { notification } from "antd";
 export const usePostForgot = (): UseMutationResult<
   TMessageResponse,
   TResponseError,
-  TForgotPasswordParam,
+  TForgotPasswordRequest,
   unknown
 > => {
   return useMutation({

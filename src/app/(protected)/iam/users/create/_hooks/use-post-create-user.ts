@@ -1,4 +1,4 @@
-import { createUser } from "@/api/users/api";
+import { postCreateUser } from "@/api/users/api";
 import { TUserCreateRequest } from "@/api/users/type";
 import { TMessageResponse, TResponseError } from "@/commons/types/response";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
@@ -11,6 +11,6 @@ export const usePostCreateUser = (): UseMutationResult<
 > => {
   return useMutation({
     mutationKey: ["post-create-user"],
-    mutationFn: async (payload) => await createUser(payload),
+    mutationFn: async (payload) => await postCreateUser(payload),
   });
 };

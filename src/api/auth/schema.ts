@@ -1,65 +1,48 @@
 import { z } from "zod";
 
+const requiredString = (field: string) =>
+  z.string({ required_error: `${field} Required` }).min(1, { message: `${field} Required` });
+
+const emailSchema = requiredString("Email").email({ message: "Invalid email" });
+
+const passwordSchema = z
+  .string({ required_error: "Password Required" })
+  .min(6, { message: "Password must be at least 6 characters" });
+
+const otpSchema = requiredString("OTP");
+
 export const loginSchema = z.object({
-  email: z
-    .string({ required_error: "Email Required" })
-    .min(1, { message: "Email Required" })
-    .email({ message: "Invalid email" }),
-  password: z
-    .string({ required_error: "Password Required" })
-    .min(1, { message: "Password Required" }),
+  email: emailSchema,
+  password: requiredString("Password"),
 });
 
 export const registerSchema = z.object({
-  email: z
-    .string({ required_error: "Email Required" })
-    .min(1, { message: "Email Required" })
-    .email({ message: "Invalid email" }),
-  fullname: z
-    .string({ required_error: "Fullname Required" })
-    .min(1, { message: "Fullname Required" }),
-  password: z
-    .string({ required_error: "Password Required" })
-    .min(6, { message: "Password must be at least 6 characters" }),
+  email: emailSchema,
+  fullname: requiredString("Fullname"),
+  password: passwordSchema,
   phone_number: z
     .string({ required_error: "Phone Number Required" })
     .min(10, { message: "Phone Number must be at least 10 digits" }),
-  student_type: z
-    .string({ required_error: "Student Type Required" })
-    .min(1, { message: "Student Type Required" }),
+  student_type: requiredString("Student Type"),
   referral_code: z.string().optional().nullable(),
   referred_by: z.string().optional().nullable(),
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z
-    .string({ required_error: "Email Required" })
-    .min(1, { message: "Email Required" })
-    .email({ message: "Invalid email" }),
+  email: emailSchema,
 });
 
 export const newPasswordSchema = z.object({
-  email: z
-    .string({ required_error: "Email Required" })
-    .min(1, { message: "Email Required" })
-    .email({ message: "Invalid email" }),
-  otp: z.string({ required_error: "OTP Required" }).min(1, { message: "OTP Required" }),
-  password: z
-    .string({ required_error: "Password Required" })
-    .min(6, { message: "Password must be at least 6 characters" }),
+  email: emailSchema,
+  otp: otpSchema,
+  password: passwordSchema,
 });
 
 export const sendOtpSchema = z.object({
-  email: z
-    .string({ required_error: "Email Required" })
-    .min(1, { message: "Email Required" })
-    .email({ message: "Invalid email" }),
+  email: emailSchema,
 });
 
 export const verifyEmailSchema = z.object({
-  email: z
-    .string({ required_error: "Email Required" })
-    .min(1, { message: "Email Required" })
-    .email({ message: "Invalid email" }),
-  otp: z.string({ required_error: "OTP Required" }).min(1, { message: "OTP Required" }),
+  email: emailSchema,
+  otp: otpSchema,
 });

@@ -1,24 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { api } from "@/libs/axios/api";
+import { cleanParams } from "@/utils/clean-params";
 import { generatePath } from "react-router";
 import { ENDPOINTS } from "@/commons/constants/endpoints";
-import {
+import type { TMetaRequest } from "@/commons/types/meta";
+import type { TMessageResponse } from "@/commons/types/response";
+import type {
   TRoleCreateRequest,
   TRoleDetailResponse,
   TRoleListResponse,
   TRoleUpdateRequest,
 } from "./type";
-import { TMetaRequest } from "@/commons/types/meta";
-import { TMessageResponse } from "@/commons/types/response";
 
 export const getListRole = async (params: TMetaRequest): Promise<TRoleListResponse> => {
-  const cleanParams = Object.fromEntries(
-    Object.entries(params).filter(([_, v]) => v !== undefined && v !== null && v !== ""),
-  );
   const { data } = await api({
     url: ENDPOINTS.ROLES.LIST,
     method: "GET",
-    params: cleanParams,
+    params: cleanParams(params),
   });
   return data;
 };
@@ -31,7 +28,7 @@ export const getDetailRole = async (id: string): Promise<TRoleDetailResponse> =>
   return data;
 };
 
-export const createRole = async (payload: TRoleCreateRequest): Promise<TMessageResponse> => {
+export const postCreateRole = async (payload: TRoleCreateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: ENDPOINTS.ROLES.CREATE,
     method: "POST",
@@ -40,7 +37,7 @@ export const createRole = async (payload: TRoleCreateRequest): Promise<TMessageR
   return data;
 };
 
-export const updateRole = async (
+export const putUpdateRole = async (
   id: string,
   payload: TRoleUpdateRequest,
 ): Promise<TMessageResponse> => {

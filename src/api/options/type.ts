@@ -1,4 +1,6 @@
-import { TResponseList, TResponseDetail } from "@/commons/types/response";
+import { z } from "zod";
+import { optionCreateSchema, optionUpdateSchema } from "./schema";
+import type { TResponseList, TResponseDetail } from "@/commons/types/response";
 
 export type TOptionItem = {
   id: string;
@@ -10,18 +12,9 @@ export type TOptionItem = {
   updated_at: string;
 };
 
-export type TOptionCreateRequest = {
-  label: string;
-  is_correct: boolean;
-  image_url?: string | null;
-};
+export type TOptionCreateRequest = z.infer<typeof optionCreateSchema>;
 
-export type TOptionUpdateRequest = {
-  id: string;
-  label: string;
-  is_correct: boolean;
-  image_url?: string | null;
-};
+export type TOptionUpdateRequest = z.infer<typeof optionUpdateSchema>;
 
 export type TOptionListResponse = TResponseList<TOptionItem>;
 

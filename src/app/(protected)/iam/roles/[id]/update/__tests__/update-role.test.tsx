@@ -5,10 +5,10 @@ import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUpdateRole } from "../_hooks/use-update-role";
 import { useForm } from "react-hook-form";
-import { TRoleCreateRequest } from "@/api/roles/type";
+import { TRoleUpdateRequest } from "@/api/roles/type";
 import { vi } from "vitest";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createRoleSchema } from "@/api/roles/schema";
+import { roleUpdateSchema } from "@/api/roles/schema";
 
 const mockNavigate = vi.fn();
 const mockParams = { id: "Role-id-123" };
@@ -38,8 +38,8 @@ const TestWrapper = ({
   isValid?: boolean;
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
-  const form = useForm<TRoleCreateRequest>({
-    resolver: zodResolver(createRoleSchema),
+  const form = useForm<TRoleUpdateRequest>({
+    resolver: zodResolver(roleUpdateSchema),
     defaultValues: { name: "" },
     mode: "all",
   });
@@ -57,9 +57,6 @@ const TestWrapper = ({
     },
     handler: {
       onSubmit,
-    },
-    options: {
-      permissions: [],
     },
   });
 

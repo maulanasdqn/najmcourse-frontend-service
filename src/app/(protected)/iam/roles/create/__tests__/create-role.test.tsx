@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { TRoleCreateRequest } from "@/api/roles/type";
 import { vi } from "vitest";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createRoleSchema } from "@/api/roles/schema";
+import { roleCreateSchema } from "@/api/roles/schema";
 
 vi.mock("react-router", async () => {
   const actual: any = await vi.importActual("react-router");
@@ -28,7 +28,7 @@ const TestWrapper = ({
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
   const form = useForm<TRoleCreateRequest>({
-    resolver: zodResolver(createRoleSchema),
+    resolver: zodResolver(roleCreateSchema),
     defaultValues: { name: "" },
     mode: "all",
   });
@@ -43,9 +43,6 @@ const TestWrapper = ({
     },
     handler: {
       onSubmit,
-    },
-    options: {
-      permissions: [],
     },
     state: {
       isLoading: false,

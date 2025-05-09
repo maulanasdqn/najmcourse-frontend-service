@@ -1,30 +1,27 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { api } from "@/libs/axios/api";
-import {
+import { cleanParams } from "@/utils/clean-params";
+import { generatePath } from "react-router";
+import { ENDPOINTS } from "@/commons/constants/endpoints";
+import type { TMetaRequest } from "@/commons/types/meta";
+import type { TMessageResponse } from "@/commons/types/response";
+import type {
   TPermissionCreateRequest,
   TPermissionDetailResponse,
   TPermissionListResponse,
   TPermissionUpdateRequest,
 } from "./type";
-import { generatePath } from "react-router";
-import { ENDPOINTS } from "@/commons/constants/endpoints";
-import { TMetaRequest } from "@/commons/types/meta";
-import { TMessageResponse } from "@/commons/types/response";
 
 export const getListPermission = async (params: TMetaRequest): Promise<TPermissionListResponse> => {
-  const cleanParams = Object.fromEntries(
-    Object.entries(params).filter(([_, v]) => v !== undefined && v !== null && v !== ""),
-  );
   const { data } = await api({
     url: ENDPOINTS.PERMISSIONS.LIST,
     method: "GET",
-    params: cleanParams,
+    params: cleanParams(params),
   });
 
   return data;
 };
 
-export const getDetailPermission = async (id: string): Promise<TPermissionDetailResponse> => {
+export const getDetailPermission = async (id?: string): Promise<TPermissionDetailResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.PERMISSIONS.DETAIL, { id }),
     method: "GET",
@@ -32,7 +29,7 @@ export const getDetailPermission = async (id: string): Promise<TPermissionDetail
   return data;
 };
 
-export const createPermission = async (
+export const postCreatePermission = async (
   payload: TPermissionCreateRequest,
 ): Promise<TMessageResponse> => {
   const { data } = await api({
@@ -43,7 +40,7 @@ export const createPermission = async (
   return data;
 };
 
-export const updatePermission = async (
+export const putUpdatePermission = async (
   payload: TPermissionUpdateRequest,
 ): Promise<TMessageResponse> => {
   const { data } = await api({
@@ -54,7 +51,7 @@ export const updatePermission = async (
   return data;
 };
 
-export const deletePermission = async (id: string): Promise<TPermissionDetailResponse> => {
+export const deletePermission = async (id: string): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.PERMISSIONS.DELETE, { id }),
     method: "DELETE",

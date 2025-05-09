@@ -1,22 +1,18 @@
 import dayjs from "dayjs";
-import { Descriptions, Button } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router";
+import { Descriptions } from "antd";
+import { useParams } from "react-router";
 import { useGetDetailUser } from "../_hooks/use-get-detail-user";
+import { Fragment } from "react/jsx-runtime";
+import { PageHeadDetail } from "@/app/(protected)/_components/page-head-detail";
 
 export const Component = () => {
   const params = useParams();
-  const navigate = useNavigate();
   const { data } = useGetDetailUser(params.id ?? "");
   const user = data?.data;
 
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow">
-      <div className="flex items-center gap-2 mb-4">
-        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} />
-        <h2 className="text-xl font-semibold mb-0">Detail user</h2>
-      </div>
-
+    <Fragment>
+      <PageHeadDetail title="Detail User" />
       <Descriptions bordered column={1}>
         <Descriptions.Item label="ID">{user?.id}</Descriptions.Item>
         <Descriptions.Item label="Fullname">{user?.fullname}</Descriptions.Item>
@@ -31,7 +27,7 @@ export const Component = () => {
           {user?.updated_at ? dayjs(user.updated_at).format("DD/MM/YYYY HH:mm") : "-"}
         </Descriptions.Item>
       </Descriptions>
-    </div>
+    </Fragment>
   );
 };
 

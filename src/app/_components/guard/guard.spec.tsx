@@ -1,7 +1,7 @@
-import { render } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { Guard } from "./";
 import { useSession } from "../providers";
+import { render } from "@testing-library/react";
+import { Guard } from "./";
 
 vi.mock("../providers", () => ({
   useSession: vi.fn(),

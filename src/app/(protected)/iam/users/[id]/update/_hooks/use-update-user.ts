@@ -1,4 +1,3 @@
-import { updateUserSchema } from "@/api/users/schema";
 import { TUserUpdateRequest } from "@/api/users/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -7,21 +6,17 @@ import { message } from "antd";
 import { useNavigate, useParams } from "react-router";
 import { useGetDetailUser } from "../../_hooks/use-get-detail-user";
 import { useEffect } from "react";
-import { useGetListRole } from "@/app/(protected)/iam/roles/list/_hooks/use-get-list-role";
 import { ROUTES } from "@/commons/constants/routes";
+import { userUpdateSchema } from "@/api/users/schema";
 
 export const useUpdateUser = () => {
-  const { data: roles } = useGetListRole({
-    page: 1,
-    per_page: 100,
-  });
   const params = useParams();
   const navigate = useNavigate();
   const { mutate, isPending } = usePutUpdateUser();
   const { data, isLoading } = useGetDetailUser(params.id ?? "");
   const form = useForm<TUserUpdateRequest>({
     mode: "all",
-    resolver: zodResolver(updateUserSchema),
+    resolver: zodResolver(userUpdateSchema),
     defaultValues: {
       avatar: "",
       birthdate: "",
@@ -42,6 +37,7 @@ export const useUpdateUser = () => {
   useEffect(() => {
     if (data) {
       form.reset({
+        id: data.data.id,
         avatar: data.data.avatar,
         birthdate: data.data.birthdate,
         email: data.data.email,
@@ -60,43 +56,18 @@ export const useUpdateUser = () => {
   }, [data, form]);
 
   const onSubmit = form.handleSubmit((data) => {
-    mutate(
-      {
-        id: params.id ?? "",
-        ...data,
+    mutate(data, {
+      onSuccess: () => {
+        form.reset();
+        message.success("User updated successfully");
+        navigate(ROUTES.iam.users.list);
       },
-      {
-        onSuccess: () => {
-          form.reset();
-          message.success("User updated successfully");
-          navigate(ROUTES.iam.users.list);
-        },
-      },
-    );
+      onError: (err) => void message.error(err?.response?.data?.message),
+    });
   });
 
   const state = {
     isLoading: isLoading || isPending,
-  };
-
-  const studentTypes = [
-    { label: "TNI", value: "TNI" },
-    {
-      label: "Polri",
-      value: "POLRI",
-    },
-    {
-      label: "Staff / Admin",
-      value: "-",
-    },
-  ];
-
-  const options = {
-    roles: roles?.data.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })),
-    studentTypes,
   };
 
   const handler = {
@@ -107,6 +78,5 @@ export const useUpdateUser = () => {
     form,
     state,
     handler,
-    options,
   };
 };

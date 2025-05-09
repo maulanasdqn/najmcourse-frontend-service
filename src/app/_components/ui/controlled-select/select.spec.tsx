@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import { ControlledSelect } from "./";
+import { ControlledSelect } from "./select";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -117,7 +117,6 @@ describe("Controlled Select", () => {
         />
       );
     };
-
     render(<WithDefault />);
     expect(screen.getByText("User")).toBeInTheDocument();
   });

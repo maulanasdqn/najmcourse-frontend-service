@@ -14,9 +14,9 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { FC, ReactElement } from "react";
+import type { FC, ReactElement } from "react";
 
-const Component: FC = (): ReactElement => {
+export const Component: FC = (): ReactElement => {
   const { signOut } = useSession();
 
   const handleLogout = () => {

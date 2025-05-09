@@ -1,7 +1,7 @@
 import { Button, Col, Form, Row, Typography } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useLogin } from "./_hooks/use-login";
-import { ControlledInput } from "@/app/_components/ui/controlled-input";
+import { ControlledInput } from "@/app/_components/ui/controlled-input/input";
 import { FC, ReactElement } from "react";
 
 const { Text, Title, Link } = Typography;
