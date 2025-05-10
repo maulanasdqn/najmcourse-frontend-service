@@ -94,6 +94,46 @@ const mappingRoutePermissions = [
     permissions: [PERMISSIONS.TESTS.READ_DETAIL_TESTS],
     flag: FEATURE_FLAGS.EXAMS.TESTS.DETAIL_TESTS,
   },
+  {
+    path: ROUTES.exams.accurations.list,
+    permissions: [PERMISSIONS.ACCURATIONS.READ_LIST_ACCURATIONS],
+    flag: FEATURE_FLAGS.EXAMS.ACCURATIONS.LIST_ACCURATIONS,
+  },
+  {
+    path: ROUTES.exams.accurations.detail,
+    permissions: [PERMISSIONS.ACCURATIONS.READ_DETAIL_ACCURATIONS],
+    flag: FEATURE_FLAGS.EXAMS.ACCURATIONS.DETAIL_ACCURATIONS,
+  },
+  {
+    path: ROUTES.exams.accurations.create,
+    permissions: [PERMISSIONS.ACCURATIONS.CREATE_ACCURATIONS],
+    flag: FEATURE_FLAGS.EXAMS.ACCURATIONS.CREATE_ACCURATIONS,
+  },
+  {
+    path: ROUTES.exams.accurations.update,
+    permissions: [PERMISSIONS.ACCURATIONS.UPDATE_ACCURATIONS],
+    flag: FEATURE_FLAGS.EXAMS.ACCURATIONS.UPDATE_ACCURATIONS,
+  },
+  {
+    path: ROUTES.exams.results.list,
+    permissions: [PERMISSIONS.RESULTS.READ_LIST_RESULTS],
+    flag: FEATURE_FLAGS.EXAMS.RESULTS.LIST_RESULTS,
+  },
+  {
+    path: ROUTES.exams.results.detail,
+    permissions: [PERMISSIONS.RESULTS.READ_DETAIL_RESULTS],
+    flag: FEATURE_FLAGS.EXAMS.RESULTS.DETAIL_RESULTS,
+  },
+  {
+    path: ROUTES.exams.results.create,
+    permissions: [PERMISSIONS.RESULTS.CREATE_RESULTS],
+    flag: FEATURE_FLAGS.EXAMS.RESULTS.CREATE_RESULTS,
+  },
+  {
+    path: ROUTES.exams.results.update,
+    permissions: [PERMISSIONS.RESULTS.UPDATE_RESULTS],
+    flag: FEATURE_FLAGS.EXAMS.RESULTS.UPDATE_RESULTS,
+  },
 ];
 
 export const middleware = async ({ request }: LoaderFunctionArgs) => {

@@ -6,9 +6,10 @@ import { ReactNode } from "react";
 import {
   ApiOutlined,
   BookOutlined,
+  CheckSquareOutlined,
   ClockCircleOutlined,
   FormOutlined,
-  HolderOutlined,
+  FullscreenExitOutlined,
   IdcardOutlined,
 } from "@ant-design/icons";
 import { FEATURE_FLAGS } from "@/libs/feature-flag";
@@ -55,9 +56,16 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
       {
         key: ROUTES.exams.accurations.list,
         label: <Link to={ROUTES.exams.accurations.list}>Test Accurations</Link>,
-        permissions: [PERMISSIONS.TESTS.READ_LIST_TESTS],
-        flag: FEATURE_FLAGS.EXAMS.TESTS.LIST_TESTS,
-        icon: <HolderOutlined />,
+        permissions: [PERMISSIONS.ACCURATIONS.READ_LIST_ACCURATIONS],
+        flag: FEATURE_FLAGS.EXAMS.ACCURATIONS.LIST_ACCURATIONS,
+        icon: <FullscreenExitOutlined />,
+      },
+      {
+        key: ROUTES.exams.results.list,
+        label: <Link to={ROUTES.exams.results.list}>Test Results</Link>,
+        permissions: [PERMISSIONS.RESULTS.READ_LIST_RESULTS],
+        flag: FEATURE_FLAGS.EXAMS.RESULTS.LIST_RESULTS,
+        icon: <CheckSquareOutlined />,
       },
     ],
   },

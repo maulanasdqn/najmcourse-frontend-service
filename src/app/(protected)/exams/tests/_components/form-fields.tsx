@@ -11,8 +11,6 @@ import { ControlledWysiwyg } from "@/app/_components/ui/controlled-wysiwyg/wysiw
 export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   const { form, fields, handler } = useFormTest();
 
-  console.log(form.watch());
-
   return (
     <Form name="test_form" onFinish={props.onSubmit} layout="vertical">
       <ControlledInput
@@ -43,7 +41,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             name={`questions.${index}.question`}
             placeholder="Input question text"
           />
-          <ControlledInput
+          <ControlledWysiwyg
             label="Discussion"
             control={form.control}
             name={`questions.${index}.discussion`}

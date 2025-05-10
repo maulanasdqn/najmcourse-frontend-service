@@ -56,4 +56,18 @@ export const PERMISSIONS = {
     UPDATE_QUESTIONS: "Update Questions",
     DELETE_QUESTIONS: "Delete Questions",
   },
+  ACCURATIONS: {
+    READ_LIST_ACCURATIONS: "Read List Accurations",
+    READ_DETAIL_ACCURATIONS: "Read Detail Accurations",
+    CREATE_ACCURATIONS: "Create Accurations",
+    UPDATE_ACCURATIONS: "Update Accurations",
+    DELETE_ACCURATIONS: "Delete Accurations",
+  },
+  RESULTS: {
+    READ_LIST_RESULTS: "Read List Results",
+    READ_DETAIL_RESULTS: "Read Detail Results",
+    CREATE_RESULTS: "Create Results",
+    UPDATE_RESULTS: "Update Results",
+    DELETE_RESULTS: "Delete Results",
+  },
 };

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { userCreateSchema, userUpdateSchema } from "./schema";
+import { userActivateSchema, userCreateSchema, userUpdateSchema } from "./schema";
 import type { TRoleItem } from "../roles/type";
 import type { TResponseDetail, TResponseList } from "@/commons/types/response";
 
@@ -30,3 +30,5 @@ export type TUserUpdateRequest = z.infer<typeof userUpdateSchema>;
 export type TUserListResponse = TResponseList<TUserItem>;
 
 export type TUserDetailResponse = TResponseDetail<TUserItem>;
+
+export type TUserActivateRequest = z.infer<typeof userActivateSchema>;

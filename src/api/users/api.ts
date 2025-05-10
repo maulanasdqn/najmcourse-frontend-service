@@ -5,6 +5,7 @@ import { ENDPOINTS } from "@/commons/constants/endpoints";
 import type { TMetaRequest } from "@/commons/types/meta";
 import type { TMessageResponse } from "@/commons/types/response";
 import type {
+  TUserActivateRequest,
   TUserCreateRequest,
   TUserDetailResponse,
   TUserListResponse,
@@ -40,6 +41,15 @@ export const postCreateUser = async (payload: TUserCreateRequest): Promise<TMess
 export const putUpdateUser = async (payload: TUserUpdateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.USERS.UPDATE, { id: payload.id }),
+    method: "PUT",
+    data: payload,
+  });
+  return data;
+};
+
+export const putActivateUser = async (payload: TUserActivateRequest): Promise<TMessageResponse> => {
+  const { data } = await api({
+    url: generatePath(ENDPOINTS.USERS.ACTIVATE, { id: payload.id }),
     method: "PUT",
     data: payload,
   });

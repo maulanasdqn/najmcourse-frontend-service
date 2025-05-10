@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
-import { TUserItem, TUserListResponse } from "@/api/users/type";
-import { Space, Button, Modal, message, Tag } from "antd";
+import { TUserActivateRequest, TUserItem, TUserListResponse } from "@/api/users/type";
+import { Space, Button, Modal, message, Tag, Switch } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { generatePath, Link } from "react-router";
 import { useDeleteUser } from "./use-delete-user";
@@ -9,6 +9,7 @@ import { TResponseError } from "@/commons/types/response";
 import { Guard } from "@/app/_components/guard";
 import { PERMISSIONS } from "@/commons/constants/permissions";
 import { ROUTES } from "@/commons/constants/routes";
+import { usePutActivateUser } from "./use-put-activate-user";
 
 type TUseColumnUserProps = {
   refetch: (
@@ -18,6 +19,7 @@ type TUseColumnUserProps = {
 
 export const useColumnUser = (props: TUseColumnUserProps) => {
   const { mutate } = useDeleteUser();
+  const { mutate: mutateActivate } = usePutActivateUser();
 
   const handleDelete = (record: TUserItem) => {
     Modal.confirm({
@@ -35,6 +37,23 @@ export const useColumnUser = (props: TUseColumnUserProps) => {
         });
       },
     });
+  };
+
+  const handleActivate = (data: TUserActivateRequest) => {
+    const isActive = !data.is_active;
+    mutateActivate(
+      {
+        ...data,
+        is_active: isActive,
+      },
+      {
+        onSuccess: () => {
+          void props.refetch?.();
+          message.success(`User ${isActive ? "activated" : "deactivated"} successfully`);
+        },
+        onError: (err) => void message.error(err?.response?.data?.message),
+      },
+    );
   };
 
   const columns = [
@@ -71,6 +90,16 @@ export const useColumnUser = (props: TUseColumnUserProps) => {
       key: "is_active",
       render: (is_active: boolean) => (
         <Tag color={is_active ? "green" : "red"}>{is_active ? "Active" : "Inactive"}</Tag>
+      ),
+    },
+    {
+      title: "Activate",
+      dataIndex: "is_active",
+      key: "activate",
+      render: (_: unknown, row: TUserItem) => (
+        <Guard fallback="-" permissions={[PERMISSIONS.USERS.ACTIVATE_USERS]}>
+          <Switch checked={row.is_active} onChange={() => handleActivate(row)} />
+        </Guard>
       ),
     },
     {

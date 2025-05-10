@@ -36,3 +36,8 @@ export const userUpdateSchema = z.object({
     .min(1, "Identity number is required")
     .nullable(),
 });
+
+export const userActivateSchema = z.object({
+  id: z.string({ required_error: "ID is required" }).min(1, "ID is required"),
+  is_active: z.boolean({ required_error: "Active status is required" }),
+});

@@ -6,6 +6,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import {
+  $getRoot,
   $isTextNode,
   DOMConversionMap,
   DOMExportOutput,
@@ -24,9 +25,10 @@ import { parseAllowedColor, parseAllowedFontSize } from "./wysiwyg-config";
 import { Form } from "antd";
 import { FieldValues, useController } from "react-hook-form";
 import { TControlledLexicalEditorProps, TLexicalProps } from "./type";
-import { FC, ReactElement } from "react";
-import { $generateHtmlFromNodes } from "@lexical/html";
+import { FC, ReactElement, useEffect } from "react";
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import "./style.css";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 const placeholder = "Input Question";
 
@@ -127,11 +129,32 @@ const editorConfig = {
   theme: defaultTheme,
 };
 
+const LoadHtmlPlugin = ({ html }: { html: string }) => {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    editor.update(() => {
+      const root = $getRoot();
+      if (root.getChildren().length === 1 && root.getTextContent() === "") {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(html, "text/html");
+        const nodes = $generateNodesFromDOM(editor, dom);
+        root.clear();
+        root.append(...nodes);
+      }
+    });
+  }, [editor, html]);
+
+  return null;
+};
+
 const Lexical: FC<TLexicalProps> = (props): ReactElement => {
   const handleChange = (editorState: EditorState, editor: LexicalEditor) => {
     if (!props.onChange) return;
     editorState.read(() => {
-      const html = $generateHtmlFromNodes(editor, null);
+      const html = $generateHtmlFromNodes(editor, null)
+        .replace(/\n/g, "")
+        .replace(/&nbsp;/g, " ");
       props.onChange?.(html);
     });
   };
@@ -151,6 +174,7 @@ const Lexical: FC<TLexicalProps> = (props): ReactElement => {
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
+        <LoadHtmlPlugin html={props.value ?? "<p><br></p>"} />
         <HistoryPlugin />
         <AutoFocusPlugin />
         <OnChangePlugin onChange={handleChange} />
