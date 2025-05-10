@@ -6,9 +6,12 @@ import { OptionsFields } from "./option-fields";
 import { useFormTest } from "../_hooks/use-form-test";
 import { TFormFieldsProps } from "@/commons/types/form-field";
 import { FC, ReactElement } from "react";
+import { ControlledWysiwyg } from "@/app/_components/ui/controlled-wysiwyg/wysiwyg";
 
 export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   const { form, fields, handler } = useFormTest();
+
+  console.log(form.watch());
 
   return (
     <Form name="test_form" onFinish={props.onSubmit} layout="vertical">
@@ -20,7 +23,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
         name="name"
       />
       {fields.fields.map((field, index) => (
-        <div key={field.question} className="mb-4 p-4 border border-gray-100 rounded bg-gray-50">
+        <div key={field.id} className="mb-4 p-4 border border-gray-100 rounded bg-gray-50">
           <div className="flex justify-end mb-2">
             <Button
               style={{
@@ -34,7 +37,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
               Remove Question
             </Button>
           </div>
-          <ControlledInput
+          <ControlledWysiwyg
             label="Question"
             control={form.control}
             name={`questions.${index}.question`}

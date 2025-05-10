@@ -8,8 +8,8 @@ export const PageHeadDetail: FC<TPageHeadDetailProps> = (props): ReactElement =>
   const navigate = useNavigate();
 
   return (
-    <div className="flex w-full items-center justify-between">
-      <div className="flex items-center gap-x-2 mb-6">
+    <section className="flex w-full items-center justify-between mb-6">
+      <div className="flex items-center gap-x-2">
         <Button
           className="flex justify-center items-center"
           type="text"
@@ -25,6 +25,6 @@ export const PageHeadDetail: FC<TPageHeadDetailProps> = (props): ReactElement =>
           {props.title}
         </h2>
       </div>
-    </div>
+    </section>
   );
 };
