@@ -34,7 +34,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
         placeholder="Input description"
         name="description"
       />
-      <ControlledSwitch label="Status" control={form.control} name="is_active" />
+      <ControlledSwitch label="Status Activation" control={form.control} name="is_active" />
       {fields.fields.map((field, index) => (
         <div key={field.test_id} className="mb-4 bg-gray-50 border border-gray-100 p-4 rounded-lg">
           <div className="flex justify-end">
@@ -63,28 +63,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             control={form.control}
             placeholder="Select weight"
             name={`tests.${index}.weight`}
-            options={[
-              { label: "5%", value: 0.5 },
-              { label: "10%", value: 1.0 },
-              { label: "15%", value: 1.5 },
-              { label: "20%", value: 2.0 },
-              { label: "25%", value: 2.5 },
-              { label: "30%", value: 3.0 },
-              { label: "35%", value: 3.5 },
-              { label: "40%", value: 4.0 },
-              { label: "45%", value: 4.5 },
-              { label: "50%", value: 5.0 },
-              { label: "55%", value: 5.5 },
-              { label: "60%", value: 6.0 },
-              { label: "65%", value: 6.5 },
-              { label: "70%", value: 7.0 },
-              { label: "75%", value: 7.5 },
-              { label: "80%", value: 8.0 },
-              { label: "85%", value: 8.5 },
-              { label: "90%", value: 9.0 },
-              { label: "95%", value: 9.5 },
-              { label: "100%", value: 10.0 },
-            ]}
+            options={options.weightOptions}
           />
           <ControlledInput
             label="Multiplier (Pengkali)"
@@ -92,6 +71,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             placeholder="Input multiplier"
             name={`tests.${index}.multiplier`}
           />
+
           <ControlledDatePicker
             label="Start Date"
             control={form.control}
@@ -144,6 +124,12 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                 },
               };
             }}
+          />
+          <ControlledSwitch
+            defaultValue={true}
+            label="Shuffle"
+            control={form.control}
+            name={`tests.${index}.shuffle`}
           />
         </div>
       ))}

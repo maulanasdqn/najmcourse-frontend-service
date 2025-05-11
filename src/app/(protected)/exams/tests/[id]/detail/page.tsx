@@ -7,6 +7,11 @@ import { PageHeadDetail } from "@/app/(protected)/_components/page-head-detail/p
 
 const { Panel } = Collapse;
 
+const HtmlRenderer = ({ html }: { html: string }) => {
+  if (!html) return <div>-</div>;
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
 export const Component: FC = (): ReactElement => {
   const params = useParams();
   const { data } = useGetDetailTest(params.id);
@@ -26,10 +31,10 @@ export const Component: FC = (): ReactElement => {
                   <strong>ID:</strong> {question.id}
                 </p>
                 <p>
-                  <strong>Question:</strong> {question.question || "-"}
+                  <strong>Question:</strong> <HtmlRenderer html={question.question} />
                 </p>
                 <p>
-                  <strong>Discussion:</strong> {question.discussion || "-"}
+                  <strong>Discussion:</strong> <HtmlRenderer html={question.discussion} />
                 </p>
                 {question.question_image_url && (
                   <div className="mb-2">

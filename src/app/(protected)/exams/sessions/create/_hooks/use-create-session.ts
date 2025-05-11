@@ -15,6 +15,9 @@ export const useCreateSession = () => {
   const form = useForm<TSessionCreateRequest>({
     mode: "all",
     resolver: zodResolver(sessionCreateSchema),
+    defaultValues: {
+      is_active: true,
+    },
   });
 
   const fields = useFieldArray({
