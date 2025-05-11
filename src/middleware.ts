@@ -138,6 +138,46 @@ const mappingRoutePermissions = [
     permissions: [PERMISSIONS.RESULTS.UPDATE_RESULTS],
     flag: FEATURE_FLAGS.EXAMS.RESULTS.UPDATE_RESULTS,
   },
+  {
+    path: ROUTES.exams.questions.list,
+    permissions: [PERMISSIONS.QUESTIONS.READ_LIST_QUESTIONS],
+    flag: FEATURE_FLAGS.EXAMS.QUESTIONS.LIST_QUESTIONS,
+  },
+  {
+    path: ROUTES.exams.questions.create,
+    permissions: [PERMISSIONS.QUESTIONS.CREATE_QUESTIONS],
+    flag: FEATURE_FLAGS.EXAMS.QUESTIONS.CREATE_QUESTIONS,
+  },
+  {
+    path: ROUTES.exams.questions.update,
+    permissions: [PERMISSIONS.QUESTIONS.UPDATE_QUESTIONS],
+    flag: FEATURE_FLAGS.EXAMS.QUESTIONS.UPDATE_QUESTIONS,
+  },
+  {
+    path: ROUTES.exams.questions.detail,
+    permissions: [PERMISSIONS.QUESTIONS.READ_DETAIL_QUESTIONS],
+    flag: FEATURE_FLAGS.EXAMS.QUESTIONS.DETAIL_QUESTIONS,
+  },
+  {
+    path: ROUTES.payments.list,
+    permissions: [PERMISSIONS.PAYMENTS.READ_LIST_PAYMENTS],
+    flag: FEATURE_FLAGS.PAYMENTS.LIST_PAYMENTS,
+  },
+  {
+    path: ROUTES.payments.detail,
+    permissions: [PERMISSIONS.PAYMENTS.READ_DETAIL_PAYMENTS],
+    flag: FEATURE_FLAGS.PAYMENTS.DETAIL_PAYMENTS,
+  },
+  {
+    path: ROUTES.payments.create,
+    permissions: [PERMISSIONS.PAYMENTS.CREATE_PAYMENTS],
+    flag: FEATURE_FLAGS.PAYMENTS.CREATE_PAYMENTS,
+  },
+  {
+    path: ROUTES.payments.update,
+    permissions: [PERMISSIONS.PAYMENTS.UPDATE_PAYMENTS],
+    flag: FEATURE_FLAGS.PAYMENTS.UPDATE_PAYMENTS,
+  },
 ];
 
 const redirectToFirstAccessibleRoute = (userPermissions: string[]) => {

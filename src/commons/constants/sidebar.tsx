@@ -8,9 +8,12 @@ import {
   BookOutlined,
   CheckSquareOutlined,
   ClockCircleOutlined,
+  EuroOutlined,
+  FlagOutlined,
   FormOutlined,
   FullscreenExitOutlined,
   IdcardOutlined,
+  QuestionOutlined,
 } from "@ant-design/icons";
 import { FEATURE_FLAGS } from "@/libs/feature-flag";
 
@@ -53,6 +56,13 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
         permissions: [PERMISSIONS.TESTS.READ_LIST_TESTS],
         flag: FEATURE_FLAGS.EXAMS.TESTS.LIST_TESTS,
         icon: <FormOutlined />,
+      },
+      {
+        key: ROUTES.exams.questions.list,
+        label: <Link to={ROUTES.exams.questions.list}>Bank Question</Link>,
+        permissions: [PERMISSIONS.QUESTIONS.READ_LIST_QUESTIONS],
+        flag: FEATURE_FLAGS.EXAMS.QUESTIONS.LIST_QUESTIONS,
+        icon: <QuestionOutlined />,
       },
       {
         key: ROUTES.exams.accurations.list,
@@ -106,5 +116,19 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
         icon: <IdcardOutlined />,
       },
     ],
+  },
+  {
+    key: "payments",
+    label: <Link to={ROUTES.payments.list}>Payments</Link>,
+    icon: <EuroOutlined />,
+    permissions: [PERMISSIONS.PAYMENTS.READ_LIST_PAYMENTS],
+    flag: FEATURE_FLAGS.PAYMENTS.LIST_PAYMENTS,
+  },
+  {
+    key: "flags",
+    label: <Link to={ROUTES.flags.list}>Flags</Link>,
+    icon: <FlagOutlined />,
+    permissions: [PERMISSIONS.FLAGS.READ_LIST_FLAGS],
+    flag: FEATURE_FLAGS.FLAGS.LIST_FLAGS,
   },
 ];

@@ -57,5 +57,33 @@ export const ROUTES = {
       update: "/exams/results/:id/update",
       delete: "/exams/results/:id/delete",
     },
+    questions: {
+      list: "/exams/questions/list",
+      create: "/exams/questions/create",
+      detail: "/exams/questions/:id/detail",
+      update: "/exams/questions/:id/update",
+      delete: "/exams/questions/:id/delete",
+    },
+    options: {
+      list: "/exams/options/list",
+      create: "/exams/options/create",
+      detail: "/exams/options/:id/detail",
+      update: "/exams/options/:id/update",
+      delete: "/exams/options/:id/delete",
+    },
+  },
+  payments: {
+    list: "/payments/list",
+    create: "/payments/create",
+    detail: "/payments/:id/detail",
+    update: "/payments/:id/update",
+    delete: "/payments/:id/delete",
+  },
+  flags: {
+    list: "/flags/list",
+    create: "/flags/create",
+    detail: "/flags/:id/detail",
+    update: "/flags/:id/update",
+    delete: "/flags/:id/delete",
   },
 };

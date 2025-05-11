@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router";
 import { SIDEBAR_ITEMS } from "@/commons/constants/sidebar";
 import { filterPermission } from "@/utils/permission";
 import { useSession } from "../_components/providers";
-import { DownOutlined, LogoutOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { DownOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { ROUTES } from "@/commons/constants/routes";
 
 const { Header, Sider, Content } = Layout;
@@ -45,11 +45,6 @@ const ProtectedLayout: FC = (): ReactElement => {
     },
     {
       key: "2",
-      label: "Settings",
-      icon: <SettingOutlined />,
-    },
-    {
-      key: "3",
       label: "Logout",
       icon: <LogoutOutlined />,
       onClick: () => signOut(),

@@ -1,0 +1,32 @@
+import { DataTable } from "@/app/_components/ui/data-table";
+import { useListQuestion } from "./_hooks/use-list-question";
+import { PERMISSIONS } from "@/commons/constants/permissions";
+import { ROUTES } from "@/commons/constants/routes";
+import { PageHeadList } from "@/app/(protected)/_components/page-head-list/page-head-list";
+import { Fragment } from "react/jsx-runtime";
+import { FC, ReactElement } from "react";
+
+export const Component: FC = (): ReactElement => {
+  const { dataSource, isLoading, columns, meta } = useListQuestion();
+
+  return (
+    <Fragment>
+      <PageHeadList
+        title={"Bank Questions"}
+        createText={"+ Create Question"}
+        createRoute={ROUTES.exams.questions.create}
+        createPermission={PERMISSIONS.QUESTIONS.CREATE_QUESTIONS}
+      />
+      <DataTable
+        scroll={{ x: "1400px" }}
+        rowKey={"id"}
+        loading={isLoading}
+        dataSource={dataSource}
+        columns={columns}
+        meta={meta}
+      />
+    </Fragment>
+  );
+};
+
+export default Component;

@@ -73,4 +73,18 @@ export const PERMISSIONS = {
     UPDATE_RESULTS: "Update Results",
     DELETE_RESULTS: "Delete Results",
   },
+  PAYMENTS: {
+    READ_LIST_PAYMENTS: "Read List Payments",
+    READ_DETAIL_PAYMENTS: "Read Detail Payments",
+    CREATE_PAYMENTS: "Create Payments",
+    UPDATE_PAYMENTS: "Update Payments",
+    DELETE_PAYMENTS: "Delete Payments",
+  },
+  FLAGS: {
+    READ_LIST_FLAGS: "Read List Flags",
+    READ_DETAIL_FLAGS: "Read Detail Flags",
+    CREATE_FLAGS: "Create Flags",
+    UPDATE_FLAGS: "Update Flags",
+    DELETE_FLAGS: "Delete Flags",
+  },
 };

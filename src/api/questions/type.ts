@@ -14,10 +14,18 @@ export type TQuestionItem = {
   updated_at: string;
 };
 
+export type TQuestionListItem = {
+  id: string;
+  discussion: string;
+  question: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type TQuestionCreateRequest = z.infer<typeof questionCreateSchema>;
 
 export type TQuestionUpdateRequest = z.infer<typeof questionUpdateSchema>;
 
-export type TQuestionListResponse = TResponseList<TQuestionItem>;
+export type TQuestionListResponse = TResponseList<TQuestionListItem>;
 
 export type TQuestionDetailResponse = TResponseDetail<TQuestionItem>;
