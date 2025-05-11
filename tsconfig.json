@@ -9,11 +9,7 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
-    "types": ["vitest/globals", "@testing-library/jest-dom", "vitest"],
-    "paths": {
-      "@/*": ["./src/*"],
-      "@protected": ["./src/app/(protected)/*"]
-    }
-  }
+    "types": ["vitest/globals", "@testing-library/jest-dom", "vitest"]
+  },
+  "extends": "./tsconfig.base.json"
 }

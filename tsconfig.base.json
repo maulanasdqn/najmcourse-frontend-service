@@ -1,0 +1,13 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/shared/apis/*": ["shared/apis/src/*"],
+      "@/shared/commons/*": ["shared/commons/src/*"],
+      "@/shared/components/*": ["shared/components/src/*"],
+      "@/shared/libs/*": ["shared/libs/src/*"],
+      "@/shared/utils/*": ["shared/utils/src/*"]
+    }
+  }
+}
