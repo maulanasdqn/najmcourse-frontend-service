@@ -5,10 +5,14 @@ import { SessionUser } from "./libs/localstorage";
 import { SessionToken } from "./libs/cookies";
 import { FEATURE_FLAGS } from "./libs/feature-flag";
 
-const mappingPublicRoutes = ["/auth/login", "/auth/forgot"];
+const mappingPublicRoutes = ["/auth/login", "/auth/forgot", "/auth/new-password"];
 
 const mappingRoutePermissions = [
-  { path: ROUTES.dashboard, flag: true },
+  {
+    path: ROUTES.dashboard,
+    permissions: [PERMISSIONS.DASHBOARD.READ_DASHBOARD],
+    flag: FEATURE_FLAGS.DASHBOARD.READ_DASHBOARD,
+  },
   {
     path: ROUTES.iam.users.list,
     permissions: [PERMISSIONS.USERS.READ_LIST_USERS],
@@ -136,6 +140,14 @@ const mappingRoutePermissions = [
   },
 ];
 
+const redirectToFirstAccessibleRoute = (userPermissions: string[]) => {
+  const fallback = mappingRoutePermissions.find(
+    (route) =>
+      route.flag === true && route.permissions.some((perm) => userPermissions.includes(perm)),
+  );
+  return redirect(fallback?.path ?? ROUTES.auth.login);
+};
+
 export const middleware = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const pathname = url.pathname;
@@ -160,12 +172,8 @@ export const middleware = async ({ request }: LoaderFunctionArgs) => {
 
     const isEnabled = matchedRoute.flag === true;
 
-    if (!isEnabled) {
-      return redirect(ROUTES.dashboard);
-    }
-
-    if (!hasPermission) {
-      return redirect(ROUTES.dashboard);
+    if (!isEnabled || !hasPermission) {
+      return redirectToFirstAccessibleRoute(userPermissions);
     }
   }
 

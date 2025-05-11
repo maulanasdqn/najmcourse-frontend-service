@@ -1,14 +1,17 @@
-import type { FC, ReactElement } from "react";
-import { Layout, Menu, Typography, Flex, Grid, Image } from "antd";
-import { Outlet, useLocation } from "react-router";
+import { type FC, type ReactElement } from "react";
+import { Layout, Menu, Typography, Flex, Grid, Dropdown, MenuProps } from "antd";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { SIDEBAR_ITEMS } from "@/commons/constants/sidebar";
 import { filterPermission } from "@/utils/permission";
 import { useSession } from "../_components/providers";
+import { DownOutlined, LogoutOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { ROUTES } from "@/commons/constants/routes";
 
 const { Header, Sider, Content } = Layout;
 
 const ProtectedLayout: FC = (): ReactElement => {
-  const { session } = useSession();
+  const navigate = useNavigate();
+  const { session, signOut } = useSession();
   const location = useLocation();
   const { md } = Grid.useBreakpoint();
 
@@ -33,12 +36,32 @@ const ProtectedLayout: FC = (): ReactElement => {
     })),
   }));
 
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: "Profile",
+      icon: <UserOutlined />,
+      onClick: () => navigate(ROUTES.profile) as void,
+    },
+    {
+      key: "2",
+      label: "Settings",
+      icon: <SettingOutlined />,
+    },
+    {
+      key: "3",
+      label: "Logout",
+      icon: <LogoutOutlined />,
+      onClick: () => signOut(),
+    },
+  ];
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider className="bg-gray-200" width={250} breakpoint="md" collapsedWidth="0" theme="light">
-        <div className="flex items-center justify-center h-16 px-4 bg-white border-b border-gray-100 shadow">
+      <Sider width={250} breakpoint="md" collapsedWidth="0" theme="light">
+        <div className="flex items-center justify-center h-16 px-4 bg-white border-b-[2px] border-gray-100 shadow">
           <Typography.Title level={4} style={{ margin: 0 }}>
-            {session?.user?.role?.name}
+            Admin Panel
           </Typography.Title>
         </div>
         <Menu
@@ -66,21 +89,26 @@ const ProtectedLayout: FC = (): ReactElement => {
                 whiteSpace: "nowrap",
               }}
             >
-              NAJM Course Backoffice
+              NAJM Course
             </Typography.Title>
-            <div className="flex items-center gap-x-2">
-              <span className="text-white text-lg">{session?.user?.fullname}</span>
-              <Image
-                style={{
-                  borderRadius: "50%",
-                }}
-                width={30}
-                src={
-                  session?.user?.avatar ??
-                  "https://png.pngtree.com/png-vector/20190629/ourmid/pngtree-office-work-user-icon-avatar-png-image_1527655.jpg"
-                }
-              />
-            </div>
+
+            <Dropdown menu={{ items }}>
+              <div className="flex items-center gap-x-2 cursor-pointer relative">
+                <span className="text-white text-lg">{session?.user?.fullname}</span>
+                <img
+                  className="w-[30px] h-[30px] rounded-full"
+                  alt="avatar"
+                  width={30}
+                  height={30}
+                  src={
+                    session?.user?.avatar ??
+                    "https://png.pngtree.com/png-vector/20190629/ourmid/pngtree-office-work-user-icon-avatar-png-image_1527655.jpg"
+                  }
+                />
+                <DownOutlined />
+                <button onClick={(e) => e.preventDefault()} />
+              </div>
+            </Dropdown>
           </Flex>
         </Header>
         <Content style={{ margin: "24px 16px", overflow: "auto" }}>

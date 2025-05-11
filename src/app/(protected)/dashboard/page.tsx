@@ -1,5 +1,4 @@
-import { useSession } from "@/app/_components/providers";
-import { Button, Card, Col, Row, Typography } from "antd";
+import { Card, Col, Row, Typography } from "antd";
 import {
   LineChart,
   Line,
@@ -17,12 +16,6 @@ import {
 import type { FC, ReactElement } from "react";
 
 export const Component: FC = (): ReactElement => {
-  const { signOut } = useSession();
-
-  const handleLogout = () => {
-    signOut();
-  };
-
   const data = [
     { month: "Jan", value: 30 },
     { month: "Feb", value: 40 },
@@ -47,9 +40,6 @@ export const Component: FC = (): ReactElement => {
     <div style={{ padding: 24 }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Typography.Title level={2}>Dashboard</Typography.Title>
-        <Button type="primary" onClick={handleLogout}>
-          Logout
-        </Button>
       </Row>
 
       <Row gutter={[16, 16]}>

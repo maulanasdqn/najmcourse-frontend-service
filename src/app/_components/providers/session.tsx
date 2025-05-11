@@ -38,9 +38,10 @@ export const SessionProvider: FC<PropsWithChildren> = (props): ReactElement => {
       setStatus(ESessionStatus.Authenticating);
       mutate(payload, {
         onSuccess: (res) => {
-          if (res.data.user?.role.name === "Student") {
-            message.error("You are blocked from accessing this page");
+          if (res.data.user?.role.name?.toLowerCase() === "student") {
+            message.error("Student are not allowed to access this page");
             setStatus(ESessionStatus.Unauthenticated);
+            return;
           }
           setSessionData(res.data);
           setStatus(ESessionStatus.Authenticated);

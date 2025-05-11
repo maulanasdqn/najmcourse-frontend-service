@@ -1,6 +1,9 @@
 import { env } from "../env";
 
 export const FEATURE_FLAGS = {
+  DASHBOARD: {
+    READ_DASHBOARD: env.VITE_FEATURE_FLAG_DASHBOARD_READ_DASHBOARD,
+  },
   IAM: {
     USERS: {
       LIST_USERS: env.VITE_FEATURE_FLAG_IAM_USERS_LIST,

@@ -30,7 +30,8 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
     key: "dashboard",
     label: <Link to="/dashboard">Dashboard</Link>,
     icon: <DashboardFilled />,
-    flag: true,
+    flag: FEATURE_FLAGS.DASHBOARD.READ_DASHBOARD,
+    permissions: [PERMISSIONS.DASHBOARD.READ_DASHBOARD],
   },
   {
     key: "exams",
