@@ -3,6 +3,8 @@ export const ROUTES = {
   dashboard: "/dashboard",
   auth: {
     login: "/auth/login",
+    verify: "/auth/verify",
+    payment: "/auth/payment",
     forgotPassword: "/auth/forgot-password",
     resetPassword: "/auth/reset-password",
   },

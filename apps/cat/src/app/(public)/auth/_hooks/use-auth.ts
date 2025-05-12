@@ -27,10 +27,6 @@ export const useAuth = () => {
       padding: screens.md ? `${token.paddingXL}px` : `${token.padding}px`,
       height: "100%",
     },
-    container: {
-      width: "100%",
-      maxWidth: 380,
-    },
     header: {
       marginBottom: token.marginXL,
       textAlign: "center" as const,

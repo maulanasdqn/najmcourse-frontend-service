@@ -63,7 +63,10 @@ export const postVerifyEmail = async (payload: TVerifyEmailRequest): Promise<TMe
   const { data } = await api({
     url: ENDPOINTS.AUTH.VERIFY_EMAIL,
     method: "POST",
-    data: payload,
+    data: {
+      ...payload,
+      otp: Number(payload.otp),
+    },
   });
   return data;
 };

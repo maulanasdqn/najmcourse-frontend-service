@@ -1,28 +1,31 @@
 import { Form, Input } from "antd";
-import { FieldValues, useController } from "react-hook-form";
+import { useController, FieldValues } from "react-hook-form";
 import type { ReactElement } from "react";
-import type { TControlledInputProps } from "./type";
+import type { TControlledOtpInputProps } from "./type";
 
-export const ControlledInput = <T extends FieldValues>({
+export const ControlledInputOtp = <T extends FieldValues>({
   name,
   control,
   formItemProps,
   ...inputProps
-}: TControlledInputProps<T>): ReactElement => {
+}: TControlledOtpInputProps<T>): ReactElement => {
   const { field, fieldState } = useController({ name, control });
 
   return (
     <Form.Item
-      style={{
-        width: "100%",
-      }}
       {...formItemProps}
       required={inputProps.required}
       label={inputProps.label}
       validateStatus={fieldState.error ? "error" : ""}
       help={fieldState.error?.message}
     >
-      <Input {...field} {...inputProps} />
+      <Input.OTP
+        {...inputProps}
+        type="number"
+        value={field.value}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
+      />
     </Form.Item>
   );
 };

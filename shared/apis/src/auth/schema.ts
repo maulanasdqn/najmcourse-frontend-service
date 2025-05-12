@@ -26,6 +26,7 @@ export const registerSchema = z.object({
   student_type: requiredString("Student Type"),
   referral_code: z.string().optional().nullable(),
   referred_by: z.string().optional().nullable(),
+  terms_and_conditions: z.boolean(),
 });
 
 export const forgotPasswordSchema = z.object({

@@ -9,9 +9,10 @@ export const ControlledInputPhone = <T extends FieldValues>({
   formItemProps,
   label,
   placeholder,
+  ...inputProps
 }: TControlledInputPhoneProps<T>): ReactElement => {
   const {
-    field: { value, onChange },
+    field: { value, onChange, ...field },
     fieldState,
   } = useController({ name, control });
 
@@ -23,12 +24,22 @@ export const ControlledInputPhone = <T extends FieldValues>({
 
   return (
     <Form.Item
+      style={{
+        width: "100%",
+      }}
       {...formItemProps}
       label={label}
       validateStatus={fieldState.error ? "error" : ""}
       help={fieldState.error?.message}
     >
-      <Input value={value} onChange={handleChange} placeholder={placeholder} inputMode="numeric" />
+      <Input
+        value={value}
+        onChange={handleChange}
+        placeholder={placeholder}
+        {...field}
+        {...inputProps}
+        inputMode="numeric"
+      />
     </Form.Item>
   );
 };

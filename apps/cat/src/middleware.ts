@@ -5,7 +5,15 @@ import { SessionUser } from "@/shared/libs/localstorage";
 import { SessionToken } from "@/shared/libs/cookies";
 import { FEATURE_FLAGS } from "@/shared/libs/feature-flag";
 
-const mappingPublicRoutes = ["/auth/login", "/auth/forgot", "/auth/new-password"];
+const mappingPublicRoutes = [
+  "/auth/login",
+  "/auth/forgot",
+  "/auth/new-password",
+  "/auth/register",
+  "/auth/reset-password",
+  "/auth/verify",
+  "/auth/payment",
+];
 
 const mappingRoutePermissions = [
   {
