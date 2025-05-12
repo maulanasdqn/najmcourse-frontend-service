@@ -36,7 +36,6 @@ export const testCreateSchema = z.object({
   questions: z
     .array(
       baseQuestionSchema
-        .omit({ id: true })
         .refine((val) => val.question?.trim() ?? val.question_image_url?.trim(), {
           message: "Question must have text or image",
         })

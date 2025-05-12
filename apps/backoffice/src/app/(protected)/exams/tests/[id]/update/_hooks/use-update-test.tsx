@@ -18,6 +18,7 @@ export const useUpdateTest = () => {
   const form = useForm<TTestUpdateRequest>({
     mode: "all",
     resolver: zodResolver(testUpdateSchema),
+    shouldUnregister: false,
   });
 
   const fields = useFieldArray({
@@ -27,7 +28,7 @@ export const useUpdateTest = () => {
   });
 
   useEffect(() => {
-    if (detail) {
+    if (detail?.data) {
       form.reset({
         id: detail?.data.id,
         name: detail?.data.name,
@@ -48,7 +49,7 @@ export const useUpdateTest = () => {
       });
       form.trigger();
     }
-  }, [detail, form]);
+  }, [detail?.data, form]);
 
   const onSubmit = form.handleSubmit((data) => {
     mutate(data, {
@@ -57,7 +58,7 @@ export const useUpdateTest = () => {
         message.success("Test updated successfully");
         navigate(ROUTES.exams.tests.list);
       },
-      onError: (err) => void message.error(err?.response?.data?.message),
+      onError: (err) => void message.error(err?.response?.data?.message ?? "Something went wrong"),
     });
   });
 

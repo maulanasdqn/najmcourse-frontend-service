@@ -6,6 +6,7 @@ import { FC } from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ControlledUploadFile } from "@/shared/components/ui/controlled-upload-file/upload-file";
+import { v4 } from "uuid";
 
 type TProps = {
   form: UseFormReturn<TTestCreateRequest | TTestUpdateRequest>;
@@ -78,6 +79,7 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
         icon={<PlusOutlined />}
         onClick={() =>
           fields.append({
+            id: v4(),
             label: "",
             image_url: "",
             is_correct: false,

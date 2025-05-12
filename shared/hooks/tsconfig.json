@@ -5,6 +5,9 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "es2020",
     "types": ["vite/client"]
   },
   "files": [],

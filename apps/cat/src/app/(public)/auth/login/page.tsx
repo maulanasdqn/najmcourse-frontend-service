@@ -15,8 +15,8 @@ export const Component: FC = (): ReactElement => {
         <Col xs={24} md={12} style={state.styles.formWrapper}>
           <div style={state.styles.container}>
             <div style={state.styles.header}>
-              <Title style={state.styles.title}>NAJM Course Backoffice</Title>
-              <Text style={state.styles.text}>If you have an account, please sign in.</Text>
+              <Title style={state.styles.title}>NAJM Course CAT</Title>
+              <Text style={state.styles.text}>Silahkan masuk dengan akun Anda.</Text>
             </div>
             <Form
               name="auth_login"
@@ -44,7 +44,7 @@ export const Component: FC = (): ReactElement => {
               />
               <Form.Item>
                 <Link href="/auth/forgot" style={{ float: "right" }}>
-                  Forgot password? Click here
+                  Lupa kata sandi anda
                 </Link>
               </Form.Item>
               <Form.Item style={{ marginBottom: 0 }}>
@@ -56,7 +56,7 @@ export const Component: FC = (): ReactElement => {
                   htmlType="submit"
                   style={{ width: "100%" }}
                 >
-                  Sign in now
+                  Masuk
                 </Button>
               </Form.Item>
             </Form>
