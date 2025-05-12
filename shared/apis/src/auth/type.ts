@@ -8,7 +8,7 @@ import {
   verifyEmailSchema,
 } from "./schema";
 import type { TUserItem } from "../users/type";
-import type { TResponseDetail } from "@/commons/types/response";
+import type { TResponseDetail } from "@/shared/commons/types/response";
 
 export type TTokenItem = {
   access_token: string;

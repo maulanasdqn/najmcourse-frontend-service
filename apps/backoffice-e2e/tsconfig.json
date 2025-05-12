@@ -4,7 +4,9 @@
     "allowJs": true,
     "outDir": "../../dist/out-tsc",
     "sourceMap": false,
-    "module": "commonjs"
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "es2020"
   },
   "include": [
     "**/*.ts",

@@ -20,7 +20,7 @@ export const getListOption = async (params?: TMetaRequest): Promise<TOptionListR
   return data;
 };
 
-export const getDetailOption = async (id: string): Promise<TOptionDetailResponse> => {
+export const getDetailOption = async (id?: string): Promise<TOptionDetailResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.OPTIONS.DETAIL, { id }),
     method: "GET",

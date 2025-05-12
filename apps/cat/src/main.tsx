@@ -1,11 +1,44 @@
+import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
-import * as ReactDOM from "react-dom/client";
-import App from "./app/app";
+import { createBrowserRouter, RouteObject, RouterProvider } from "react-router";
+import {
+  add404PageToRoutesChildren,
+  addErrorElementToRoutes,
+  convertPagesToRoute,
+} from "@/shared/libs/react-router/file-based-routing";
+import { middleware } from "./middleware";
+import { ReactQueryProvider } from "@/shared/libs/react-query/react-query-provider";
+import "@ant-design/v5-patch-for-react-19";
+import "./style.css";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Jakarta");
 
-root.render(
+const files = import.meta.glob("./app/**/*(page|layout).tsx");
+const errorFiles = import.meta.glob("./app/**/*error.tsx");
+const notFoundFiles = import.meta.glob("./app/**/*404.tsx");
+const loadingFiles = import.meta.glob("./app/**/*loading.tsx");
+
+const routes = convertPagesToRoute(files, loadingFiles) as RouteObject;
+addErrorElementToRoutes(errorFiles, routes);
+add404PageToRoutesChildren(notFoundFiles, routes);
+
+const router = createBrowserRouter([
+  {
+    ...routes,
+    loader: middleware,
+    shouldRevalidate: () => true,
+  },
+]);
+
+createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
-    <App />
+    <ReactQueryProvider>
+      <RouterProvider router={router} />
+    </ReactQueryProvider>
   </StrictMode>,
 );

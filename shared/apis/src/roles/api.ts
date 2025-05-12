@@ -20,7 +20,7 @@ export const getListRole = async (params: TMetaRequest): Promise<TRoleListRespon
   return data;
 };
 
-export const getDetailRole = async (id: string): Promise<TRoleDetailResponse> => {
+export const getDetailRole = async (id?: string): Promise<TRoleDetailResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.ROLES.DETAIL, { id }),
     method: "GET",
@@ -37,12 +37,9 @@ export const postCreateRole = async (payload: TRoleCreateRequest): Promise<TMess
   return data;
 };
 
-export const putUpdateRole = async (
-  id: string,
-  payload: TRoleUpdateRequest,
-): Promise<TMessageResponse> => {
+export const putUpdateRole = async (payload: TRoleUpdateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
-    url: generatePath(ENDPOINTS.ROLES.UPDATE, { id }),
+    url: generatePath(ENDPOINTS.ROLES.UPDATE, { id: payload.id }),
     method: "PUT",
     data: {
       ...payload,

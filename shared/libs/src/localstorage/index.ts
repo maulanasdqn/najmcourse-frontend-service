@@ -3,7 +3,14 @@ type TUserItem = {
   role: {
     id: string;
     name: string;
-    permissions: string[];
+    permissions: Array<{
+      id: string;
+      name: string;
+      created_at: string;
+      updated_at: string;
+    }>;
+    created_at: string;
+    updated_at: string;
   };
   fullname: string;
   email: string;

@@ -11,10 +11,10 @@ import {
 import { SessionContext, ESessionStatus } from "./context/session-context";
 import { Outlet, useNavigate } from "react-router";
 import { SessionToken } from "@/shared/libs/cookies";
-import { usePostLogin } from "./hooks/use-post-login";
 import { SessionUser } from "@/shared/libs/localstorage";
 import { message } from "antd";
 import { ROUTES } from "@/shared/commons/constants/routes";
+import { usePostLogin } from "@/shared/hooks/auth/use-post-login";
 
 export const SessionProvider: FC<PropsWithChildren> = (props): ReactElement => {
   const navigate = useNavigate();
