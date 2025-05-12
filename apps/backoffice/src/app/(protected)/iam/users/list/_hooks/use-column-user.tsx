@@ -78,6 +78,9 @@ export const useColumnUser = (props: TUseColumnUserProps) => {
       title: "Student Type",
       dataIndex: "student_type",
       key: "student_type",
+      render: (student_type: string) => (
+        <span>{student_type === "-" ? "Admin / Staff" : student_type}</span>
+      ),
     },
     {
       title: "Role Name",
