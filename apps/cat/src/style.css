@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "antd/dist/reset.css";
+
+h2 {
+  margin-bottom: 0px;
+}

@@ -51,3 +51,11 @@ vite.config.ts.timestamp*
 # vitest
 coverage
 *storybook.log
+storybook-static
+
+
+
+.nx/cache
+.nx/workspace-data
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
