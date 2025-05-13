@@ -15,8 +15,12 @@ import { SessionUser } from "@/shared/libs/localstorage";
 import { message } from "antd";
 import { ROUTES } from "@/shared/commons/constants/routes";
 import { usePostLogin } from "@/shared/hooks/auth/use-post-login";
+import { env } from "@/shared/libs/env";
 
 export const SessionProvider: FC<PropsWithChildren> = (props): ReactElement => {
+  const is_cat = env.VITE_FEATURE_FLAG_IS_CAT;
+
+  console.log(is_cat);
   const navigate = useNavigate();
   const [sessionData, setSessionData] = useState<TLoginItem | undefined>(undefined);
   const [status, setStatus] = useState<ESessionStatus>();
@@ -38,10 +42,12 @@ export const SessionProvider: FC<PropsWithChildren> = (props): ReactElement => {
       setStatus(ESessionStatus.Authenticating);
       mutate(payload, {
         onSuccess: (res) => {
-          if (res.data.user?.role.name?.toLowerCase() === "student") {
-            message.error("Student are not allowed to access this page");
-            setStatus(ESessionStatus.Unauthenticated);
-            return;
+          if (!is_cat) {
+            if (res.data.user?.role.name?.toLowerCase() === "student") {
+              message.error("Student are not allowed to access this page");
+              setStatus(ESessionStatus.Unauthenticated);
+              return;
+            }
           }
           setSessionData(res.data);
           setStatus(ESessionStatus.Authenticated);
@@ -60,7 +66,7 @@ export const SessionProvider: FC<PropsWithChildren> = (props): ReactElement => {
         },
       });
     },
-    [mutate, navigate],
+    [mutate, navigate, is_cat],
   );
 
   const signOut = useCallback(() => {

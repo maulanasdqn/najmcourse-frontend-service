@@ -69,6 +69,8 @@ const envSchema = z.object({
   VITE_FEATURE_FLAG_EXAMS_QUESTIONS_CREATE: zEnvBool(),
   VITE_FEATURE_FLAG_EXAMS_QUESTIONS_UPDATE: zEnvBool(),
   VITE_FEATURE_FLAG_EXAMS_QUESTIONS_DELETE: zEnvBool(),
+
+  VITE_FEATURE_FLAG_IS_CAT: zEnvBool(),
 });
 
 export const env = envSchema.parse(import.meta.env);
