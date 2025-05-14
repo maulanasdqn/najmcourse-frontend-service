@@ -23,6 +23,7 @@ export type TSessionDetailTestItem = {
   test: TTestDetailItem;
   weight: number;
   multiplier: number;
+  shuffle: boolean;
   start_date: string;
   end_date: string;
 };

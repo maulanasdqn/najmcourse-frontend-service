@@ -65,6 +65,7 @@ export const useUpdateSession = () => {
           test_id: test.test.id,
           weight: Number((test.weight * 10).toFixed(1)),
           multiplier: test.multiplier,
+          shuffle: test.shuffle,
           start_date: test.start_date,
           end_date: test.end_date,
         })),

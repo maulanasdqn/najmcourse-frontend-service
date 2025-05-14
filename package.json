@@ -32,6 +32,7 @@
     "antd": "^5.25.0",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
+    "html-react-parser": "^5.2.5",
     "js-cookie": "^3.0.5",
     "just-debounce-it": "^3.2.0",
     "lexical": "^0.31.0",
@@ -45,7 +46,8 @@
     "recharts": "^2.15.3",
     "ts-pattern": "^5.7.0",
     "uuid": "^11.1.0",
-    "zod": "^3.24.4"
+    "zod": "^3.24.4",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",

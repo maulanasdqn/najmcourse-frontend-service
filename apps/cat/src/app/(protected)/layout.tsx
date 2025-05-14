@@ -56,7 +56,7 @@ const ProtectedLayout: FC = (): ReactElement => {
       <Sider width={250} breakpoint="md" collapsedWidth="0" theme="light">
         <div className="flex items-center justify-center h-16 px-4 bg-white border-b-[2px] border-gray-100 shadow">
           <Typography.Title level={4} style={{ margin: 0 }}>
-            Admin Panel
+            NAJM Course CAT
           </Typography.Title>
         </div>
         <Menu
@@ -84,7 +84,7 @@ const ProtectedLayout: FC = (): ReactElement => {
                 whiteSpace: "nowrap",
               }}
             >
-              NAJM Course
+              Computer Assisted Test
             </Typography.Title>
 
             <Dropdown menu={{ items }}>
@@ -107,7 +107,7 @@ const ProtectedLayout: FC = (): ReactElement => {
           </Flex>
         </Header>
         <Content style={{ margin: "24px 16px", overflow: "auto" }}>
-          <section className="px-8 bg-white py-6 rounded-lg">
+          <section className="px-8 bg-white py-6 rounded-lg h-full">
             <Outlet />
           </section>
         </Content>

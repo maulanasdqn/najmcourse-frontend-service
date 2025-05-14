@@ -11,6 +11,7 @@ import { FC, ReactElement } from "react";
 
 export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   const { form, fields, options } = useFormSession();
+
   return (
     <Form name="session_form" onFinish={props.onSubmit} layout="vertical">
       <ControlledInput label="Name" control={form.control} placeholder="Input name" name="name" />
@@ -56,7 +57,13 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             control={form.control}
             placeholder="Select test"
             name={`tests.${index}.test_id`}
-            options={options.tests}
+            options={options?.tests?.filter((opt) => {
+              const selectedTestIds = form
+                .watch("tests")
+                .map((t, i) => (i !== index ? t.test_id : null))
+                .filter(Boolean);
+              return !selectedTestIds.includes(opt.value);
+            })}
           />
           <ControlledSelect
             label="Weight (Bobot)"
@@ -71,7 +78,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             placeholder="Input multiplier"
             name={`tests.${index}.multiplier`}
           />
-
           <ControlledDatePicker
             label="Start Date"
             control={form.control}
@@ -79,17 +85,27 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             name={`tests.${index}.start_date`}
             showTime={{ format: "HH:mm" }}
             disabledDate={(currentDate) => {
-              return currentDate.isBefore(dayjs().startOf("day"));
+              const prevEnd = form.watch("tests")[index - 1]?.end_date;
+              if (!prevEnd) return currentDate.isBefore(dayjs().startOf("day"));
+              return currentDate.isBefore(dayjs(prevEnd).startOf("day"));
             }}
             disabledTime={(currentDate) => {
               const now = dayjs();
-              if (!currentDate || !currentDate.isSame(now, "day")) return {};
-
+              const prevEnd = dayjs(form.watch("tests")[index - 1]?.end_date);
+              if (!currentDate) return {};
+              const isSameDay = currentDate.isSame(prevEnd, "day");
+              const baseHour = isSameDay ? prevEnd.hour() : now.hour();
+              const baseMinute = isSameDay ? prevEnd.minute() : now.minute();
               return {
                 disabledHours: () =>
-                  Array.from({ length: 24 }, (_, i) => i).filter((h) => h < now.hour()),
+                  Array.from({ length: 24 }, (_, i) => i).filter((h) =>
+                    isSameDay ? h < baseHour : currentDate.isSame(now, "day") && h < now.hour(),
+                  ),
                 disabledMinutes: (selectedHour) => {
-                  if (selectedHour === now.hour()) {
+                  if (isSameDay && selectedHour === baseHour) {
+                    return Array.from({ length: 60 }, (_, i) => i).filter((m) => m < baseMinute);
+                  }
+                  if (currentDate.isSame(now, "day") && selectedHour === now.hour()) {
                     return Array.from({ length: 60 }, (_, i) => i).filter((m) => m < now.minute());
                   }
                   return [];

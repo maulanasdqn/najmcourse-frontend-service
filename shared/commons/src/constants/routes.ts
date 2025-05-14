@@ -37,6 +37,9 @@ export const ROUTES = {
       create: "/exams/sessions/create",
       detail: "/exams/sessions/:id/detail",
       update: "/exams/sessions/:id/update",
+      test: {
+        detail: "/exams/sessions/:id/test/:testId/start",
+      },
     },
     tests: {
       list: "/exams/tests/list",
