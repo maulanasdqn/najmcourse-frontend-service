@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 import { nxCopyAssetsPlugin } from "@nx/vite/plugins/nx-copy-assets.plugin";
 import { VitePWA } from "vite-plugin-pwa";
+// import path from "path";
 
 export default defineConfig(() => ({
   root: __dirname,
@@ -50,10 +51,6 @@ export default defineConfig(() => ({
       },
     }),
   ],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
   build: {
     outDir: "../../dist/apps/backoffice",
     emptyOutDir: true,
@@ -63,8 +60,14 @@ export default defineConfig(() => ({
     },
   },
   test: {
+    // resolve: {
+    //   alias: {
+    //     "@/shared/apis": path.resolve(__dirname, "../../shared/apis/src"),
+    //   },
+    // },
     watch: false,
     globals: true,
+    setupFiles: ["../../vitest.setup.ts"],
     environment: "jsdom",
     include: ["{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     reporters: ["default"],

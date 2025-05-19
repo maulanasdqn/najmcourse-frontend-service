@@ -8,7 +8,7 @@ import { useUpdatePermission } from "../_hooks/use-update-permission";
 import { useForm } from "react-hook-form";
 import { TPermissionUpdateRequest } from "@/api/permissions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { permissionUpdateSchema } from "@/api/permissions/schema";
+import { permissionUpdateSchema } from "@/shared/apis/permissions/schema";
 
 const mockNavigate = vi.fn();
 const mockParams = { id: "permission-id-123" };

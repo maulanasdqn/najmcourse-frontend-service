@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { Component } from "../page";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router";
-import { useGetDetailPermission } from "../../_hooks/use-get-detail-permissions";
+import { useGetDetailPermission } from "@/shared/hooks/permissions/use-get-detail-permission";
 
 const mockNavigate = vi.fn();
 
@@ -17,7 +17,7 @@ vi.mock("react-router", async () => {
   };
 });
 
-vi.mock("../../_hooks/use-get-detail-permissions");
+vi.mock("@/shared/hooks/permissions/use-get-detail-permission");
 
 const renderPage = () =>
   render(

@@ -42,21 +42,26 @@ export const SessionProvider: FC<PropsWithChildren> = (props): ReactElement => {
       setStatus(ESessionStatus.Authenticating);
       mutate(payload, {
         onSuccess: (res) => {
-          if (!is_cat) {
-            if (res.data.user?.role.name?.toLowerCase() === "student") {
-              message.error("Student are not allowed to access this page");
-              setStatus(ESessionStatus.Unauthenticated);
-              return;
-            }
+          const role = res.data.user?.role.name?.toLowerCase();
+          if (!role) {
+            message.error("Invalid role");
+            setStatus(ESessionStatus.Unauthenticated);
+            return;
+          }
+          const isStudent = role === "student";
+          if ((!is_cat && isStudent) || (is_cat && !isStudent)) {
+            message.error(
+              is_cat
+                ? "Admin / Staff are not allowed to access this page"
+                : "Student are not allowed to access this page",
+            );
+            setStatus(ESessionStatus.Unauthenticated);
+            return;
           }
           setSessionData(res.data);
           setStatus(ESessionStatus.Authenticated);
-          SessionUser.set({
-            user: res.data.user,
-          });
-          SessionToken.set({
-            token: res?.data?.token,
-          });
+          SessionUser.set({ user: res.data.user });
+          SessionToken.set({ token: res.data.token });
           message.success("Login Successful");
           navigate(0);
         },

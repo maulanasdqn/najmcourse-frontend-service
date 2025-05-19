@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { Component } from "../page";
 import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useListPermissions } from "../_hooks/use-list-permissions";
+import { useListPermissions } from "@/shared/hooks/permissions/use-list-permissions";
 
-vi.mock("../_hooks/use-list-permissions");
+vi.mock("@/shared/hooks/permissions/use-list-permissions");
 
 const defaultMockReturn = {
   dataSource: [],

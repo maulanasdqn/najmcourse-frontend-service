@@ -6,9 +6,9 @@
       "@/shared/apis/*": ["shared/apis/src/*"],
       "@/shared/commons/*": ["shared/commons/src/*"],
       "@/shared/components/*": ["shared/components/src/*"],
+      "@/shared/hooks/*": ["shared/hooks/src/*"],
       "@/shared/libs/*": ["shared/libs/src/*"],
-      "@/shared/utils/*": ["shared/utils/src/*"],
-      "@/shared/hooks/*": ["shared/hooks/src/*"]
+      "@/shared/utils/*": ["shared/utils/src/*"]
     }
   }
 }
