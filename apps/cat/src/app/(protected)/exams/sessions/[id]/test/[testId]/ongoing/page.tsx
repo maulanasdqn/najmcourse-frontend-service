@@ -1,16 +1,21 @@
-import { Card, Button, Typography, Radio, Tag } from "antd";
+import { Card, Button, Typography, Radio, Tag, Modal } from "antd";
 import parse from "html-react-parser";
-import { FC, ReactElement, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { FC, ReactElement, useEffect, useState, useCallback, useRef } from "react";
+import { generatePath, useNavigate, useParams } from "react-router";
 import { useGetDetailSession } from "@/shared/hooks/sessions/use-get-detail-session";
 import dayjs from "dayjs";
 import { useAnswerStore } from "@/shared/libs/zustand/answer";
 import { useSession } from "@/shared/components/providers";
 import { match } from "ts-pattern";
+import { PageHeadList } from "@/shared/components/ui/page-head-list";
+import { usePostCreateAnswer } from "@/shared/hooks/answers/use-post-create-answer";
+import { ROUTES } from "@/shared/commons/constants/routes";
 
 const { Title, Text } = Typography;
 
 export const Component: FC = (): ReactElement => {
+  const navigate = useNavigate();
+  const { mutate } = usePostCreateAnswer();
   const params = useParams();
   const { data } = useGetDetailSession(params.id ?? "");
   const { session: userData } = useSession();
@@ -21,14 +26,94 @@ export const Component: FC = (): ReactElement => {
 
   const [current, setCurrent] = useState(0);
   const [marked, setMarked] = useState<string[]>([]);
-  const [timeLeft, setTimeLeft] = useState("00:00");
+  const [timeLeft, setTimeLeft] = useState("00:00:00");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showFullscreenModal, setShowFullscreenModal] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentQuestion = questions[current];
+  const hasSubmittedRef = useRef(false);
 
-  const { setMeta, setAnswer, clearAnswer, answers, getPayload } = useAnswerStore();
+  const { setAnswer, answers, getPayload } = useAnswerStore();
 
-  console.log("Answers:", answers);
+  // Auto-submit function
+  const autoSubmit = useCallback(() => {
+    if (hasSubmittedRef.current || isSubmitting) return;
 
+    hasSubmittedRef.current = true;
+    setIsSubmitting(true);
+
+    const payload = getPayload();
+    console.log("Auto Submit Payload:", payload);
+
+    mutate(payload, {
+      onSuccess: () => {
+        navigate(
+          generatePath(ROUTES.exams.sessions.test.result, {
+            id: params.id ?? "",
+            testId: params.testId,
+          }),
+        );
+      },
+      onError: (err) => {
+        console.log("Auto Submit Error", err);
+        hasSubmittedRef.current = false;
+        setIsSubmitting(false);
+      },
+    });
+  }, [getPayload, mutate, navigate, params.id, params.testId, isSubmitting]);
+
+  // Fullscreen functions
+  const enterFullscreen = useCallback(() => {
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if ((element as any).webkitRequestFullscreen) {
+      (element as any).webkitRequestFullscreen();
+    } else if ((element as any).msRequestFullscreen) {
+      (element as any).msRequestFullscreen();
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(() => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if ((document as any).webkitExitFullscreen) {
+      (document as any).webkitExitFullscreen();
+    } else if ((document as any).msExitFullscreen) {
+      (document as any).msExitFullscreen();
+    }
+  }, []);
+
+  // Check if document is in fullscreen
+  const checkFullscreen = useCallback(() => {
+    return !!(
+      document.fullscreenElement ||
+      (document as any).webkitFullscreenElement ||
+      (document as any).msFullscreenElement
+    );
+  }, []);
+
+  // Handle fullscreen change
+  const handleFullscreenChange = useCallback(() => {
+    const isCurrentlyFullscreen = checkFullscreen();
+    setIsFullscreen(isCurrentlyFullscreen);
+
+    // If user exits fullscreen and exam is active, auto-submit
+    if (!isCurrentlyFullscreen && !showFullscreenModal && !hasSubmittedRef.current) {
+      Modal.warning({
+        title: "Keluar dari Mode Fullscreen",
+        content: "Anda telah keluar dari mode fullscreen. Jawaban akan otomatis dikirim.",
+        onOk: () => {
+          autoSubmit();
+        },
+        okText: "OK",
+        centered: true,
+      });
+    }
+  }, [checkFullscreen, showFullscreenModal, autoSubmit]);
+
+  // Timer effect with auto-submit when time runs out
   useEffect(() => {
     if (!selectedTest?.start_date || !selectedTest?.end_date) return;
 
@@ -38,18 +123,79 @@ export const Component: FC = (): ReactElement => {
       const diff = end.diff(now, "second");
 
       if (diff <= 0) {
-        setTimeLeft("00:00");
+        setTimeLeft("00:00:00");
         clearInterval(interval);
+
+        // Auto-submit when time runs out
+        if (!hasSubmittedRef.current) {
+          Modal.warning({
+            title: "Waktu Habis",
+            content: "Waktu ujian telah habis. Jawaban akan otomatis dikirim.",
+            onOk: () => {
+              autoSubmit();
+            },
+            okText: "OK",
+            centered: true,
+          });
+        }
         return;
       }
 
-      const m = Math.floor(diff / 60);
+      const h = Math.floor(diff / 3600);
+      const m = Math.floor((diff % 3600) / 60);
       const s = diff % 60;
-      setTimeLeft(`${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`);
+      setTimeLeft(
+        `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`,
+      );
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [selectedTest]);
+  }, [selectedTest, autoSubmit]);
+
+  // Setup fullscreen event listeners
+  useEffect(() => {
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("msfullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("msfullscreenchange", handleFullscreenChange);
+    };
+  }, [handleFullscreenChange]);
+
+  // Prevent context menu, F12, and other shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Prevent F12, Ctrl+Shift+I, Ctrl+U, etc.
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "C") ||
+        (e.ctrlKey && e.key === "u") ||
+        (e.ctrlKey && e.key === "s") ||
+        e.key === "F5" ||
+        (e.ctrlKey && e.key === "r")
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      return false;
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("contextmenu", handleContextMenu);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, []);
 
   useEffect(() => {
     if (!selectedTest || !session?.id || !userData?.user?.id) return;
@@ -58,24 +204,13 @@ export const Component: FC = (): ReactElement => {
       test_id: selectedTest.test.id,
       user_id: userData.user.id,
     });
-  }, [selectedTest?.test.id, session?.id, userData?.user?.id]);
+  }, [selectedTest, selectedTest?.test.id, session?.id, userData?.user?.id]);
 
   const handleAnswer = (value: string) => {
     setAnswer({
       question_id: currentQuestion.id,
       option_id: value,
     });
-  };
-
-  const handleClear = () => {
-    clearAnswer(currentQuestion.id);
-  };
-
-  const handleMark = () => {
-    if (!marked.includes(currentQuestion.id)) {
-      setMarked([...marked, currentQuestion.id]);
-    }
-    setCurrent((prev) => Math.min(prev + 1, questions.length - 1));
   };
 
   const handleSaveNext = () => {
@@ -94,90 +229,185 @@ export const Component: FC = (): ReactElement => {
     answers.find((a) => a.question_id === questionId)?.option_id;
 
   const handleSubmit = () => {
-    const payload = getPayload();
-    console.log("Submit Payload:", payload);
+    if (hasSubmittedRef.current || isSubmitting) return;
+
+    Modal.confirm({
+      title: "Konfirmasi Submit",
+      content: "Apakah Anda yakin ingin mengirim jawaban? Tindakan ini tidak dapat dibatalkan.",
+      onOk: () => {
+        hasSubmittedRef.current = true;
+        setIsSubmitting(true);
+
+        const payload = getPayload();
+        console.log("Manual Submit Payload:", payload);
+
+        mutate(payload, {
+          onSuccess: () => {
+            navigate(
+              generatePath(ROUTES.exams.sessions.test.result, {
+                id: params.id ?? "",
+                testId: params.testId,
+              }),
+            );
+          },
+          onError: (err) => {
+            console.log("Manual Submit Error", err);
+            hasSubmittedRef.current = false;
+            setIsSubmitting(false);
+          },
+        });
+      },
+      okText: "Ya, Kirim",
+      cancelText: "Batal",
+      centered: true,
+    });
   };
+
+  const handleStartExam = () => {
+    enterFullscreen();
+    setShowFullscreenModal(false);
+  };
+
+  const areAllQuestionsAnswered = answers.length === questions.length;
 
   if (!selectedTest || questions.length === 0) {
     return <div className="text-center py-12 text-gray-500">Soal tidak tersedia</div>;
   }
 
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 p-6 min-h-screen">
-      <div>
-        <Card className="shadow-sm">
-          <Title level={5} className="mb-4">
-            {selectedTest.test.name} - Question No. {current + 1}
-          </Title>
-          <div className="mb-4">{parse(currentQuestion.question)}</div>
-
-          <Radio.Group
-            onChange={(e) => handleAnswer(e.target.value)}
-            value={getSelectedOption(currentQuestion.id)}
-          >
-            <div className="flex flex-col gap-2">
-              {currentQuestion.options.map((opt) => (
-                <Radio key={opt.id} value={opt.id}>
-                  {opt.label}
-                </Radio>
-              ))}
+  if (showFullscreenModal) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full mx-4 shadow-sm">
+          <div className="text-center">
+            <Title level={3}>Mode Ujian Fullscreen</Title>
+            <Text className="block mb-4">
+              Ujian akan dimulai dalam mode fullscreen. Jika Anda keluar dari mode fullscreen atau
+              waktu habis, jawaban akan otomatis dikirim.
+            </Text>
+            <div className="space-y-2 text-left mb-6">
+              <Text strong>Peraturan:</Text>
+              <ul className="list-disc list-inside text-sm space-y-1">
+                <li>Tetap dalam mode fullscreen selama ujian</li>
+                <li>Jangan menekan F12 atau membuka developer tools</li>
+                <li>Jangan refresh halaman</li>
+                <li>Jawaban akan otomatis dikirim jika melanggar aturan</li>
+              </ul>
             </div>
-          </Radio.Group>
-
-          <div className="flex justify-between mt-6 flex-wrap gap-2">
-            <Button onClick={handleMark}>Mark for Review & Next</Button>
-            <Button danger onClick={handleClear}>
-              Clear Response
-            </Button>
-            <Button type="primary" onClick={handleSaveNext}>
-              Save & Next
+            <Button type="primary" size="large" onClick={handleStartExam} block>
+              Mulai Ujian
             </Button>
           </div>
         </Card>
       </div>
+    );
+  }
 
-      <div className="flex flex-col gap-y-4">
-        <Card title="Time Left" className="text-center shadow-sm">
-          <Text strong className="text-2xl">
-            {timeLeft}
-          </Text>
-        </Card>
-        <Card title="Question Palette" className="shadow-sm">
-          <div className="grid grid-cols-5 gap-2">
-            {questions.map((q, idx) => {
-              const status = getStatus(q.id);
-              const color = match(status)
-                .with("answered", () => "green")
-                .with("marked", () => "purple")
-                .otherwise(() => "red");
-              return (
-                <Button
-                  key={q.id}
-                  size="small"
-                  className="text-white"
-                  style={{ backgroundColor: color }}
-                  onClick={() => setCurrent(idx)}
-                >
-                  {idx + 1}
-                </Button>
-              );
-            })}
-          </div>
-          <div className="mt-4 space-y-1 text-sm text-gray-600">
-            <div>
-              <Tag color="green" /> Answered
+  // Render exam in fullscreen mode without sidebar/header
+  return (
+    <div className="fixed inset-0 bg-white z-50 overflow-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 p-6 min-h-screen">
+        <div className="flex flex-col gap-y-4">
+          <Card className="shadow-sm">
+            <div className="flex w-full justify-between items-center">
+              <div className="flex flex-col">
+                <h1 className="font-bold text-xl uppercase">{userData?.user?.fullname}</h1>
+                <span>
+                  {userData?.user?.student_type} - {session?.category}
+                </span>
+                <div className="flex items-center gap-2 mt-1">
+                  <div
+                    className={`w-2 h-2 rounded-full ${isFullscreen ? "bg-green-500" : "bg-red-500"}`}
+                  ></div>
+                  <Text className={`text-xs ${isFullscreen ? "text-green-600" : "text-red-600"}`}>
+                    {isFullscreen ? "Mode Fullscreen Aktif" : "Mode Fullscreen Tidak Aktif"}
+                  </Text>
+                </div>
+              </div>
+              <img
+                src={
+                  userData?.user?.avatar ??
+                  "https://png.pngtree.com/png-vector/20190629/ourmid/pngtree-office-work-user-icon-avatar-png-image_1527655.jpg"
+                }
+                alt="avatar"
+                className="w-16 h-16 rounded-full"
+              />
             </div>
-            <div>
-              <Tag color="red" /> Not Answered
+          </Card>
+          <Card className="shadow-sm">
+            <Title level={5} className="mb-4 font-bold">
+              Pertanyaan No. {current + 1}
+            </Title>
+            <div className="mb-4">{parse(currentQuestion.question)}</div>
+
+            <Radio.Group
+              onChange={(e) => handleAnswer(e.target.value)}
+              value={getSelectedOption(currentQuestion.id)}
+              disabled={isSubmitting}
+            >
+              <div className="flex flex-col gap-2">
+                {currentQuestion.options.map((opt) => (
+                  <Radio key={opt.id} value={opt.id}>
+                    {opt.label}
+                  </Radio>
+                ))}
+              </div>
+            </Radio.Group>
+
+            <div className="flex justify-between mt-6 flex-wrap gap-2">
+              <Button type="primary" onClick={handleSaveNext} disabled={isSubmitting}>
+                Selanjutnya
+              </Button>
             </div>
-            <div>
-              <Tag color="purple" /> Marked for Review
+          </Card>
+        </div>
+
+        <div className="flex flex-col gap-y-4">
+          <Card title="Waktu Tersisa" className="text-center shadow-sm">
+            <Text strong className={`text-2xl ${timeLeft === "00:00:00" ? "text-red-500" : ""}`}>
+              {timeLeft}
+            </Text>
+          </Card>
+          <Card title="Daftar Pertanyaan" className="shadow-sm">
+            <div className="grid grid-cols-5 gap-2">
+              {questions.map((q, idx) => {
+                const status = getStatus(q.id);
+                const color = match(status)
+                  .with("answered", () => "green")
+                  .with("marked", () => "purple")
+                  .otherwise(() => "red");
+                return (
+                  <Button
+                    key={q.id}
+                    size="small"
+                    className="text-white"
+                    style={{ backgroundColor: color }}
+                    onClick={() => setCurrent(idx)}
+                    disabled={isSubmitting}
+                  >
+                    {idx + 1}
+                  </Button>
+                );
+              })}
             </div>
-          </div>
-        </Card>
-        <Button block type="primary" danger onClick={handleSubmit}>
-          Submit
-        </Button>
+            <div className="mt-4 space-y-1 text-sm text-gray-600">
+              <div>
+                <Tag color="green" /> Terjawab
+              </div>
+              <div>
+                <Tag color="red" /> Belum Dijawab
+              </div>
+            </div>
+          </Card>
+          <Button
+            block
+            type="primary"
+            onClick={handleSubmit}
+            disabled={!areAllQuestionsAnswered || isSubmitting}
+            loading={isSubmitting}
+          >
+            {isSubmitting ? "Mengirim..." : "Selesai"}
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -50,6 +50,7 @@ export const ENDPOINTS = {
   ANSWERS: {
     CREATE: "/answers/create",
     DETAIL: "/answers/detail/:id",
+    DETAIL_TEST_AND_USER_ID: "/answers/detail/:testId/:userId",
     DELETE: "/answers/delete/:id",
   },
   TESTS: {

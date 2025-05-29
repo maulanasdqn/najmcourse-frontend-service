@@ -134,13 +134,41 @@ const LoadHtmlPlugin = ({ html }: { html: string }) => {
 
   useEffect(() => {
     editor.update(() => {
-      const root = $getRoot();
-      if (root.getChildren().length === 1 && root.getTextContent() === "") {
-        const parser = new DOMParser();
-        const dom = parser.parseFromString(html, "text/html");
-        const nodes = $generateNodesFromDOM(editor, dom);
+      try {
+        const root = $getRoot();
+        if (root.getChildren().length === 1 && root.getTextContent() === "") {
+          const parser = new DOMParser();
+          const dom = parser.parseFromString(html, "text/html");
+          const nodes = $generateNodesFromDOM(editor, dom);
+          root.clear();
+          const validNodes = nodes.filter((node) => {
+            try {
+              return node && (node.getType() === "paragraph" || node.getType() === "text");
+            } catch {
+              return false;
+            }
+          });
+
+          if (validNodes.length > 0) {
+            try {
+              root.append(...validNodes);
+            } catch (error) {
+              console.warn("Failed to append nodes, using fallback:", error);
+              root.clear();
+              const paragraphNode = new ParagraphNode();
+              root.append(paragraphNode);
+            }
+          } else {
+            const paragraphNode = new ParagraphNode();
+            root.append(paragraphNode);
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to load HTML content:", error);
+        const root = $getRoot();
         root.clear();
-        root.append(...nodes);
+        const paragraphNode = new ParagraphNode();
+        root.append(paragraphNode);
       }
     });
   }, [editor, html]);

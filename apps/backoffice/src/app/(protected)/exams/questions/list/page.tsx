@@ -18,7 +18,7 @@ export const Component: FC = (): ReactElement => {
         createPermission={PERMISSIONS.QUESTIONS.CREATE_QUESTIONS}
       />
       <DataTable
-        scroll={{ x: "1400px" }}
+        scroll={{ x: "2100px" }}
         rowKey={"id"}
         loading={isLoading}
         dataSource={dataSource}

@@ -38,7 +38,9 @@ export const ROUTES = {
       detail: "/exams/sessions/:id/detail",
       update: "/exams/sessions/:id/update",
       test: {
-        detail: "/exams/sessions/:id/test/:testId/start",
+        start: "/exams/sessions/:id/test/:testId/start",
+        result: "/exams/sessions/:id/test/:testId/result",
+        ongoing: "/exams/sessions/:id/test/:testId/ongoing",
       },
     },
     tests: {

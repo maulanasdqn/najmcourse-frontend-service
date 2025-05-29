@@ -9,6 +9,7 @@ import { TResponseError } from "@/shared/commons/types/response";
 import { Guard } from "@/shared/components/guard";
 import { PERMISSIONS } from "@/shared/commons/constants/permissions";
 import { ROUTES } from "@/shared/commons/constants/routes";
+import parse from "html-react-parser";
 
 type TUseColumnQuestionProps = {
   refetch: (
@@ -43,14 +44,13 @@ export const useColumnQuestion = (props: TUseColumnQuestionProps) => {
       dataIndex: "question",
       key: "question",
       sorter: true,
+      render: (question: string) => <span className="truncate">{parse(question)}</span>,
     },
     {
       title: "Discussion",
       dataIndex: "discussion",
       key: "discussion",
-      render: (discussion: string) => (
-        <span className="truncate">{discussion.slice(0, 100)}...</span>
-      ),
+      render: (discussion: string) => <span className="truncate">{parse(discussion)}</span>,
     },
     {
       title: "Created At",
