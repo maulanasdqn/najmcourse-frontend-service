@@ -1,28 +1,35 @@
 import { ControlledInput } from "@/shared/components/ui/controlled-input";
 import { ControlledUploadFile } from "@/shared/components/ui/controlled-upload-file";
-import { DeleteOutlined, PlusOutlined, CopyOutlined } from "@ant-design/icons";
-import { Button, Form, Modal, Input } from "antd";
-import { OptionsFields } from "./option-fields";
+import { ControlledWysiwyg } from "@/shared/components/ui/controlled-wysiwyg/wysiwyg";
+import { ControlledSwitch } from "@/shared/components/ui/controlled-switch/switch";
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  CopyOutlined,
+  EditOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
+import { Button, Form, Modal, Input, Card, Space, Typography, Radio, Divider } from "antd";
 import { useFormTest } from "../_hooks/use-form-test";
 import { TFormFieldsProps } from "@/shared/commons/types/form-field";
-import { FC, ReactElement, useState } from "react";
-import { ControlledWysiwyg } from "@/shared/components/ui/controlled-wysiwyg/wysiwyg";
+import { FC, ReactElement, useState, useMemo } from "react";
+import { useFieldArray, useWatch } from "react-hook-form";
 import { v4 } from "uuid";
 
 const { TextArea } = Input;
+const { Text, Title } = Typography;
 
 export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   const { form, fields, handler } = useFormTest();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pastedQuestions, setPastedQuestions] = useState("");
+  const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
 
   const parseAndAddQuestions = () => {
     if (!pastedQuestions.trim()) return;
 
-    // Helper function to escape HTML and convert to proper HTML format
     const escapeAndFormatText = (text: string): string => {
       if (!text) return "<p><br></p>";
-      // Escape HTML characters
       const escaped = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -30,14 +37,12 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
 
-      // Convert line breaks to paragraphs
       const paragraphs = escaped.split("\n").filter((line: string) => line.trim());
       if (paragraphs.length === 0) return "<p><br></p>";
       if (paragraphs.length === 1) return `<p>${paragraphs[0]}</p>`;
       return paragraphs.map((p: string) => `<p>${p}</p>`).join("");
     };
 
-    // Split the text into individual questions using regex that matches question numbers
     const questionMatches = pastedQuestions.match(/\d+\.\s+[\s\S]*?(?=\n\s*\d+\.\s+|$)/g);
 
     if (!questionMatches) return;
@@ -45,19 +50,14 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
     questionMatches.forEach((questionBlock) => {
       if (!questionBlock.trim()) return;
 
-      // Remove the question number from the beginning
       const cleanedBlock = questionBlock.replace(/^\d+\.\s+/, "").trim();
-
-      // Split by "Pembahasan" to separate question+options from discussion
       const parts = cleanedBlock.split(/\nPembahasan\s*\n/);
       const questionPart = parts[0].trim();
       const discussionPart = parts[1] ? parts[1].trim() : "";
 
-      // Extract question text (everything before the first option)
       const optionMatch = questionPart.match(/^([\s\S]*?)\n\s*[A-E]\./s);
       const questionText = optionMatch ? optionMatch[1].trim() : questionPart;
 
-      // Extract options
       const optionLines = questionPart
         .split("\n")
         .filter((line) => line.trim().match(/^[A-E]\.\s+/));
@@ -73,7 +73,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
         };
       });
 
-      // Add the question with properly formatted HTML
       fields.append({
         id: v4(),
         question: escapeAndFormatText(questionText),
@@ -84,107 +83,419 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
       });
     });
 
-    // Close modal and clear textarea
     setIsModalVisible(false);
     setPastedQuestions("");
   };
 
+  const handleEditQuestion = (index: number) => {
+    setEditingQuestionIndex(index);
+  };
+
+  const handleSaveQuestion = () => {
+    setEditingQuestionIndex(null);
+  };
+
+  const handleDeleteQuestion = (index: number) => {
+    handler.onRemoveQuestion(index);
+  };
+
+  const handleDuplicateQuestion = (index: number) => {
+    const questionToDuplicate = fields.fields[index];
+    fields.append({
+      ...questionToDuplicate,
+      id: v4(),
+      options: questionToDuplicate.options.map((opt) => ({
+        ...opt,
+        id: v4(),
+      })),
+    });
+  };
+
+  const handleAddOption = (questionIndex: number) => {
+    // Get current options
+    const currentOptions = form.getValues(`questions.${questionIndex}.options`) || [];
+
+    // Create new option
+    const newOption = {
+      id: v4(),
+      label: "",
+      image_url: "",
+      is_correct: false,
+      points: "0",
+    };
+
+    // Update the form with new options array
+    const updatedOptions = [...currentOptions, newOption];
+    form.setValue(`questions.${questionIndex}.options`, updatedOptions, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    // Trigger form re-render
+    form.trigger(`questions.${questionIndex}.options`);
+  };
+
+  const getOptionLabel = (index: number): string => {
+    return String.fromCharCode(65 + index);
+  };
+
+  // Component for rendering options in edit mode
+  const OptionsEditComponent: FC<{ questionIndex: number }> = ({ questionIndex }) => {
+    const optionsFieldArray = useFieldArray({
+      control: form.control,
+      name: `questions.${questionIndex}.options`,
+    });
+
+    const addOption = () => {
+      optionsFieldArray.append({
+        id: v4(),
+        label: "",
+        image_url: "",
+        is_correct: false,
+        points: "0",
+      });
+    };
+
+    const removeOption = (optionIndex: number) => {
+      optionsFieldArray.remove(optionIndex);
+    };
+
+    const setCorrect = (optionIndex: number) => {
+      const currentOptions = form.getValues(`questions.${questionIndex}.options`) || [];
+      const updated = currentOptions.map((opt, idx) => ({
+        ...opt,
+        is_correct: idx === optionIndex,
+      }));
+      form.setValue(`questions.${questionIndex}.options`, updated, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    };
+
+    return (
+      <div className="flex flex-col gap-y-3">
+        {optionsFieldArray.fields.map((option, optionIndex) => (
+          <div key={option.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <div className="flex items-center justify-between mb-3">
+              <Text strong>Opsi {getOptionLabel(optionIndex)}</Text>
+              <Button
+                size="small"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => removeOption(optionIndex)}
+              >
+                Hapus
+              </Button>
+            </div>
+
+            <ControlledInput
+              label="Teks Pilihan"
+              control={form.control}
+              name={`questions.${questionIndex}.options.${optionIndex}.label`}
+              placeholder="Masukkan teks pilihan jawaban"
+            />
+
+            <ControlledUploadFile
+              label="Gambar Pilihan (Opsional)"
+              control={form.control}
+              name={`questions.${questionIndex}.options.${optionIndex}.image_url`}
+            />
+
+            <div className="flex items-center justify-between">
+              <ControlledSwitch
+                label="Jawaban Benar"
+                control={form.control}
+                name={`questions.${questionIndex}.options.${optionIndex}.is_correct`}
+                onChange={() => setCorrect(optionIndex)}
+              />
+
+              <ControlledInput
+                label="Poin (Khusus Psikologi)"
+                control={form.control}
+                name={`questions.${questionIndex}.options.${optionIndex}.points`}
+                placeholder="0"
+                style={{ width: 100 }}
+              />
+            </div>
+          </div>
+        ))}
+
+        <Button type="dashed" icon={<PlusOutlined />} onClick={addOption} className="w-full">
+          Tambah Pilihan Jawaban
+        </Button>
+      </div>
+    );
+  };
+
+  console.log(fields.fields);
+
   return (
     <Form name="test_form" onFinish={props.onSubmit} layout="vertical">
-      <ControlledInput
-        required
-        label="Name"
-        control={form.control}
-        placeholder="Input test name"
-        name="name"
-      />
-      {fields.fields.map((field, index) => (
-        <div key={field.id} className="mb-4 p-4 border border-gray-100 rounded bg-gray-50">
-          <div className="flex justify-end mb-2">
-            <Button
-              style={{
-                backgroundColor: "#f56565",
-                color: "white",
-              }}
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => handler.onRemoveQuestion(index)}
-            >
-              Remove Question
-            </Button>
-          </div>
-          <ControlledWysiwyg
-            label="Question"
-            control={form.control}
-            name={`questions.${index}.question`}
-            placeholder="Input question text"
-          />
-          <ControlledWysiwyg
-            label="Discussion"
-            control={form.control}
-            name={`questions.${index}.discussion`}
-            placeholder="Input discussion text"
-          />
-          <ControlledUploadFile
-            label="Question With Image"
-            control={form.control}
-            name={`questions.${index}.question_image_url`}
-          />
-          <ControlledUploadFile
-            label="Discussion With Image"
-            control={form.control}
-            name={`questions.${index}.discussion_image_url`}
-          />
-          <Form.Item required label="Options" className="px-2">
-            <OptionsFields form={form} index={index} />
-          </Form.Item>
-        </div>
-      ))}
-      <Form.Item>
-        <div className="flex gap-2">
-          <Button
-            htmlType="button"
-            type="dashed"
-            onClick={handler.onAddQuestion}
-            icon={<PlusOutlined />}
-          >
-            Add Question
-          </Button>
-          <Button
-            htmlType="button"
-            type="dashed"
-            onClick={() => setIsModalVisible(true)}
-            icon={<CopyOutlined />}
-          >
-            Paste Questions
-          </Button>
-        </div>
-      </Form.Item>
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          disabled={!form.formState.isValid || !form.formState.isDirty || props.isLoading}
-          loading={props.isLoading}
+      <div className="max-w-4xl mx-auto">
+        <Card
+          style={{
+            marginBottom: "1rem",
+          }}
         >
-          Submit
-        </Button>
-      </Form.Item>
+          <ControlledInput
+            required
+            label="Nama Test"
+            control={form.control}
+            placeholder="Masukkan nama test"
+            name="name"
+          />
+        </Card>
 
+        <div className="flex flex-col gap-y-4">
+          {fields.fields.length === 0 ? (
+            <Card className="text-center py-12">
+              <div className="text-gray-500">
+                <Title level={4} className="text-gray-400">
+                  Belum ada soal yang dibuat
+                </Title>
+                <p className="mb-6">
+                  Mulai dengan menambahkan soal pertama atau paste beberapa soal sekaligus
+                </p>
+                <Space>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    size="large"
+                    onClick={() => {
+                      handler.onAddQuestion();
+                      handleEditQuestion(0);
+                    }}
+                  >
+                    Tambah Soal Pertama
+                  </Button>
+                  <Button
+                    icon={<CopyOutlined />}
+                    size="large"
+                    onClick={() => setIsModalVisible(true)}
+                  >
+                    Paste Soal
+                  </Button>
+                </Space>
+              </div>
+            </Card>
+          ) : (
+            fields.fields.map((field, index) => (
+              <Card key={field.id} className="relative">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center space-x-3">
+                    <Text strong className="text-lg">
+                      Soal {index + 1}
+                    </Text>
+                    {editingQuestionIndex === index && (
+                      <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">
+                        Sedang diedit
+                      </span>
+                    )}
+                  </div>
+                  <Space>
+                    {editingQuestionIndex === index ? (
+                      <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveQuestion}>
+                        Selesai
+                      </Button>
+                    ) : (
+                      <Button icon={<EditOutlined />} onClick={() => handleEditQuestion(index)}>
+                        Edit
+                      </Button>
+                    )}
+                    <Button icon={<CopyOutlined />} onClick={() => handleDuplicateQuestion(index)}>
+                      Duplikasi
+                    </Button>
+                    <Button
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleDeleteQuestion(index)}
+                    >
+                      Hapus
+                    </Button>
+                  </Space>
+                </div>
+
+                {editingQuestionIndex === index ? (
+                  <div className="space-y-4">
+                    <ControlledWysiwyg
+                      label="Pertanyaan"
+                      control={form.control}
+                      name={`questions.${index}.question`}
+                      placeholder="Masukkan teks pertanyaan"
+                    />
+
+                    <ControlledUploadFile
+                      label="Gambar Pertanyaan (Opsional)"
+                      control={form.control}
+                      name={`questions.${index}.question_image_url`}
+                    />
+
+                    <Divider>Pilihan Jawaban</Divider>
+
+                    <OptionsEditComponent questionIndex={index} />
+
+                    <Divider>Pembahasan</Divider>
+
+                    <ControlledWysiwyg
+                      label="Pembahasan (Opsional)"
+                      control={form.control}
+                      name={`questions.${index}.discussion`}
+                      placeholder="Masukkan pembahasan soal"
+                    />
+
+                    <ControlledUploadFile
+                      label="Gambar Pembahasan (Opsional)"
+                      control={form.control}
+                      name={`questions.${index}.discussion_image_url`}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <div className="mb-4">
+                      <div
+                        className="text-base leading-relaxed text-gray-800 mb-3"
+                        dangerouslySetInnerHTML={{ __html: field.question ?? "" }}
+                      />
+                      {field.question_image_url && (
+                        <img
+                          src={field.question_image_url}
+                          alt="Question"
+                          className="max-w-full h-auto rounded border"
+                        />
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-y-2">
+                      <Radio.Group
+                        className="w-full"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "1rem",
+                        }}
+                      >
+                        {(form.getValues(`questions.${index}.options`) || field.options || []).map(
+                          (option, optionIndex) => (
+                            <div
+                              key={option.id ?? optionIndex}
+                              className={`flex items-center p-3 rounded-lg border transition-colors ${
+                                option.is_correct
+                                  ? "border-green-300 bg-green-50"
+                                  : "border-gray-200 bg-white"
+                              }`}
+                            >
+                              <Radio disabled value={option.id} className="mr-3">
+                                <span className="font-medium text-gray-700 mr-2">
+                                  {getOptionLabel(optionIndex)}.
+                                </span>
+                                <span className="text-gray-800">{option.label}</span>
+                              </Radio>
+                              {option.is_correct && (
+                                <span className="ml-auto px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
+                                  Jawaban Benar
+                                </span>
+                              )}
+                            </div>
+                          ),
+                        )}
+                      </Radio.Group>
+
+                      {/* Add Option Button - Always Visible in Preview Mode */}
+                      <Button
+                        type="dashed"
+                        icon={<PlusOutlined />}
+                        onClick={() => {
+                          handleAddOption(index);
+                          handleEditQuestion(index);
+                        }}
+                        className="w-full mt-3"
+                        size="small"
+                      >
+                        Tambah Pilihan Jawaban
+                      </Button>
+                    </div>
+
+                    {/* Discussion Preview */}
+                    {field.discussion && (
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <Text strong className="text-gray-700 block mb-2">
+                          Pembahasan:
+                        </Text>
+                        <div
+                          className="text-gray-600 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: field.discussion }}
+                        />
+                        {field.discussion_image_url && (
+                          <img
+                            src={field.discussion_image_url}
+                            alt="Discussion"
+                            className="mt-3 max-w-full h-auto rounded border"
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Card>
+            ))
+          )}
+
+          {/* Add Question Button */}
+          {fields.fields.length > 0 && (
+            <div className="flex gap-3 justify-center pt-4">
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                size="large"
+                onClick={() => {
+                  handler.onAddQuestion();
+                  handleEditQuestion(fields.fields.length);
+                }}
+              >
+                Tambah Soal Baru
+              </Button>
+              <Button
+                type="dashed"
+                icon={<CopyOutlined />}
+                size="large"
+                onClick={() => setIsModalVisible(true)}
+              >
+                Paste Soal
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <div className="mt-8 text-center">
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={!form.formState.isValid || !form.formState.isDirty || props.isLoading}
+            loading={props.isLoading}
+            size="large"
+            className="px-8"
+          >
+            Simpan Test
+          </Button>
+        </div>
+      </div>
+
+      {/* Paste Questions Modal */}
       <Modal
-        title="Paste Questions"
+        title="Paste Soal Sekaligus"
         open={isModalVisible}
         onOk={parseAndAddQuestions}
         onCancel={() => {
           setIsModalVisible(false);
           setPastedQuestions("");
         }}
-        okText="Parse and Add Questions"
-        cancelText="Cancel"
+        okText="Tambahkan Soal"
+        cancelText="Batal"
         width={800}
       >
         <div className="mb-4">
-          <p className="mb-2 text-sm text-gray-600">Paste your questions in the format:</p>
+          <p className="mb-2 text-sm text-gray-600">Format yang didukung:</p>
           <div className="p-3 bg-gray-100 rounded text-xs font-mono max-h-40 overflow-y-auto">
             1. Yang meliputi bidang PU (openbare werken) di Indonesia pada zaman Belanda adalah
             sebagai berikut, kecuali ...
@@ -201,7 +512,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             <br />
             Pembahasan
             <br />
-            Aku ingin terbang tinggi
+            Penjelasan jawaban yang benar
             <br />
             <br />
             2. Yang dimaksud 'jalan' sesuai Undang-Undang No. 38 Tahun 2004 adalah ...
@@ -213,18 +524,19 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             <br />
             Pembahasan
             <br />
-            Aku ingin terbang tinggi
+            Penjelasan jawaban yang benar
           </div>
         </div>
         <TextArea
           rows={12}
           value={pastedQuestions}
           onChange={(e) => setPastedQuestions(e.target.value)}
-          placeholder="Paste your questions here..."
+          placeholder="Paste soal-soal Anda di sini..."
         />
         <p className="mt-2 text-xs text-gray-500">
-          Note: This will add new questions to the existing ones. Each question should start with a
-          number (1., 2., etc.) and include options (A., B., C., etc.) and discussion section.
+          Catatan: Soal-soal ini akan ditambahkan ke daftar soal yang sudah ada. Setiap soal harus
+          dimulai dengan nomor (1., 2., dst.) dan menyertakan pilihan jawaban (A., B., C., dst.)
+          serta bagian pembahasan.
         </p>
       </Modal>
     </Form>
