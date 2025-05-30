@@ -12,8 +12,8 @@ import {
 import { Button, Form, Modal, Input, Card, Space, Typography, Radio, Divider } from "antd";
 import { useFormTest } from "../_hooks/use-form-test";
 import { TFormFieldsProps } from "@/shared/commons/types/form-field";
-import { FC, ReactElement, useState, useMemo } from "react";
-import { useFieldArray, useWatch } from "react-hook-form";
+import { FC, ReactElement, useState } from "react";
+import { useFieldArray } from "react-hook-form";
 import { v4 } from "uuid";
 
 const { TextArea } = Input;
@@ -112,10 +112,8 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   };
 
   const handleAddOption = (questionIndex: number) => {
-    // Get current options
     const currentOptions = form.getValues(`questions.${questionIndex}.options`) || [];
 
-    // Create new option
     const newOption = {
       id: v4(),
       label: "",
@@ -124,14 +122,12 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
       points: "0",
     };
 
-    // Update the form with new options array
     const updatedOptions = [...currentOptions, newOption];
     form.setValue(`questions.${questionIndex}.options`, updatedOptions, {
       shouldDirty: true,
       shouldValidate: true,
     });
 
-    // Trigger form re-render
     form.trigger(`questions.${questionIndex}.options`);
   };
 
@@ -139,7 +135,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
     return String.fromCharCode(65 + index);
   };
 
-  // Component for rendering options in edit mode
   const OptionsEditComponent: FC<{ questionIndex: number }> = ({ questionIndex }) => {
     const optionsFieldArray = useFieldArray({
       control: form.control,
@@ -226,8 +221,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
       </div>
     );
   };
-
-  console.log(fields.fields);
 
   return (
     <Form name="test_form" onFinish={props.onSubmit} layout="vertical">
@@ -400,7 +393,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                         )}
                       </Radio.Group>
 
-                      {/* Add Option Button - Always Visible in Preview Mode */}
                       <Button
                         type="dashed"
                         icon={<PlusOutlined />}
@@ -415,7 +407,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                       </Button>
                     </div>
 
-                    {/* Discussion Preview */}
                     {field.discussion && (
                       <div className="mt-4 pt-4 border-t border-gray-100">
                         <Text strong className="text-gray-700 block mb-2">
@@ -440,7 +431,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             ))
           )}
 
-          {/* Add Question Button */}
           {fields.fields.length > 0 && (
             <div className="flex gap-3 justify-center pt-4">
               <Button
@@ -466,7 +456,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
           )}
         </div>
 
-        {/* Submit Button */}
         <div className="mt-8 text-center">
           <Button
             type="primary"
@@ -481,7 +470,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
         </div>
       </div>
 
-      {/* Paste Questions Modal */}
       <Modal
         title="Paste Soal Sekaligus"
         open={isModalVisible}
