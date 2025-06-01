@@ -15,6 +15,7 @@ export type TTestListItem = {
 export type TTestDetailItem = {
   id: string;
   name: string;
+  category: string;
   banner: string;
   questions: TQuestionItem[];
   created_at: string;
