@@ -63,7 +63,6 @@ export const Component: FC = (): ReactElement => {
     });
   }, [getPayload, mutate, navigate, params.id, params.testId, isSubmitting]);
 
-  // Fullscreen functions
   const enterFullscreen = useCallback(() => {
     const element = document.documentElement;
     if (element.requestFullscreen) {
@@ -85,7 +84,6 @@ export const Component: FC = (): ReactElement => {
     }
   }, []);
 
-  // Check if document is in fullscreen
   const checkFullscreen = useCallback(() => {
     return !!(
       document.fullscreenElement ||
@@ -94,12 +92,10 @@ export const Component: FC = (): ReactElement => {
     );
   }, []);
 
-  // Handle fullscreen change
   const handleFullscreenChange = useCallback(() => {
     const isCurrentlyFullscreen = checkFullscreen();
     setIsFullscreen(isCurrentlyFullscreen);
 
-    // If user exits fullscreen and exam is active, auto-submit
     if (!isCurrentlyFullscreen && !showFullscreenModal && !hasSubmittedRef.current) {
       Modal.warning({
         title: "Keluar dari Mode Fullscreen",
@@ -113,7 +109,6 @@ export const Component: FC = (): ReactElement => {
     }
   }, [checkFullscreen, showFullscreenModal, autoSubmit]);
 
-  // Timer effect with auto-submit when time runs out
   useEffect(() => {
     if (!selectedTest?.start_date || !selectedTest?.end_date) return;
 
@@ -125,8 +120,6 @@ export const Component: FC = (): ReactElement => {
       if (diff <= 0) {
         setTimeLeft("00:00:00");
         clearInterval(interval);
-
-        // Auto-submit when time runs out
         if (!hasSubmittedRef.current) {
           Modal.warning({
             title: "Waktu Habis",
@@ -140,7 +133,6 @@ export const Component: FC = (): ReactElement => {
         }
         return;
       }
-
       const h = Math.floor(diff / 3600);
       const m = Math.floor((diff % 3600) / 60);
       const s = diff % 60;
@@ -148,16 +140,13 @@ export const Component: FC = (): ReactElement => {
         `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`,
       );
     }, 1000);
-
     return () => clearInterval(interval);
   }, [selectedTest, autoSubmit]);
 
-  // Setup fullscreen event listeners
   useEffect(() => {
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
     document.addEventListener("msfullscreenchange", handleFullscreenChange);
-
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
@@ -165,10 +154,8 @@ export const Component: FC = (): ReactElement => {
     };
   }, [handleFullscreenChange]);
 
-  // Prevent context menu, F12, and other shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent F12, Ctrl+Shift+I, Ctrl+U, etc.
       if (
         e.key === "F12" ||
         (e.ctrlKey && e.shiftKey && e.key === "I") ||
@@ -243,6 +230,7 @@ export const Component: FC = (): ReactElement => {
 
         mutate(payload, {
           onSuccess: () => {
+            exitFullscreen();
             navigate(
               generatePath(ROUTES.exams.sessions.test.result, {
                 id: params.id ?? "",
@@ -251,6 +239,7 @@ export const Component: FC = (): ReactElement => {
             );
           },
           onError: (err) => {
+            exitFullscreen();
             console.log("Manual Submit Error", err);
             hasSubmittedRef.current = false;
             setIsSubmitting(false);
@@ -302,7 +291,6 @@ export const Component: FC = (): ReactElement => {
     );
   }
 
-  // Render exam in fullscreen mode without sidebar/header
   return (
     <div className="fixed inset-0 bg-white z-50 overflow-auto">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 p-6 min-h-screen">
@@ -338,6 +326,14 @@ export const Component: FC = (): ReactElement => {
               Pertanyaan No. {current + 1}
             </Title>
             <div className="mb-4">{parse(currentQuestion.question)}</div>
+
+            {currentQuestion.question_image_url && (
+              <img
+                src={currentQuestion.question_image_url}
+                alt="Gambar Pertanyaan"
+                className="mt-2 rounded max-w-md max-h-80 object-contain"
+              />
+            )}
 
             <Radio.Group
               onChange={(e) => handleAnswer(e.target.value)}

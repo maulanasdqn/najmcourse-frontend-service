@@ -41,7 +41,7 @@ export const useUpdateSession = () => {
   const onAddTest = () => {
     fields.append({
       test_id: "",
-      weight: 0,
+      weight: "0%",
       multiplier: 0,
       start_date: "",
       end_date: "",
@@ -57,13 +57,14 @@ export const useUpdateSession = () => {
       form.reset({
         id: detail.data.id,
         name: detail.data.name,
+        banner: detail.data.banner,
         category: detail.data.category,
         student_type: detail.data.student_type,
         description: detail.data.description,
         is_active: detail.data.is_active,
         tests: detail.data.tests.map((test) => ({
           test_id: test.test.id,
-          weight: Number((test.weight * 10).toFixed(1)),
+          weight: test.weight,
           multiplier: test.multiplier,
           shuffle: test.shuffle,
           start_date: test.start_date,

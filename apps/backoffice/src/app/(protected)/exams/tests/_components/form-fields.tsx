@@ -1,4 +1,5 @@
 import { ControlledInput } from "@/shared/components/ui/controlled-input";
+import { ControlledSelect } from "@/shared/components/ui/controlled-select";
 import { ControlledUploadFile } from "@/shared/components/ui/controlled-upload-file";
 import { ControlledWysiwyg } from "@/shared/components/ui/controlled-wysiwyg/wysiwyg";
 import { ControlledSwitch } from "@/shared/components/ui/controlled-switch/switch";
@@ -197,21 +198,37 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             />
 
             <div className="flex items-center justify-between">
-              <ControlledSwitch
-                label="Jawaban Benar"
-                control={form.control}
-                name={`questions.${questionIndex}.options.${optionIndex}.is_correct`}
-                onChange={() => setCorrect(optionIndex)}
-              />
+              {form.watch("category") === "Akademik" && (
+                <ControlledSwitch
+                  label="Jawaban Benar"
+                  control={form.control}
+                  name={`questions.${questionIndex}.options.${optionIndex}.is_correct`}
+                  onChange={() => setCorrect(optionIndex)}
+                />
+              )}
 
-              <ControlledInput
-                required
-                label="Poin (Khusus Psikologi)"
-                control={form.control}
-                name={`questions.${questionIndex}.options.${optionIndex}.points`}
-                placeholder="0"
-                style={{ width: 100 }}
-              />
+              {form.watch("category") === "Akademik" &&
+                form.watch(`questions.${questionIndex}.options.${optionIndex}.is_correct`) && (
+                  <ControlledInput
+                    required
+                    label="Poin"
+                    control={form.control}
+                    name={`questions.${questionIndex}.options.${optionIndex}.points`}
+                    placeholder="0"
+                    style={{ width: 100 }}
+                  />
+                )}
+
+              {form.watch("category") === "Psikologi" && (
+                <ControlledInput
+                  required
+                  label="Poin"
+                  control={form.control}
+                  name={`questions.${questionIndex}.options.${optionIndex}.points`}
+                  placeholder="0"
+                  style={{ width: 100 }}
+                />
+              )}
             </div>
           </div>
         ))}
@@ -237,6 +254,22 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             control={form.control}
             placeholder="Masukkan nama test"
             name="name"
+          />
+          <ControlledSelect
+            label="Kategori Test"
+            control={form.control}
+            placeholder="Masukkan nama test"
+            name="category"
+            options={[
+              {
+                label: "Akademik",
+                value: "Akademik",
+              },
+              {
+                label: "Psikologi",
+                value: "Psikologi",
+              },
+            ]}
           />
         </Card>
         <Card
@@ -402,6 +435,13 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                                   {getOptionLabel(optionIndex)}.
                                 </span>
                                 <span className="text-gray-800">{option.label}</span>
+                                {option.image_url && (
+                                  <img
+                                    src={option.image_url}
+                                    alt="Gambar Pilihan"
+                                    className="max-w-full h-auto rounded border"
+                                  />
+                                )}
                               </Radio>
                               {option.is_correct && (
                                 <span className="ml-auto px-2 py-1 bg-green-100 text-green-700 text-xs rounded">

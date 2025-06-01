@@ -5,16 +5,10 @@ const baseOptionSchema = z.object({
   label: z.string().trim().optional().nullable(),
   is_correct: z.boolean().nullable(),
   image_url: z.string().trim().optional().nullable(),
-  points: z
-    .string({
-      required_error: "Points is required",
-    })
-    .min(1, {
-      message: "Points must be at least 1 character",
-    }),
+  points: z.string().optional().nullable(),
 });
 
-const optionSchema = baseOptionSchema.refine((val) => val.label?.trim() || val.image_url?.trim(), {
+const optionSchema = baseOptionSchema.refine((val) => val.label?.trim() ?? val.image_url?.trim(), {
   message: "Option must have label or image",
 });
 
@@ -39,6 +33,9 @@ export const testCreateSchema = z.object({
   name: z.string({ required_error: "Name is required" }).min(1, {
     message: "Name must be at least 1 character",
   }),
+  category: z.string({ required_error: "Category is required" }).min(1, {
+    message: "Category must be at least 1 character",
+  }),
   banner: z.string().trim().optional().nullable(),
   questions: z
     .array(
@@ -59,5 +56,8 @@ export const testUpdateSchema = z.object({
     message: "Name must be at least 1 character",
   }),
   banner: z.string().trim().optional().nullable(),
+  category: z.string({ required_error: "Category is required" }).min(1, {
+    message: "Category must be at least 1 character",
+  }),
   questions: z.array(questionSchema).min(1, { message: "At least one question is required" }),
 });

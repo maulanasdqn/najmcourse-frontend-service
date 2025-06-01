@@ -22,7 +22,7 @@ export type TSessionListItem = TBaseSession & {
 
 export type TSessionDetailTestItem = {
   test: TTestDetailItem;
-  weight: number;
+  weight: string;
   multiplier: number;
   shuffle: boolean;
   start_date: string;
