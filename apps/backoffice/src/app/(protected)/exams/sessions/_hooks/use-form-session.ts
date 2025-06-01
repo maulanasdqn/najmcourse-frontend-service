@@ -19,7 +19,7 @@ export const useFormSession = () => {
   const onAddTest = () => {
     fields.append({
       test_id: "",
-      weight: 0,
+      weight: "0%",
       multiplier: 0,
       start_date: "",
       end_date: "",
@@ -36,26 +36,16 @@ export const useFormSession = () => {
   };
 
   const weights = [
-    { label: "5%", value: 0.5 },
-    { label: "10%", value: 1.0 },
-    { label: "15%", value: 1.5 },
-    { label: "20%", value: 2.0 },
-    { label: "25%", value: 2.5 },
-    { label: "30%", value: 3.0 },
-    { label: "35%", value: 3.5 },
-    { label: "40%", value: 4.0 },
-    { label: "45%", value: 4.5 },
-    { label: "50%", value: 5.0 },
-    { label: "55%", value: 5.5 },
-    { label: "60%", value: 6.0 },
-    { label: "65%", value: 6.5 },
-    { label: "70%", value: 7.0 },
-    { label: "75%", value: 7.5 },
-    { label: "80%", value: 8.0 },
-    { label: "85%", value: 8.5 },
-    { label: "90%", value: 9.0 },
-    { label: "95%", value: 9.5 },
-    { label: "100%", value: 10.0 },
+    { label: "0%", value: "0%" },
+    { label: "10%", value: "10%" },
+    { label: "15%", value: "15%" },
+    { label: "20%", value: "20%" },
+    { label: "25%", value: "25%" },
+    { label: "30%", value: "30%" },
+    { label: "35%", value: "35%" },
+    { label: "40%", value: "40%" },
+    { label: "45%", value: "45%" },
+    { label: "50%", value: "50%" },
   ];
 
   const options = {

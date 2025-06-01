@@ -31,7 +31,7 @@ const baseSessionSchema = z.object({
             .string({ required_error: "Test ID is required" })
             .min(1, { message: "Test ID must be at least 1 character" }),
           shuffle: z.boolean().optional().nullable(),
-          weight: z.coerce.number({ required_error: "Weight is required" }),
+          weight: z.string({ required_error: "Weight is required" }),
           multiplier: z.coerce.number({ required_error: "Multiplier is required" }),
           start_date: z
             .string({ required_error: "Start date is required" })
@@ -64,7 +64,7 @@ export const sessionCreateSchema = baseSessionSchema.extend({
             .string({ required_error: "Test ID is required" })
             .min(1, { message: "Test ID must be at least 1 character" }),
           shuffle: z.boolean().optional().nullable(),
-          weight: z.coerce.number({ required_error: "Weight is required" }),
+          weight: z.string({ required_error: "Weight is required" }),
           multiplier: z.coerce.number({ required_error: "Multiplier is required" }),
           start_date: z
             .string({ required_error: "Start date is required" })
