@@ -119,12 +119,12 @@ export const Component: FC = (): ReactElement => {
                 {correctAnswersCount}
               </Text>
             </Descriptions.Item>
-            <Descriptions.Item label="Skor Akhir" span={2}>
+            <Descriptions.Item label="Nilai Ujian" span={2}>
               <Tag
                 color={score >= 70 ? "success" : score >= 50 ? "warning" : "error"}
                 className="text-2xl px-4 py-1"
               >
-                {score} / 100
+                {score}
               </Tag>
             </Descriptions.Item>
           </Descriptions>
