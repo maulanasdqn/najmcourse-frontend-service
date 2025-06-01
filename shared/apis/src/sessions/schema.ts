@@ -18,6 +18,7 @@ const baseSessionSchema = z.object({
   name: z
     .string({ required_error: "Name is required" })
     .min(1, { message: "Name must be at least 1 character" }),
+  banner: z.string().trim().optional().nullable(),
   is_active: z.boolean({ required_error: "Active status is required" }),
   student_type: z
     .string({ required_error: "Student type is required" })

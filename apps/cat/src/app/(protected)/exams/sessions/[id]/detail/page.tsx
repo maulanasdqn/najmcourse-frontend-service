@@ -10,7 +10,6 @@ import { clsx } from "clsx";
 import { ROUTES } from "@/shared/commons/constants/routes";
 import type { TSessionDetailItem, TSessionDetailTestItem } from "@/shared/apis/sessions/type";
 
-// Countdown Timer Component
 const CountdownTimer: FC<{ targetDate: string }> = ({ targetDate }) => {
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
@@ -70,7 +69,6 @@ const CountdownTimer: FC<{ targetDate: string }> = ({ targetDate }) => {
   );
 };
 
-// User type from localStorage
 type TUserItem = {
   id: string;
   role: {
@@ -102,7 +100,6 @@ type TUserItem = {
   created_at: string;
 };
 
-// Component to handle individual test card with exam completion check
 const TestCard: FC<{
   test: TSessionDetailTestItem;
   session: TSessionDetailItem;
@@ -110,7 +107,6 @@ const TestCard: FC<{
 }> = ({ test, session, currentUser }) => {
   const now = dayjs();
 
-  // Check if user has already taken this exam
   const { data: answerData } = useGetDetailByTestAndUserIdAnswer({
     testId: test.test.id,
     userId: currentUser?.id ?? "",
@@ -176,6 +172,16 @@ const TestCard: FC<{
         },
       }}
     >
+      <img
+        src={
+          test.test.banner ??
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgrrPv9S9wjnjjPMxe7ZE0xbh4owIMv8WMZw&s"
+        }
+        alt="banner"
+        width={400}
+        height={200}
+        className="w-full h-auto mb-4 rounded-lg"
+      />
       <div className="flex flex-col gap-y-4 h-full">
         <Tag className="w-fit" color={tagColor}>
           {statusText}

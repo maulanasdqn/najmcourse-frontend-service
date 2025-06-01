@@ -205,6 +205,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
               />
 
               <ControlledInput
+                required
                 label="Poin (Khusus Psikologi)"
                 control={form.control}
                 name={`questions.${questionIndex}.options.${optionIndex}.points`}
@@ -236,6 +237,17 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             control={form.control}
             placeholder="Masukkan nama test"
             name="name"
+          />
+        </Card>
+        <Card
+          style={{
+            marginBottom: "1rem",
+          }}
+        >
+          <ControlledUploadFile
+            label="Test Banner (Opsional)"
+            control={form.control}
+            name="banner"
           />
         </Card>
 
@@ -273,7 +285,15 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             </Card>
           ) : (
             fields.fields.map((field, index) => (
-              <Card key={field.id} className="relative">
+              <Card
+                key={field.id}
+                className="relative"
+                style={{
+                  backgroundColor: "#E6F4FF",
+                  border: "1px solid #E5E7EB",
+                  borderRadius: "8px",
+                }}
+              >
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center space-x-3">
                     <Text strong className="text-lg">

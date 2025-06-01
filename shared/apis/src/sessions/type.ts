@@ -6,6 +6,7 @@ import type { TResponseList, TResponseDetail } from "@/shared/commons/types/resp
 type TBaseSession = {
   id: string;
   name: string;
+  banner: string;
   category: string;
   description: string;
   student_type: string;

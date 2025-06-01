@@ -20,7 +20,6 @@ import { env } from "@/shared/libs/env";
 export const SessionProvider: FC<PropsWithChildren> = (props): ReactElement => {
   const is_cat = env.VITE_FEATURE_FLAG_IS_CAT;
 
-  console.log(is_cat);
   const navigate = useNavigate();
   const [sessionData, setSessionData] = useState<TLoginItem | undefined>(undefined);
   const [status, setStatus] = useState<ESessionStatus>();

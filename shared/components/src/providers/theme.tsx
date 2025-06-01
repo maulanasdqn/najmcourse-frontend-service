@@ -5,7 +5,7 @@ const theme: ThemeConfig = {
   token: {
     colorPrimary: "#4D9AC1",
     colorLink: "#4D9AC1",
-    colorBgLayout: "rgb(249 250 251)",
+    colorBgLayout: "#F0F0F0",
     colorText: "#0B0A13",
   },
   components: {
@@ -19,7 +19,7 @@ const theme: ThemeConfig = {
       horizontalItemSelectedColor: "#4D9AC1",
     },
     Layout: {
-      headerColor: "#FFFFFF",
+      headerColor: "#2A3E52",
       headerBg: "#2A3E52",
     },
     Button: {

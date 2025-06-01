@@ -63,7 +63,7 @@ const ProtectedLayout: FC = (): ReactElement => {
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
-          style={{ borderRight: 0 }}
+          style={{ borderRight: 0, backgroundColor: "Background" }}
         />
       </Sider>
       <Layout>

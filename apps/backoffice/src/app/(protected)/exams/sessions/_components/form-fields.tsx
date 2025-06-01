@@ -8,6 +8,7 @@ import { ControlledSwitch } from "@/shared/components/ui/controlled-switch";
 import { ControlledDatePicker } from "@/shared/components/ui/controlled-date-picker";
 import { TFormFieldsProps } from "@/shared/commons/types/form-field";
 import { FC, ReactElement } from "react";
+import { ControlledUploadFile } from "@/shared/components/ui/controlled-upload-file";
 
 export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   const { form, fields, options } = useFormSession();
@@ -15,6 +16,11 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   return (
     <Form name="session_form" onFinish={props.onSubmit} layout="vertical">
       <ControlledInput label="Name" control={form.control} placeholder="Input name" name="name" />
+      <ControlledUploadFile
+        label="Session Banner (Opsional)"
+        control={form.control}
+        name="banner"
+      />
       <ControlledSelect
         label="Category"
         control={form.control}
@@ -37,7 +43,10 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
       />
       <ControlledSwitch label="Status Activation" control={form.control} name="is_active" />
       {fields.fields.map((field, index) => (
-        <div key={field.test_id} className="mb-4 bg-gray-50 border border-gray-100 p-4 rounded-lg">
+        <div
+          key={field.test_id}
+          className="mb-4 bg-blue-100 shadow-md border border-gray-100 p-4 rounded-lg"
+        >
           <div className="flex justify-end">
             <Button
               style={{
