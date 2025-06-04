@@ -6,6 +6,7 @@ import type { TResponseList, TResponseDetail } from "@/shared/commons/types/resp
 export type TTestListItem = {
   id: string;
   name: string;
+  category: string;
   banner: string;
   question_count: number;
   created_at: string;

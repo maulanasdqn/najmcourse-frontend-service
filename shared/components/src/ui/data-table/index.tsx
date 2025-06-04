@@ -42,7 +42,7 @@ export const DataTable = <T extends Record<string, unknown>>({
   }));
 
   return (
-    <section className="bg-white rounded-lg">
+    <section className="bg-white rounded-lg p-6">
       <div className="flex flex-wrap gap-4 mb-6 items-center">
         <Input.Search
           size="large"

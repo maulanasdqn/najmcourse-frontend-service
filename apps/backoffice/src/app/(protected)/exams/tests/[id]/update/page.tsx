@@ -8,7 +8,12 @@ export const Component: FC = (): ReactElement => {
   const { form, handler, isLoading } = useUpdateTest();
   return (
     <FormProvider {...form}>
-      <PageHeadDetail title="Update Test" />
+      <PageHeadDetail
+        disabled={!form.formState.isValid || !form.formState.isDirty}
+        isLoading={isLoading}
+        title="Update Test"
+        onSubmit={handler.onSubmit}
+      />
       <FormFields isLoading={isLoading} onSubmit={handler.onSubmit} />
     </FormProvider>
   );

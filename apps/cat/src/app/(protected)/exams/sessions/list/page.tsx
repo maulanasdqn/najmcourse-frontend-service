@@ -39,7 +39,7 @@ export const Component: FC = (): ReactElement => {
                 <Link key={item.id} to={generatePath(ROUTES.exams.sessions.detail, item)}>
                   <Card className="shadow-md" title={item.name}>
                     <img
-                      className="w-full h-auto mb-4 rounded-lg"
+                      className="w-full h-[350px] object-cover mb-4 rounded-lg"
                       src={
                         item.banner ??
                         "https://www.open.edu.au/-/media/blog/2022/04-april/how-to-study-for-exams-at-university.jpg?rev=36c9b6e3e64543d082bead36c4f4585d&hash=097053DEA83CCCDFAD0483FF6AFB2E5E"

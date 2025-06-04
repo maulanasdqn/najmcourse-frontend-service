@@ -107,7 +107,7 @@ const ProtectedLayout: FC = (): ReactElement => {
           </Flex>
         </Header>
         <Content style={{ margin: "24px 16px", overflow: "auto" }}>
-          <section className="px-8 bg-white py-6 rounded-lg">
+          <section className="px-8 py-6 rounded-lg">
             <Outlet />
           </section>
         </Content>

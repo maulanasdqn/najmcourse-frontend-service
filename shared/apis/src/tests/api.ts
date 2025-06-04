@@ -17,7 +17,7 @@ const transformTestPayload = (payload: TTestCreateRequest | TTestUpdateRequest) 
     ...question,
     options: question.options.map((option) => ({
       ...option,
-      points: parseInt(option.points ?? "") || 0,
+      points: parseFloat(option.points ?? "") || 0,
     })),
   })),
 });

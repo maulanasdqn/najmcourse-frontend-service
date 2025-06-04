@@ -16,6 +16,7 @@ import {
   QuestionOutlined,
 } from "@ant-design/icons";
 import { FEATURE_FLAGS } from "@/shared/libs/feature-flag";
+import { env } from "@/shared/libs/env";
 
 const { DashboardFilled, UserOutlined } = lazily(() => import("@ant-design/icons"));
 
@@ -38,14 +39,18 @@ export const SIDEBAR_ITEMS: TSidebarItem[] = [
   },
   {
     key: "exams",
-    label: "Exams",
+    label: env.VITE_FEATURE_FLAG_IS_CAT ? "Ujian" : "Exams",
     icon: <BookOutlined />,
     permissions: [PERMISSIONS.SESSIONS.READ_LIST_SESSIONS, PERMISSIONS.TESTS.READ_LIST_TESTS],
     flag: FEATURE_FLAGS.EXAMS.SESSIONS.LIST_SESSIONS || FEATURE_FLAGS.EXAMS.TESTS.LIST_TESTS,
     children: [
       {
         key: ROUTES.exams.sessions.list,
-        label: <Link to={ROUTES.exams.sessions.list}>Sessions</Link>,
+        label: (
+          <Link to={ROUTES.exams.sessions.list}>
+            {env.VITE_FEATURE_FLAG_IS_CAT ? "Sesi" : "Sessions"}
+          </Link>
+        ),
         permissions: [PERMISSIONS.SESSIONS.READ_LIST_SESSIONS],
         flag: FEATURE_FLAGS.EXAMS.SESSIONS.LIST_SESSIONS,
         icon: <ClockCircleOutlined />,

@@ -100,14 +100,14 @@ const ProtectedLayout: FC = (): ReactElement => {
                     "https://png.pngtree.com/png-vector/20190629/ourmid/pngtree-office-work-user-icon-avatar-png-image_1527655.jpg"
                   }
                 />
-                <DownOutlined />
+                <DownOutlined className="text-white" />
                 <button onClick={(e) => e.preventDefault()} />
               </div>
             </Dropdown>
           </Flex>
         </Header>
         <Content style={{ margin: "24px 16px", overflow: "auto" }}>
-          <section className="px-8 bg-white py-6 rounded-lg h-full">
+          <section className="px-8 shadow-md py-6 rounded-lg h-full">
             <Outlet />
           </section>
         </Content>

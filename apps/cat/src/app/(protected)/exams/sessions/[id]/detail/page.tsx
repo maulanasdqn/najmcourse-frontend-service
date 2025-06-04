@@ -7,6 +7,7 @@ import { FC, Fragment, ReactElement, useState, useEffect } from "react";
 import { PageHeadDetail } from "@/shared/components/ui/page-head-detail";
 import dayjs from "dayjs";
 import { clsx } from "clsx";
+import { match } from "ts-pattern";
 import { ROUTES } from "@/shared/commons/constants/routes";
 import type { TSessionDetailItem, TSessionDetailTestItem } from "@/shared/apis/sessions/type";
 
@@ -140,7 +141,7 @@ const TestCard: FC<{
     "text-gray-700": tagColor === "red",
   });
 
-  const cardClass = clsx("shadow-sm border", {
+  const cardClass = clsx("shadow-sm border h-full", {
     "bg-green-50 border-green-100 hover:border-green-300": tagColor === "green",
     "bg-blue-50 border-blue-100 hover:border-blue-300": tagColor === "blue",
     "bg-yellow-50 border-yellow-100 hover:border-yellow-300": tagColor === "yellow",
@@ -152,23 +153,23 @@ const TestCard: FC<{
       title={<span className={titleClass}>{test.test.name}</span>}
       className={cardClass}
       styles={{
+        body: {
+          height: "fit-content",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        },
         header: {
-          backgroundColor:
-            tagColor === "green"
-              ? "#f0fdf4"
-              : tagColor === "red"
-                ? "#f3f4f6"
-                : tagColor === "yellow"
-                  ? "#fef9c3"
-                  : "#e0f2fe",
-          borderBottom:
-            tagColor === "green"
-              ? "1px solid #bbf7d0"
-              : tagColor === "red"
-                ? "1px solid #d1d5db"
-                : tagColor === "yellow"
-                  ? "1px solid #fde68a"
-                  : "1px solid #bae6fd",
+          backgroundColor: match(tagColor)
+            .with("green", () => "#f0fdf4")
+            .with("red", () => "#f3f4f6")
+            .with("yellow", () => "#fef9c3")
+            .otherwise(() => "#e0f2fe"),
+          borderBottom: match(tagColor)
+            .with("green", () => "1px solid #bbf7d0")
+            .with("red", () => "1px solid #d1d5db")
+            .with("yellow", () => "1px solid #fde68a")
+            .otherwise(() => "1px solid #bae6fd"),
         },
       }}
     >
@@ -180,9 +181,9 @@ const TestCard: FC<{
         alt="banner"
         width={400}
         height={200}
-        className="w-full h-auto mb-4 rounded-lg"
+        className="w-full h-[350px] object-cover mb-4 rounded-lg"
       />
-      <div className="flex flex-col gap-y-4 h-full">
+      <div className="flex flex-col justify-between gap-y-4 h-full">
         <Tag className="w-fit" color={tagColor}>
           {statusText}
         </Tag>
@@ -194,7 +195,7 @@ const TestCard: FC<{
           </div>
         )}
         {tagColor === "yellow" && <CountdownTimer targetDate={test.start_date} />}
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full justify-between">
           <p className="text-sm text-gray-700">
             <strong>Kategori:</strong> {session?.category}
           </p>
@@ -226,23 +227,23 @@ const TestCard: FC<{
               Ujian Telah Berakhir
             </Button>
           )}
-          {!hasCompletedExam && (tagColor === "blue" || tagColor === "yellow") && (
-            <Link
-              to={generatePath(ROUTES.exams.sessions.test.ongoing, {
-                id: session.id,
-                testId: test.test.id,
-              })}
-              onClick={(e) => {
-                if (tagColor === "yellow") e.preventDefault();
-              }}
-              style={tagColor === "yellow" ? { pointerEvents: "none" } : {}}
-            >
-              <Button type="primary" block disabled={tagColor === "yellow"}>
-                Ikuti Ujian
-              </Button>
-            </Link>
-          )}
         </div>
+        {!hasCompletedExam && (tagColor === "blue" || tagColor === "yellow") && (
+          <Link
+            to={generatePath(ROUTES.exams.sessions.test.ongoing, {
+              id: session.id,
+              testId: test.test.id,
+            })}
+            onClick={(e) => {
+              if (tagColor === "yellow") e.preventDefault();
+            }}
+            style={tagColor === "yellow" ? { pointerEvents: "none" } : {}}
+          >
+            <Button type="primary" block disabled={tagColor === "yellow"}>
+              Ikuti Ujian
+            </Button>
+          </Link>
+        )}
       </div>
     </Card>
   );
@@ -256,7 +257,10 @@ export const Component: FC = (): ReactElement => {
 
   return (
     <Fragment>
-      <PageHeadDetail title={`Daftar Test ${session?.name}`} />
+      <PageHeadDetail
+        backRoute={ROUTES.exams.sessions.list}
+        title={`Daftar Test ${session?.name}`}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {session?.tests?.map((test) => (
           <div key={test.test.id}>

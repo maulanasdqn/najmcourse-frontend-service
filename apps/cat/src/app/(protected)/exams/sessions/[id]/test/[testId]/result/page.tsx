@@ -1,3 +1,4 @@
+import parse from "html-react-parser";
 import { Button, Card, Descriptions, Result, Spin, Tag, Typography, Divider, Alert } from "antd";
 import { Link, useParams, generatePath } from "react-router";
 import { useGetDetailByTestAndUserIdAnswer } from "@/shared/hooks/answers/use-get-detail-by-test-and-user-id-answer";
@@ -5,7 +6,6 @@ import { FC, ReactElement, useMemo } from "react";
 import { PageHeadDetail } from "@/shared/components/ui/page-head-detail";
 import { useSession } from "@/shared/components/providers";
 import { ROUTES } from "@/shared/commons/constants/routes";
-import parse from "html-react-parser";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { useGetDetailTest } from "@/shared/hooks/tests/use-get-detail-test";
 import { useGetDetailSession } from "@/shared/hooks/sessions/use-get-detail-session";
@@ -23,7 +23,13 @@ export const Component: FC = (): ReactElement => {
   const { data: dataSession } = useGetDetailSession(params.id);
 
   const answerResult = answerData?.data;
-  const questions = answerResult?.questions ?? [];
+  const questions = useMemo(() => answerResult?.questions ?? [], [answerResult?.questions]);
+
+  const getScoreColor = (score: number): string => {
+    if (score >= 70) return "success";
+    if (score >= 50) return "warning";
+    return "error";
+  };
 
   const { score, correctAnswersCount, totalQuestions } = useMemo(() => {
     if (!questions || questions.length === 0) {
@@ -77,7 +83,12 @@ export const Component: FC = (): ReactElement => {
 
   return (
     <div className="min-h-screen">
-      <PageHeadDetail title={`Hasil Ujian: ${dataTest?.data?.name}`} />
+      <PageHeadDetail
+        backRoute={generatePath(ROUTES.exams.sessions.detail, {
+          id: params.id ?? "",
+        })}
+        title={`Hasil Ujian`}
+      />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
         <Card className="shadow-sm md:col-span-1">
           <div className="flex flex-col items-center text-center">
@@ -120,10 +131,7 @@ export const Component: FC = (): ReactElement => {
               </Text>
             </Descriptions.Item>
             <Descriptions.Item label="Nilai Ujian" span={2}>
-              <Tag
-                color={score >= 70 ? "success" : score >= 50 ? "warning" : "error"}
-                className="text-2xl px-4 py-1"
-              >
+              <Tag color={getScoreColor(score)} className="text-2xl px-4 py-1">
                 {score}
               </Tag>
             </Descriptions.Item>

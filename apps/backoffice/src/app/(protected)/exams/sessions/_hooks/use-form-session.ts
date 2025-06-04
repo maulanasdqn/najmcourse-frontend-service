@@ -52,10 +52,12 @@ export const useFormSession = () => {
     examCategories,
     studentTypes,
     weightOptions: weights,
-    tests: data?.data.map((test) => ({
-      label: test.name,
-      value: test.id,
-    })),
+    tests: data?.data
+      .filter((test) => test.category === form.watch("category"))
+      .map((test) => ({
+        label: test.name,
+        value: test.id,
+      })),
   };
 
   const state = {

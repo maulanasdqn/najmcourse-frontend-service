@@ -38,14 +38,11 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
 
   const parseAndAddOptions = () => {
     if (!pastedOptions.trim()) return;
-
-    // Parse the pasted options
     const lines = pastedOptions.trim().split("\n");
     const parsedOptions = lines
       .map((line) => line.trim())
       .filter((line) => line.length > 0)
       .map((line) => {
-        // Remove leading letters and dots (A., B., C., etc.)
         const cleanedLine = line.replace(/^[A-Za-z]\.\s*/, "");
         return {
           id: v4(),
@@ -55,14 +52,10 @@ export const OptionsFields: FC<TProps> = ({ form, index }) => {
           points: "0",
         };
       });
-
-    // Clear existing options and add parsed ones
     fields.remove();
     parsedOptions.forEach((option) => {
       fields.append(option);
     });
-
-    // Close modal and clear textarea
     setIsModalVisible(false);
     setPastedOptions("");
   };

@@ -167,6 +167,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             fields.append({
               test_id: "",
               weight: "0%",
+              shuffle: false,
               multiplier: 0,
               start_date: "",
               end_date: "",

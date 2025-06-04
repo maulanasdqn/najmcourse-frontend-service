@@ -1,5 +1,5 @@
 import { ReactElement, useState } from "react";
-import { Form, Upload, Button, Image } from "antd";
+import { Form, Upload, Button, Image, message } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FieldValues, useController } from "react-hook-form";
 import { TControlledUploadFileProps } from "./type";
@@ -30,6 +30,8 @@ export const ControlledUploadFile = <T extends FieldValues>({
       onChange(res.data.file_url);
       onSuccess?.(res, realFile);
     } catch (err) {
+      const error = err as Error;
+      message.error(error?.message ?? "Failed to upload file");
       onError?.(err as Error);
     } finally {
       setLoading(false);
