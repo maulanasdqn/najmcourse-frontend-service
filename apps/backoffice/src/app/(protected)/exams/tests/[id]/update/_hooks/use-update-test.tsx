@@ -44,7 +44,7 @@ export const useUpdateTest = () => {
             id: option.id,
             label: option.label,
             image_url: option.image_url,
-            points: String(option.points ?? ""),
+            points: String(parseFloat(String(option.points)).toFixed(1)),
             is_correct: option.is_correct,
           })),
         })),

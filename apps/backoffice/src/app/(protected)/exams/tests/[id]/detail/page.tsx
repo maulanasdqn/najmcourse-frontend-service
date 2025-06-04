@@ -65,7 +65,7 @@ export const Component: FC = (): ReactElement => {
                         </div>
                       )}
                       <p>
-                        <strong>Points:</strong> {option.points ?? 0}
+                        <strong>Points:</strong> {parseFloat(String(option.points)).toFixed(1) ?? 0}
                       </p>
                     </div>
                   ))}
