@@ -10,6 +10,11 @@ export const useFormTest = () => {
     name: "questions",
   });
 
+  const subTestFields = useFieldArray({
+    control: form.control,
+    name: "sub_tests",
+  });
+
   const onAddQuestion = () => {
     fields.append({
       id: v4(),
@@ -25,14 +30,31 @@ export const useFormTest = () => {
     fields.remove(index);
   };
 
+  const onAddSubTest = () => {
+    subTestFields.append({
+      id: v4(),
+      name: "",
+      banner: "",
+      category: form.getValues("category") || "Psikologi",
+      questions: [],
+    });
+  };
+
+  const onRemoveSubTest = (index: number) => {
+    subTestFields.remove(index);
+  };
+
   const handler = {
     onAddQuestion,
     onRemoveQuestion,
+    onAddSubTest,
+    onRemoveSubTest,
   };
 
   return {
     form,
     fields,
+    subTestFields,
     handler,
   };
 };

@@ -10,7 +10,7 @@ import {
   EditOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Modal, Input, Card, Space, Typography, Radio, Divider } from "antd";
+import { Button, Form, Modal, Input, Card, Space, Typography, Radio, Divider, Tabs } from "antd";
 import { useFormTest } from "../_hooks/use-form-test";
 import { TFormFieldsProps } from "@/shared/commons/types/form-field";
 import { FC, ReactElement, useState } from "react";
@@ -21,10 +21,16 @@ const { TextArea } = Input;
 const { Text, Title } = Typography;
 
 export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
-  const { form, fields, handler } = useFormTest();
+  const { form, fields, subTestFields, handler } = useFormTest();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pastedQuestions, setPastedQuestions] = useState("");
   const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
+  const [editingSubTestIndex, setEditingSubTestIndex] = useState<number | null>(null);
+  const [editingSubTestQuestionIndex, setEditingSubTestQuestionIndex] = useState<{
+    subTestIndex: number;
+    questionIndex: number;
+  } | null>(null);
+  const [activeTab, setActiveTab] = useState<"main" | "subtests">("subtests");
 
   const parseAndAddQuestions = () => {
     if (!pastedQuestions.trim()) return;
@@ -55,14 +61,11 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
       const parts = cleanedBlock.split(/\nPembahasan\s*\n/);
       const questionPart = parts[0].trim();
       const discussionPart = parts[1] ? parts[1].trim() : "";
-
       const optionMatch = questionPart.match(/^([\s\S]*?)\n\s*[A-E]\./s);
       const questionText = optionMatch ? optionMatch[1].trim() : questionPart;
-
       const optionLines = questionPart
         .split("\n")
         .filter((line) => line.trim().match(/^[A-E]\.\s+/));
-
       const options = optionLines.map((line) => {
         const cleanedLine = line.trim().replace(/^[A-E]\.\s*/, "");
         return {
@@ -70,7 +73,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
           label: cleanedLine,
           image_url: "",
           is_correct: false,
-          points: "0",
+          points: 0,
         };
       });
 
@@ -120,7 +123,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
       label: "",
       image_url: "",
       is_correct: false,
-      points: "0",
+      points: 0,
     };
 
     const updatedOptions = [...currentOptions, newOption];
@@ -132,14 +135,43 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
     form.trigger(`questions.${questionIndex}.options`);
   };
 
+  const handleAddSubTestOption = (subTestIndex: number, questionIndex: number) => {
+    const currentOptions =
+      form.getValues(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`) || [];
+
+    const newOption = {
+      id: v4(),
+      label: "",
+      image_url: "",
+      is_correct: false,
+      points: 0,
+    };
+
+    const updatedOptions = [...currentOptions, newOption];
+    form.setValue(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`, updatedOptions, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    form.trigger(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`);
+  };
+
   const getOptionLabel = (index: number): string => {
     return String.fromCharCode(65 + index);
   };
 
-  const OptionsEditComponent: FC<{ questionIndex: number }> = ({ questionIndex }) => {
+  const OptionsEditComponent: FC<{ questionIndex: number; subTestIndex?: number }> = ({
+    questionIndex,
+    subTestIndex,
+  }) => {
+    const fieldName =
+      subTestIndex !== undefined
+        ? `sub_tests.${subTestIndex}.questions.${questionIndex}.options`
+        : `questions.${questionIndex}.options`;
+
     const optionsFieldArray = useFieldArray({
       control: form.control,
-      name: `questions.${questionIndex}.options`,
+      name: fieldName as any,
     });
 
     const addOption = () => {
@@ -148,7 +180,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
         label: "",
         image_url: "",
         is_correct: false,
-        points: "0",
+        points: 0,
       });
     };
 
@@ -157,12 +189,12 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
     };
 
     const setCorrect = (optionIndex: number) => {
-      const currentOptions = form.getValues(`questions.${questionIndex}.options`) || [];
-      const updated = currentOptions.map((opt, idx) => ({
+      const currentOptions = form.getValues(fieldName as any) || [];
+      const updated = currentOptions.map((opt: any, idx: number) => ({
         ...opt,
         is_correct: idx === optionIndex,
       }));
-      form.setValue(`questions.${questionIndex}.options`, updated, {
+      form.setValue(fieldName as any, updated, {
         shouldDirty: true,
         shouldValidate: true,
       });
@@ -187,14 +219,14 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             <ControlledInput
               label="Teks Pilihan"
               control={form.control}
-              name={`questions.${questionIndex}.options.${optionIndex}.label`}
+              name={`${fieldName}.${optionIndex}.label` as any}
               placeholder="Masukkan teks pilihan jawaban"
             />
 
             <ControlledUploadFile
               label="Gambar Pilihan (Opsional)"
               control={form.control}
-              name={`questions.${questionIndex}.options.${optionIndex}.image_url`}
+              name={`${fieldName}.${optionIndex}.image_url` as any}
             />
 
             <div className="flex items-center justify-between">
@@ -202,18 +234,18 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                 <ControlledSwitch
                   label="Jawaban Benar"
                   control={form.control}
-                  name={`questions.${questionIndex}.options.${optionIndex}.is_correct`}
+                  name={`${fieldName}.${optionIndex}.is_correct` as any}
                   onChange={() => setCorrect(optionIndex)}
                 />
               )}
 
               {form.watch("category") === "Akademik" &&
-                form.watch(`questions.${questionIndex}.options.${optionIndex}.is_correct`) && (
+                form.watch(`${fieldName}.${optionIndex}.is_correct` as any) && (
                   <ControlledInput
                     required
                     label="Poin"
                     control={form.control}
-                    name={`questions.${questionIndex}.options.${optionIndex}.points`}
+                    name={`${fieldName}.${optionIndex}.points` as any}
                     placeholder="0"
                     style={{ width: 100 }}
                   />
@@ -224,7 +256,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                   required
                   label="Poin"
                   control={form.control}
-                  name={`questions.${questionIndex}.options.${optionIndex}.points`}
+                  name={`${fieldName}.${optionIndex}.points` as any}
                   placeholder="0"
                   style={{ width: 100 }}
                 />
@@ -239,6 +271,591 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
       </div>
     );
   };
+
+  const handleEditSubTestQuestion = (subTestIndex: number, questionIndex: number) => {
+    setEditingSubTestQuestionIndex({ subTestIndex, questionIndex });
+  };
+
+  const handleSaveSubTestQuestion = () => {
+    setEditingSubTestQuestionIndex(null);
+  };
+
+  const SubTestQuestionsComponent: FC<{ subTestIndex: number }> = ({ subTestIndex }) => {
+    const subTestQuestionsFieldArray = useFieldArray({
+      control: form.control,
+      name: `sub_tests.${subTestIndex}.questions`,
+    });
+
+    const addSubTestQuestion = () => {
+      subTestQuestionsFieldArray.append({
+        id: v4(),
+        question: "",
+        question_image_url: "",
+        discussion: "",
+        discussion_image_url: "",
+        options: [],
+      });
+    };
+
+    const removeSubTestQuestion = (questionIndex: number) => {
+      subTestQuestionsFieldArray.remove(questionIndex);
+    };
+
+    const handleDuplicateSubTestQuestion = (questionIndex: number) => {
+      const questionToDuplicate = subTestQuestionsFieldArray.fields[questionIndex];
+      subTestQuestionsFieldArray.append({
+        ...questionToDuplicate,
+        id: v4(),
+        options: questionToDuplicate.options.map((opt) => ({
+          ...opt,
+          id: v4(),
+        })),
+      });
+    };
+
+    const handleAddSubTestQuestionOption = (questionIndex: number) => {
+      const currentOptions =
+        form.getValues(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`) || [];
+
+      const newOption = {
+        id: v4(),
+        label: "",
+        image_url: "",
+        is_correct: false,
+        points: 0,
+      };
+
+      const updatedOptions = [...currentOptions, newOption];
+      form.setValue(
+        `sub_tests.${subTestIndex}.questions.${questionIndex}.options`,
+        updatedOptions,
+        {
+          shouldDirty: true,
+          shouldValidate: true,
+        },
+      );
+
+      form.trigger(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`);
+    };
+
+    return (
+      <div className="space-y-4">
+        {subTestQuestionsFieldArray.fields.map((question, questionIndex) => (
+          <Card
+            key={question.id}
+            className="relative"
+            style={{
+              backgroundColor: "#F0F9FF",
+              border: "1px solid #E0E7FF",
+              borderRadius: "8px",
+            }}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-3">
+                <Text strong className="text-lg">
+                  Soal {questionIndex + 1}
+                </Text>
+                {editingSubTestQuestionIndex?.subTestIndex === subTestIndex &&
+                  editingSubTestQuestionIndex?.questionIndex === questionIndex && (
+                    <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">
+                      Sedang diedit
+                    </span>
+                  )}
+              </div>
+              <Space>
+                {editingSubTestQuestionIndex?.subTestIndex === subTestIndex &&
+                editingSubTestQuestionIndex?.questionIndex === questionIndex ? (
+                  <Button
+                    type="primary"
+                    icon={<SaveOutlined />}
+                    onClick={handleSaveSubTestQuestion}
+                  >
+                    Selesai
+                  </Button>
+                ) : (
+                  <Button
+                    icon={<EditOutlined />}
+                    onClick={() => handleEditSubTestQuestion(subTestIndex, questionIndex)}
+                  >
+                    Edit
+                  </Button>
+                )}
+                <Button
+                  icon={<CopyOutlined />}
+                  onClick={() => handleDuplicateSubTestQuestion(questionIndex)}
+                >
+                  Duplikasi
+                </Button>
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => removeSubTestQuestion(questionIndex)}
+                >
+                  Hapus
+                </Button>
+              </Space>
+            </div>
+
+            {editingSubTestQuestionIndex?.subTestIndex === subTestIndex &&
+            editingSubTestQuestionIndex?.questionIndex === questionIndex ? (
+              <div className="space-y-4">
+                <ControlledWysiwyg
+                  label="Pertanyaan"
+                  control={form.control}
+                  name={`sub_tests.${subTestIndex}.questions.${questionIndex}.question`}
+                  placeholder="Masukkan teks pertanyaan"
+                />
+
+                <ControlledUploadFile
+                  label="Gambar Pertanyaan (Opsional)"
+                  control={form.control}
+                  name={`sub_tests.${subTestIndex}.questions.${questionIndex}.question_image_url`}
+                />
+
+                <Divider>Pilihan Jawaban</Divider>
+
+                <OptionsEditComponent questionIndex={questionIndex} subTestIndex={subTestIndex} />
+
+                <Divider>Pembahasan</Divider>
+
+                <ControlledWysiwyg
+                  label="Pembahasan (Opsional)"
+                  control={form.control}
+                  name={`sub_tests.${subTestIndex}.questions.${questionIndex}.discussion`}
+                  placeholder="Masukkan pembahasan soal"
+                />
+
+                <ControlledUploadFile
+                  label="Gambar Pembahasan (Opsional)"
+                  control={form.control}
+                  name={`sub_tests.${subTestIndex}.questions.${questionIndex}.discussion_image_url`}
+                />
+              </div>
+            ) : (
+              <div>
+                <div className="mb-4">
+                  <div
+                    className="text-base leading-relaxed text-gray-800 mb-3"
+                    dangerouslySetInnerHTML={{ __html: question.question ?? "" }}
+                  />
+                  {question.question_image_url && (
+                    <img
+                      src={question.question_image_url}
+                      alt="Question"
+                      className="max-w-full h-auto rounded border"
+                    />
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-y-2">
+                  <Radio.Group
+                    className="w-full"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                    }}
+                  >
+                    {(
+                      form.getValues(
+                        `sub_tests.${subTestIndex}.questions.${questionIndex}.options`,
+                      ) ||
+                      question.options ||
+                      []
+                    ).map((option, optionIndex) => (
+                      <div
+                        key={option.id ?? optionIndex}
+                        className={`flex items-center p-3 rounded-lg border transition-colors ${
+                          option.is_correct
+                            ? "border-green-300 bg-green-50"
+                            : "border-gray-200 bg-white"
+                        }`}
+                      >
+                        <Radio disabled value={option.id} className="mr-3">
+                          <span className="font-medium text-gray-700 mr-2">
+                            {getOptionLabel(optionIndex)}.
+                          </span>
+                          <span className="text-gray-800">{option.label}</span>
+                          {option.image_url && (
+                            <img
+                              src={option.image_url}
+                              alt="Gambar Pilihan"
+                              className="max-w-full h-auto rounded border"
+                            />
+                          )}
+                        </Radio>
+                        {option.is_correct && (
+                          <span className="ml-auto px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
+                            Jawaban Benar
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </Radio.Group>
+
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      handleAddSubTestQuestionOption(questionIndex);
+                      handleEditSubTestQuestion(subTestIndex, questionIndex);
+                    }}
+                    className="w-full mt-3"
+                    size="small"
+                  >
+                    Tambah Pilihan Jawaban
+                  </Button>
+                </div>
+
+                {question.discussion && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <Text strong className="text-gray-700 block mb-2">
+                      Pembahasan:
+                    </Text>
+                    <div
+                      className="text-gray-600 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: question.discussion }}
+                    />
+                    {question.discussion_image_url && (
+                      <img
+                        src={question.discussion_image_url}
+                        alt="Discussion"
+                        className="mt-3 max-w-full h-auto rounded border"
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        ))}
+
+        <Button
+          type="dashed"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            addSubTestQuestion();
+            handleEditSubTestQuestion(subTestIndex, subTestQuestionsFieldArray.fields.length);
+          }}
+          className="w-full"
+          size="large"
+        >
+          Tambah Soal Sub-Test
+        </Button>
+      </div>
+    );
+  };
+
+  const renderMainQuestions = () => (
+    <div className="flex flex-col gap-y-4">
+      {fields.fields.length === 0 ? (
+        <Card className="text-center py-12">
+          <div className="text-gray-500">
+            <Title level={4} className="text-gray-400">
+              Belum ada soal yang dibuat
+            </Title>
+            <p className="mb-6">
+              Mulai dengan menambahkan soal pertama atau paste beberapa soal sekaligus
+            </p>
+            <Space>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                size="large"
+                onClick={() => {
+                  handler.onAddQuestion();
+                  handleEditQuestion(0);
+                }}
+              >
+                Tambah Soal Pertama
+              </Button>
+              <Button icon={<CopyOutlined />} size="large" onClick={() => setIsModalVisible(true)}>
+                Paste Soal
+              </Button>
+            </Space>
+          </div>
+        </Card>
+      ) : (
+        fields.fields.map((field, index) => (
+          <Card
+            key={field.id}
+            className="relative"
+            style={{
+              backgroundColor: "#E6F4FF",
+              border: "1px solid #E5E7EB",
+              borderRadius: "8px",
+            }}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-3">
+                <Text strong className="text-lg">
+                  Soal {index + 1}
+                </Text>
+                {editingQuestionIndex === index && (
+                  <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">
+                    Sedang diedit
+                  </span>
+                )}
+              </div>
+              <Space>
+                {editingQuestionIndex === index ? (
+                  <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveQuestion}>
+                    Selesai
+                  </Button>
+                ) : (
+                  <Button icon={<EditOutlined />} onClick={() => handleEditQuestion(index)}>
+                    Edit
+                  </Button>
+                )}
+                <Button icon={<CopyOutlined />} onClick={() => handleDuplicateQuestion(index)}>
+                  Duplikasi
+                </Button>
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => handleDeleteQuestion(index)}
+                >
+                  Hapus
+                </Button>
+              </Space>
+            </div>
+
+            {editingQuestionIndex === index ? (
+              <div className="space-y-4">
+                <ControlledWysiwyg
+                  label="Pertanyaan"
+                  control={form.control}
+                  name={`questions.${index}.question`}
+                  placeholder="Masukkan teks pertanyaan"
+                />
+
+                <ControlledUploadFile
+                  label="Gambar Pertanyaan (Opsional)"
+                  control={form.control}
+                  name={`questions.${index}.question_image_url`}
+                />
+
+                <Divider>Pilihan Jawaban</Divider>
+
+                <OptionsEditComponent questionIndex={index} />
+
+                <Divider>Pembahasan</Divider>
+
+                <ControlledWysiwyg
+                  label="Pembahasan (Opsional)"
+                  control={form.control}
+                  name={`questions.${index}.discussion`}
+                  placeholder="Masukkan pembahasan soal"
+                />
+
+                <ControlledUploadFile
+                  label="Gambar Pembahasan (Opsional)"
+                  control={form.control}
+                  name={`questions.${index}.discussion_image_url`}
+                />
+              </div>
+            ) : (
+              <div>
+                <div className="mb-4">
+                  <div
+                    className="text-base leading-relaxed text-gray-800 mb-3"
+                    dangerouslySetInnerHTML={{ __html: field.question ?? "" }}
+                  />
+                  {field.question_image_url && (
+                    <img
+                      src={field.question_image_url}
+                      alt="Question"
+                      className="max-w-full h-auto rounded border"
+                    />
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-y-2">
+                  <Radio.Group
+                    className="w-full"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                    }}
+                  >
+                    {(form.getValues(`questions.${index}.options`) || field.options || []).map(
+                      (option, optionIndex) => (
+                        <div
+                          key={option.id ?? optionIndex}
+                          className={`flex items-center p-3 rounded-lg border transition-colors ${
+                            option.is_correct
+                              ? "border-green-300 bg-green-50"
+                              : "border-gray-200 bg-white"
+                          }`}
+                        >
+                          <Radio disabled value={option.id} className="mr-3">
+                            <span className="font-medium text-gray-700 mr-2">
+                              {getOptionLabel(optionIndex)}.
+                            </span>
+                            <span className="text-gray-800">{option.label}</span>
+                            {option.image_url && (
+                              <img
+                                src={option.image_url}
+                                alt="Gambar Pilihan"
+                                className="max-w-full h-auto rounded border"
+                              />
+                            )}
+                          </Radio>
+                          {option.is_correct && (
+                            <span className="ml-auto px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
+                              Jawaban Benar
+                            </span>
+                          )}
+                        </div>
+                      ),
+                    )}
+                  </Radio.Group>
+
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      handleAddOption(index);
+                      handleEditQuestion(index);
+                    }}
+                    className="w-full mt-3"
+                    size="small"
+                  >
+                    Tambah Pilihan Jawaban
+                  </Button>
+                </div>
+
+                {field.discussion && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <Text strong className="text-gray-700 block mb-2">
+                      Pembahasan:
+                    </Text>
+                    <div
+                      className="text-gray-600 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: field.discussion }}
+                    />
+                    {field.discussion_image_url && (
+                      <img
+                        src={field.discussion_image_url}
+                        alt="Discussion"
+                        className="mt-3 max-w-full h-auto rounded border"
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        ))
+      )}
+
+      {fields.fields.length > 0 && (
+        <div className="flex gap-3 justify-center pt-4">
+          <Button
+            type="dashed"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => {
+              handler.onAddQuestion();
+              handleEditQuestion(fields.fields.length);
+            }}
+          >
+            Tambah Soal Baru
+          </Button>
+          <Button
+            type="dashed"
+            icon={<CopyOutlined />}
+            size="large"
+            onClick={() => setIsModalVisible(true)}
+          >
+            Paste Soal
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderSubTests = () => (
+    <div className="flex flex-col gap-y-4">
+      {subTestFields.fields.length === 0 ? (
+        <Card className="text-center py-12">
+          <div className="text-gray-500">
+            <Title level={4} className="text-gray-400">
+              Belum ada sub-test yang dibuat
+            </Title>
+            <p className="mb-6">
+              Sub-test memungkinkan Anda untuk mengelompokkan soal berdasarkan kategori atau tema
+              tertentu
+            </p>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              size="large"
+              onClick={handler.onAddSubTest}
+            >
+              Tambah Sub-Test Pertama
+            </Button>
+          </div>
+        </Card>
+      ) : (
+        subTestFields.fields.map((subTest, subTestIndex) => (
+          <Card
+            key={subTest.id}
+            className="relative"
+            style={{
+              backgroundColor: "#FEF3C7",
+              border: "1px solid #F59E0B",
+              borderRadius: "8px",
+            }}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <Text strong className="text-lg">
+                Sub-Test {subTestIndex + 1}
+              </Text>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handler.onRemoveSubTest(subTestIndex)}
+              >
+                Hapus Sub-Test
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <ControlledInput
+                required
+                label="Nama Sub-Test"
+                control={form.control}
+                name={`sub_tests.${subTestIndex}.name`}
+                placeholder="Masukkan nama sub-test"
+              />
+
+              <ControlledUploadFile
+                label="Banner Sub-Test (Opsional)"
+                control={form.control}
+                name={`sub_tests.${subTestIndex}.banner`}
+              />
+
+              <Divider>Soal Sub-Test</Divider>
+
+              <SubTestQuestionsComponent subTestIndex={subTestIndex} />
+            </div>
+          </Card>
+        ))
+      )}
+
+      {subTestFields.fields.length > 0 && (
+        <div className="flex justify-center pt-4">
+          <Button type="dashed" icon={<PlusOutlined />} size="large" onClick={handler.onAddSubTest}>
+            Tambah Sub-Test Baru
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+
+  const isPsychologyCategory = form.watch("category") === "Psikologi";
 
   return (
     <Form name="test_form" onFinish={props.onSubmit} layout="vertical">
@@ -258,7 +875,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
           <ControlledSelect
             label="Kategori Test"
             control={form.control}
-            placeholder="Masukkan nama test"
+            placeholder="Masukkan kategori test"
             name="category"
             options={[
               {
@@ -284,237 +901,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
           />
         </Card>
 
-        <div className="flex flex-col gap-y-4">
-          {fields.fields.length === 0 ? (
-            <Card className="text-center py-12">
-              <div className="text-gray-500">
-                <Title level={4} className="text-gray-400">
-                  Belum ada soal yang dibuat
-                </Title>
-                <p className="mb-6">
-                  Mulai dengan menambahkan soal pertama atau paste beberapa soal sekaligus
-                </p>
-                <Space>
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    size="large"
-                    onClick={() => {
-                      handler.onAddQuestion();
-                      handleEditQuestion(0);
-                    }}
-                  >
-                    Tambah Soal Pertama
-                  </Button>
-                  <Button
-                    icon={<CopyOutlined />}
-                    size="large"
-                    onClick={() => setIsModalVisible(true)}
-                  >
-                    Paste Soal
-                  </Button>
-                </Space>
-              </div>
-            </Card>
-          ) : (
-            fields.fields.map((field, index) => (
-              <Card
-                key={field.id}
-                className="relative"
-                style={{
-                  backgroundColor: "#E6F4FF",
-                  border: "1px solid #E5E7EB",
-                  borderRadius: "8px",
-                }}
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center space-x-3">
-                    <Text strong className="text-lg">
-                      Soal {index + 1}
-                    </Text>
-                    {editingQuestionIndex === index && (
-                      <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">
-                        Sedang diedit
-                      </span>
-                    )}
-                  </div>
-                  <Space>
-                    {editingQuestionIndex === index ? (
-                      <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveQuestion}>
-                        Selesai
-                      </Button>
-                    ) : (
-                      <Button icon={<EditOutlined />} onClick={() => handleEditQuestion(index)}>
-                        Edit
-                      </Button>
-                    )}
-                    <Button icon={<CopyOutlined />} onClick={() => handleDuplicateQuestion(index)}>
-                      Duplikasi
-                    </Button>
-                    <Button
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => handleDeleteQuestion(index)}
-                    >
-                      Hapus
-                    </Button>
-                  </Space>
-                </div>
-
-                {editingQuestionIndex === index ? (
-                  <div className="space-y-4">
-                    <ControlledWysiwyg
-                      label="Pertanyaan"
-                      control={form.control}
-                      name={`questions.${index}.question`}
-                      placeholder="Masukkan teks pertanyaan"
-                    />
-
-                    <ControlledUploadFile
-                      label="Gambar Pertanyaan (Opsional)"
-                      control={form.control}
-                      name={`questions.${index}.question_image_url`}
-                    />
-
-                    <Divider>Pilihan Jawaban</Divider>
-
-                    <OptionsEditComponent questionIndex={index} />
-
-                    <Divider>Pembahasan</Divider>
-
-                    <ControlledWysiwyg
-                      label="Pembahasan (Opsional)"
-                      control={form.control}
-                      name={`questions.${index}.discussion`}
-                      placeholder="Masukkan pembahasan soal"
-                    />
-
-                    <ControlledUploadFile
-                      label="Gambar Pembahasan (Opsional)"
-                      control={form.control}
-                      name={`questions.${index}.discussion_image_url`}
-                    />
-                  </div>
-                ) : (
-                  <div>
-                    <div className="mb-4">
-                      <div
-                        className="text-base leading-relaxed text-gray-800 mb-3"
-                        dangerouslySetInnerHTML={{ __html: field.question ?? "" }}
-                      />
-                      {field.question_image_url && (
-                        <img
-                          src={field.question_image_url}
-                          alt="Question"
-                          className="max-w-full h-auto rounded border"
-                        />
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-y-2">
-                      <Radio.Group
-                        className="w-full"
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "1rem",
-                        }}
-                      >
-                        {(form.getValues(`questions.${index}.options`) || field.options || []).map(
-                          (option, optionIndex) => (
-                            <div
-                              key={option.id ?? optionIndex}
-                              className={`flex items-center p-3 rounded-lg border transition-colors ${
-                                option.is_correct
-                                  ? "border-green-300 bg-green-50"
-                                  : "border-gray-200 bg-white"
-                              }`}
-                            >
-                              <Radio disabled value={option.id} className="mr-3">
-                                <span className="font-medium text-gray-700 mr-2">
-                                  {getOptionLabel(optionIndex)}.
-                                </span>
-                                <span className="text-gray-800">{option.label}</span>
-                                {option.image_url && (
-                                  <img
-                                    src={option.image_url}
-                                    alt="Gambar Pilihan"
-                                    className="max-w-full h-auto rounded border"
-                                  />
-                                )}
-                              </Radio>
-                              {option.is_correct && (
-                                <span className="ml-auto px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
-                                  Jawaban Benar
-                                </span>
-                              )}
-                            </div>
-                          ),
-                        )}
-                      </Radio.Group>
-
-                      <Button
-                        type="dashed"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                          handleAddOption(index);
-                          handleEditQuestion(index);
-                        }}
-                        className="w-full mt-3"
-                        size="small"
-                      >
-                        Tambah Pilihan Jawaban
-                      </Button>
-                    </div>
-
-                    {field.discussion && (
-                      <div className="mt-4 pt-4 border-t border-gray-100">
-                        <Text strong className="text-gray-700 block mb-2">
-                          Pembahasan:
-                        </Text>
-                        <div
-                          className="text-gray-600 leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: field.discussion }}
-                        />
-                        {field.discussion_image_url && (
-                          <img
-                            src={field.discussion_image_url}
-                            alt="Discussion"
-                            className="mt-3 max-w-full h-auto rounded border"
-                          />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </Card>
-            ))
-          )}
-
-          {fields.fields.length > 0 && (
-            <div className="flex gap-3 justify-center pt-4">
-              <Button
-                type="dashed"
-                icon={<PlusOutlined />}
-                size="large"
-                onClick={() => {
-                  handler.onAddQuestion();
-                  handleEditQuestion(fields.fields.length);
-                }}
-              >
-                Tambah Soal Baru
-              </Button>
-              <Button
-                type="dashed"
-                icon={<CopyOutlined />}
-                size="large"
-                onClick={() => setIsModalVisible(true)}
-              >
-                Paste Soal
-              </Button>
-            </div>
-          )}
-        </div>
+        {isPsychologyCategory ? renderSubTests() : renderMainQuestions()}
 
         <div className="mt-8 text-center">
           <Button

@@ -50,6 +50,13 @@ export const ROUTES = {
       update: "/exams/tests/:id/update",
       delete: "/exams/tests/:id/delete",
     },
+    tests_psikologi: {
+      list: "/exams/psikologi/list",
+      create: "/exams/psikologi/create",
+      detail: "/exams/psikologi/:id/detail",
+      update: "/exams/psikologi/:id/update",
+      delete: "/exams/psikologi/:id/delete",
+    },
     accurations: {
       list: "/exams/accurations/list",
       create: "/exams/accurations/create",

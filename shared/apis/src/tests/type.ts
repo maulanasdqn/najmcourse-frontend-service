@@ -3,6 +3,16 @@ import { testCreateSchema, testUpdateSchema } from "./schema";
 import type { TQuestionItem } from "../questions/type";
 import type { TResponseList, TResponseDetail } from "@/shared/commons/types/response";
 
+export type TSubTestItem = {
+  id: string;
+  name: string;
+  questions: TQuestionItem[];
+  banner?: string;
+  category: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type TTestListItem = {
   id: string;
   name: string;
@@ -19,6 +29,7 @@ export type TTestDetailItem = {
   category: string;
   banner: string;
   questions: TQuestionItem[];
+  sub_tests?: TSubTestItem[];
   created_at: string;
   updated_at: string;
 };
