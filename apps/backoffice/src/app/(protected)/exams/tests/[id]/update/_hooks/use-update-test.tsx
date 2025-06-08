@@ -34,6 +34,26 @@ export const useUpdateTest = () => {
         name: detail?.data.name,
         category: detail?.data.category,
         banner: detail?.data.banner,
+        sub_tests: detail?.data?.sub_tests?.map?.((sub_test) => ({
+          id: sub_test.id,
+          name: sub_test.name,
+          category: detail?.data?.category,
+          description: sub_test.description,
+          questions: sub_test.questions.map((question) => ({
+            id: question.id,
+            question: question.question,
+            discussion: question.discussion,
+            question_image_url: question.question_image_url,
+            discussion_image_url: question.discussion_image_url,
+            options: question.options.map((option) => ({
+              id: option.id,
+              label: option.label,
+              image_url: option.image_url,
+              points: parseFloat(String(option.points)),
+              is_correct: option.is_correct,
+            })),
+          })),
+        })),
         questions: detail?.data.questions.map((question) => ({
           id: question.id,
           question: question.question,
@@ -44,7 +64,7 @@ export const useUpdateTest = () => {
             id: option.id,
             label: option.label,
             image_url: option.image_url,
-            points: String(parseFloat(String(option.points)).toFixed(1)),
+            points: parseFloat(String(option.points)),
             is_correct: option.is_correct,
           })),
         })),
@@ -52,6 +72,8 @@ export const useUpdateTest = () => {
       form.trigger();
     }
   }, [detail?.data, form]);
+
+  console.log(form.formState.errors);
 
   const onSubmit = form.handleSubmit((data) => {
     mutate(data, {

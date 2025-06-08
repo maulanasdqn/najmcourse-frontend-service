@@ -98,6 +98,6 @@ export const testUpdateSchema = z.object({
   category: z.string({ required_error: "Category is required" }).min(1, {
     message: "Category must be at least 1 character",
   }),
-  questions: z.array(questionSchema).min(1, { message: "At least one question is required" }),
+  questions: z.array(questionSchema).optional(),
   sub_tests: z.array(subTestSchema).optional(),
 });

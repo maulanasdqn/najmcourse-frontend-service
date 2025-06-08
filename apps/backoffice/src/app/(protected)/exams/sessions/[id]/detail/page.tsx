@@ -34,7 +34,7 @@ export const Component: FC = (): ReactElement => {
                   <strong>Test ID:</strong> {test.test.id}
                 </p>
                 <p>
-                  <strong>Weight (Bobot):</strong> {Math.round(test.weight * 100)}%
+                  <strong>Weight (Bobot):</strong> {test.weight}
                 </p>
                 <p>
                   <strong>Multiplier (Pengkali):</strong> {test.multiplier}

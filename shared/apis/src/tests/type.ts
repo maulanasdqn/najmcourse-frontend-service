@@ -4,6 +4,7 @@ import type { TQuestionItem } from "../questions/type";
 import type { TResponseList, TResponseDetail } from "@/shared/commons/types/response";
 
 export type TSubTestItem = {
+  description: string;
   id: string;
   name: string;
   questions: TQuestionItem[];

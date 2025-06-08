@@ -907,7 +907,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
           <Button
             type="primary"
             htmlType="submit"
-            disabled={!form.formState.isValid || !form.formState.isDirty || props.isLoading}
+            // disabled={!form.formState.isValid || !form.formState.isDirty || props.isLoading}
             loading={props.isLoading}
             size="large"
             className="px-8"
