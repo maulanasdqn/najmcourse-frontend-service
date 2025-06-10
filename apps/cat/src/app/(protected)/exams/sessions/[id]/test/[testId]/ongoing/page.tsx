@@ -364,7 +364,7 @@ export const Component: FC = (): ReactElement => {
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-auto">
+    <div className="fixed inset-0 bg-gray-100 z-50 overflow-auto">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 p-6 min-h-screen">
         <div className="flex flex-col gap-y-4">
           <Card className="shadow-sm">
