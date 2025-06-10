@@ -1,4 +1,4 @@
-import { Card, Button, Typography, Radio, Tag, Modal } from "antd";
+import { Card, Button, Typography, Radio, Tag, Modal, Select } from "antd";
 import parse from "html-react-parser";
 import { FC, ReactElement, useEffect, useState, useCallback, useRef } from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
@@ -7,22 +7,35 @@ import dayjs from "dayjs";
 import { useAnswerStore } from "@/shared/libs/zustand/answer";
 import { useSession } from "@/shared/components/providers";
 import { match } from "ts-pattern";
-import { PageHeadList } from "@/shared/components/ui/page-head-list";
-import { usePostCreateAnswer } from "@/shared/hooks/answers/use-post-create-answer";
+import { usePostCreateAkademikAnswer } from "@/shared/hooks/answers/use-post-create-akademik-answer";
+import { usePostCreatePsikologiAnswer } from "@/shared/hooks/answers/use-post-create-psikologi-answer";
 import { ROUTES } from "@/shared/commons/constants/routes";
 
 const { Title, Text } = Typography;
 
 export const Component: FC = (): ReactElement => {
   const navigate = useNavigate();
-  const { mutate } = usePostCreateAnswer();
+  const { mutate: mutateAkademik } = usePostCreateAkademikAnswer();
+  const { mutate: mutatePsikologi } = usePostCreatePsikologiAnswer();
   const params = useParams();
   const { data } = useGetDetailSession(params.id ?? "");
   const { session: userData } = useSession();
   const session = data?.data;
 
   const selectedTest = session?.tests?.find((t) => t.test.id === params.testId);
-  const questions = selectedTest?.test?.questions ?? [];
+  const isPsikologi = session?.category === "Psikologi";
+  const subTests = selectedTest?.test?.sub_tests ?? [];
+
+  const [selectedSubTestId, setSelectedSubTestId] = useState<string>("");
+  const [showSubTestSelection, setShowSubTestSelection] = useState(
+    isPsikologi && subTests.length > 0,
+  );
+
+  const currentSubTest = subTests.find((st) => st.id === selectedSubTestId);
+  const questions =
+    isPsikologi && currentSubTest
+      ? currentSubTest.questions
+      : (selectedTest?.test?.questions ?? []);
 
   const [current, setCurrent] = useState(0);
   const [marked, setMarked] = useState<string[]>([]);
@@ -36,7 +49,6 @@ export const Component: FC = (): ReactElement => {
 
   const { setAnswer, answers, getPayload } = useAnswerStore();
 
-  // Auto-submit function
   const autoSubmit = useCallback(() => {
     if (hasSubmittedRef.current || isSubmitting) return;
 
@@ -46,7 +58,9 @@ export const Component: FC = (): ReactElement => {
     const payload = getPayload();
     console.log("Auto Submit Payload:", payload);
 
-    mutate(payload, {
+    const mutateFunction = isPsikologi ? mutatePsikologi : mutateAkademik;
+
+    mutateFunction(payload, {
       onSuccess: () => {
         navigate(
           generatePath(ROUTES.exams.sessions.test.result, {
@@ -61,7 +75,16 @@ export const Component: FC = (): ReactElement => {
         setIsSubmitting(false);
       },
     });
-  }, [getPayload, mutate, navigate, params.id, params.testId, isSubmitting]);
+  }, [
+    getPayload,
+    mutateAkademik,
+    mutatePsikologi,
+    isPsikologi,
+    navigate,
+    params.id,
+    params.testId,
+    isSubmitting,
+  ]);
 
   const enterFullscreen = useCallback(() => {
     const element = document.documentElement;
@@ -190,8 +213,9 @@ export const Component: FC = (): ReactElement => {
       session_id: session.id,
       test_id: selectedTest.test.id,
       user_id: userData.user.id,
+      sub_test_id: selectedSubTestId,
     });
-  }, [selectedTest, selectedTest?.test.id, session?.id, userData?.user?.id]);
+  }, [selectedTest, selectedTest?.test.id, session?.id, userData?.user?.id, selectedSubTestId]);
 
   const handleAnswer = (value: string) => {
     setAnswer({
@@ -228,7 +252,9 @@ export const Component: FC = (): ReactElement => {
         const payload = getPayload();
         console.log("Manual Submit Payload:", payload);
 
-        mutate(payload, {
+        const mutateFunction = isPsikologi ? mutatePsikologi : mutateAkademik;
+
+        mutateFunction(payload, {
           onSuccess: () => {
             exitFullscreen();
             navigate(
@@ -257,9 +283,55 @@ export const Component: FC = (): ReactElement => {
     setShowFullscreenModal(false);
   };
 
+  const handleSubTestSelect = (subTestId: string) => {
+    setSelectedSubTestId(subTestId);
+    setShowSubTestSelection(false);
+    setCurrent(0); // Reset to first question
+    useAnswerStore.getState().reset(); // Clear previous answers
+  };
+
   const areAllQuestionsAnswered = answers.length === questions.length;
 
-  if (!selectedTest || questions.length === 0) {
+  if (!selectedTest) {
+    return <div className="text-center py-12 text-gray-500">Test tidak tersedia</div>;
+  }
+
+  if (showSubTestSelection) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md w-full mx-4 shadow-sm">
+          <div className="text-center">
+            <Title level={3}>Pilih Sub-Test</Title>
+            <Text className="block mb-4">
+              Silakan pilih sub-test yang ingin Anda kerjakan untuk kategori Psikologi.
+            </Text>
+            <div className="space-y-3">
+              {subTests.map((subTest) => (
+                <Card
+                  key={subTest.id}
+                  className="cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => handleSubTestSelect(subTest.id)}
+                >
+                  <div className="text-left">
+                    <Title level={5} className="mb-2">
+                      {subTest.name}
+                    </Title>
+                    <Text className="text-gray-600">{subTest.description}</Text>
+                    <div className="mt-2">
+                      <Tag color="blue">{subTest.questions.length} Soal</Tag>
+                      <Tag color="green">{subTest.category}</Tag>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
     return <div className="text-center py-12 text-gray-500">Soal tidak tersedia</div>;
   }
 
@@ -302,6 +374,11 @@ export const Component: FC = (): ReactElement => {
                 <span>
                   {userData?.user?.student_type} - {session?.category}
                 </span>
+                {isPsikologi && currentSubTest && (
+                  <span className="text-sm text-blue-600 font-medium">
+                    Sub-Test: {currentSubTest.name}
+                  </span>
+                )}
                 <div className="flex items-center gap-2 mt-1">
                   <div
                     className={`w-2 h-2 rounded-full ${isFullscreen ? "bg-green-500" : "bg-red-500"}`}

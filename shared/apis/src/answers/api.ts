@@ -22,9 +22,34 @@ export const getDetailAnswerByTestAndUserId = async (params: {
   return data;
 };
 
-export const postCreateAnswer = async (payload: TRequestCreateAnswer): Promise<TResponseAnswer> => {
+export const getDetailAnswerByTestSubTestAndUserId = async (params: {
+  testId: string;
+  subTestId: string;
+  userId: string;
+}): Promise<TResponseAnswer> => {
   const { data } = await api({
-    url: ENDPOINTS.ANSWERS.CREATE,
+    url: generatePath(ENDPOINTS.ANSWERS.DETAIL_TEST_SUB_TEST_AND_USER_ID, params),
+    method: "GET",
+  });
+  return data;
+};
+
+export const postCreateAkademikAnswer = async (
+  payload: TRequestCreateAnswer,
+): Promise<TResponseAnswer> => {
+  const { data } = await api({
+    url: ENDPOINTS.ANSWERS.CREATE_AKADEMIK,
+    method: "POST",
+    data: payload,
+  });
+  return data;
+};
+
+export const postCreatePsikologiAnswer = async (
+  payload: TRequestCreateAnswer,
+): Promise<TResponseAnswer> => {
+  const { data } = await api({
+    url: ENDPOINTS.ANSWERS.CREATE_PSIKOLOGI,
     method: "POST",
     data: payload,
   });

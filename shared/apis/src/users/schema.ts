@@ -37,6 +37,11 @@ export const userUpdateSchema = z.object({
     .nullable(),
 });
 
+export const userUpdateBackofficeSchema = z.object({
+  ...baseUserSchema,
+  id: z.string({ required_error: "ID is required" }).min(1, "ID is required"),
+});
+
 export const userActivateSchema = z.object({
   id: z.string({ required_error: "ID is required" }).min(1, "ID is required"),
   is_active: z.boolean({ required_error: "Active status is required" }),

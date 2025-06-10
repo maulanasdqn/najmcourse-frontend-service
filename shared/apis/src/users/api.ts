@@ -9,6 +9,7 @@ import type {
   TUserCreateRequest,
   TUserDetailResponse,
   TUserListResponse,
+  TUserUpdateBackofficeRequest,
   TUserUpdateRequest,
 } from "./type";
 
@@ -39,6 +40,17 @@ export const postCreateUser = async (payload: TUserCreateRequest): Promise<TMess
 };
 
 export const putUpdateUser = async (payload: TUserUpdateRequest): Promise<TMessageResponse> => {
+  const { data } = await api({
+    url: generatePath(ENDPOINTS.USERS.UPDATE, { id: payload.id }),
+    method: "PUT",
+    data: payload,
+  });
+  return data;
+};
+
+export const putUpdateBackofficeUser = async (
+  payload: TUserUpdateBackofficeRequest,
+): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.USERS.UPDATE, { id: payload.id }),
     method: "PUT",

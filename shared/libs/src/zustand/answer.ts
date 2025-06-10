@@ -9,14 +9,21 @@ export interface AnswerItem {
 interface AnswerState {
   session_id: string;
   test_id: string;
+  sub_test_id: string;
   user_id: string;
   answers: AnswerItem[];
-  setMeta: (payload: { session_id: string; test_id: string; user_id: string }) => void;
+  setMeta: (payload: {
+    session_id: string;
+    test_id: string;
+    user_id: string;
+    sub_test_id?: string;
+  }) => void;
   setAnswer: (answer: AnswerItem) => void;
   clearAnswer: (question_id: string) => void;
   getPayload: () => {
     session_id: string;
     test_id: string;
+    sub_test_id: string;
     user_id: string;
     answers: AnswerItem[];
   };
@@ -26,10 +33,12 @@ interface AnswerState {
 export const useAnswerStore = create<AnswerState>((set, get) => ({
   session_id: "",
   test_id: "",
+  sub_test_id: "",
   user_id: "",
   answers: [],
 
-  setMeta: ({ session_id, test_id, user_id }) => set({ session_id, test_id, user_id }),
+  setMeta: ({ session_id, test_id, user_id, sub_test_id }) =>
+    set({ session_id, test_id, user_id, sub_test_id: sub_test_id || "" }),
 
   setAnswer: ({ question_id, option_id }) => {
     const { answers } = get();
@@ -46,6 +55,7 @@ export const useAnswerStore = create<AnswerState>((set, get) => ({
   getPayload: () => ({
     session_id: get().session_id,
     test_id: get().test_id,
+    sub_test_id: get().sub_test_id,
     user_id: get().user_id,
     answers: get().answers,
   }),

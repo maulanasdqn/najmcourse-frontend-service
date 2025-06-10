@@ -48,9 +48,11 @@ export const ENDPOINTS = {
     DELETE: "/questions/delete/:id",
   },
   ANSWERS: {
-    CREATE: "/answers/create",
+    CREATE_AKADEMIK: "/answers/create-akademik",
+    CREATE_PSIKOLOGI: "/answers/create-psikologi",
     DETAIL: "/answers/detail/:id",
     DETAIL_TEST_AND_USER_ID: "/answers/detail/:testId/:userId",
+    DETAIL_TEST_SUB_TEST_AND_USER_ID: "/answers/detail/:testId/:subTestId/:userId",
     DELETE: "/answers/delete/:id",
   },
   TESTS: {
