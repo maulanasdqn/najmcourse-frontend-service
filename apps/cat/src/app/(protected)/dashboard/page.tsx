@@ -1,8 +1,14 @@
-import { Card, Row, Typography, Avatar, Progress, Table, Tag, List } from "antd";
-import { ClockCircleOutlined, TrophyOutlined } from "@ant-design/icons";
+import { Card, Row, Typography, Avatar, Progress, Table, Tag, List, Col, Tooltip } from "antd";
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
+  TrophyOutlined,
+} from "@ant-design/icons";
 import type { FC, ReactElement } from "react";
 import { useGetListTest, useGetListSession, useGetDetailUser } from "@/shared/hooks/index";
 import { useSession } from "@/shared/components/providers";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export const Component: FC = (): ReactElement => {
   const { session } = useSession();
@@ -11,8 +17,16 @@ export const Component: FC = (): ReactElement => {
   const { data: userData } = useGetDetailUser(session?.user?.id ?? "");
 
   const progressData = 70;
-  const finalScore = 85;
   const lastExamDate = "4 April 2024";
+
+  const data = [
+    { month: "Jan", value: 30 },
+    { month: "Feb", value: 40 },
+    { month: "Mar", value: 35 },
+    { month: "Apr", value: 50 },
+    { month: "May", value: 49 },
+    { month: "Jun", value: 60 },
+  ];
 
   const simulationData = [
     {
@@ -44,10 +58,6 @@ export const Component: FC = (): ReactElement => {
     { name: "TKP", score: 75, color: "#DEB887" },
   ];
 
-  const evaluationItems = ["Strategi Sukses TWK", "Pemecahan Masalah TIU", "Latihan Soal TKP"];
-
-  const learningMaterials = ["Strategi Sukses TWK", "Pemecahan Masalah TIU", "Latihan Soal TKP"];
-
   const columns = [
     {
       title: "Ujian",
@@ -75,7 +85,7 @@ export const Component: FC = (): ReactElement => {
     <div className="flex flex-col gap-y-6 bg-white rounded-xl" style={{ padding: 24 }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Typography.Title level={2} className="!mb-0">
-          Dashbor Siswa
+          Dasbor Siswa
         </Typography.Title>
       </Row>
 
@@ -90,7 +100,7 @@ export const Component: FC = (): ReactElement => {
       </div>
 
       <div className="flex w-full items-start gap-x-6">
-        <Card className="flex-1 shadow-sm" style={{ minHeight: 300 }}>
+        <Card className="flex-1 h-full shadow-sm" style={{ minHeight: 300 }}>
           <div className="flex flex-col items-center justify-center h-full">
             <Progress
               type="circle"
@@ -107,34 +117,68 @@ export const Component: FC = (): ReactElement => {
             </Typography.Title>
           </div>
         </Card>
-
-        <Card className="flex-1 shadow-sm" style={{ minHeight: 200 }}>
-          <div className="flex items-center gap-x-3 mb-4">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <ClockCircleOutlined className="text-blue-600 text-lg" />
+        <div className="flex flex-col w-1/2 gap-y-6">
+          <Card className="flex-1 shadow-sm" style={{ minHeight: 200 }}>
+            <div className="flex items-center gap-x-3 mb-4">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <ClockCircleOutlined className="text-blue-600 text-lg" />
+              </div>
+              <div>
+                <Typography.Title level={4} className="!mb-0">
+                  Riwayat Simulasi Ujian
+                </Typography.Title>
+              </div>
             </div>
-            <div>
-              <Typography.Title level={4} className="!mb-0">
-                Riwayat Simulasi Ujian
-              </Typography.Title>
+            <Typography.Text type="secondary">{lastExamDate}</Typography.Text>
+          </Card>
+          <Card className="flex-1 shadow-sm" style={{ minHeight: 200 }}>
+            <div className="flex items-center gap-x-3 mb-4">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircleOutlined className="text-green-600 text-lg" />
+              </div>
+              <div>
+                <Typography.Title level={4} className="!mb-0">
+                  Ujian Selesai
+                </Typography.Title>
+              </div>
             </div>
-          </div>
-          <Typography.Text type="secondary">{lastExamDate}</Typography.Text>
-        </Card>
-
-        <Card className="flex-1 shadow-sm" style={{ minHeight: 200 }}>
-          <div className="flex items-center gap-x-3 mb-4">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <TrophyOutlined className="text-blue-600 text-lg" />
+            <div className="flex text-lg text-gray-400 flex-col gap-y-2">
+              <span>- Test Psikologi</span>
+              <span>- Test Kewarasan</span>
             </div>
-            <Typography.Title level={4} className="!mb-0">
-              Nilai Akhir
-            </Typography.Title>
-          </div>
-          <Typography.Title level={1} className="!mb-0 text-4xl font-bold">
-            {finalScore}
-          </Typography.Title>
-        </Card>
+          </Card>
+        </div>
+        <div className="flex flex-col w-1/2 gap-y-6">
+          <Card className="flex-1 shadow-sm" style={{ minHeight: 200 }}>
+            <div className="flex items-center gap-x-3 mb-4">
+              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <TrophyOutlined className="text-yellow-600 text-lg" />
+              </div>
+              <div>
+                <Typography.Title level={4} className="!mb-0">
+                  Nilai Akhir
+                </Typography.Title>
+              </div>
+            </div>
+            <Typography.Title type="secondary">80</Typography.Title>
+          </Card>
+          <Card className="flex-1 shadow-sm" style={{ minHeight: 200 }}>
+            <div className="flex items-center gap-x-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <CloseCircleOutlined className="text-red-600 text-lg" />
+              </div>
+              <div>
+                <Typography.Title level={4} className="!mb-0">
+                  Ujian Terlewat
+                </Typography.Title>
+              </div>
+            </div>
+            <div className="flex text-lg text-gray-400 flex-col gap-y-2">
+              <span>- Test Keberanian</span>
+              <span>- Test Kebinekaan</span>
+            </div>
+          </Card>
+        </div>
       </div>
 
       <div className="flex w-full items-start gap-x-6">
@@ -163,39 +207,17 @@ export const Component: FC = (): ReactElement => {
         </Card>
 
         <div className="flex flex-col gap-y-6 w-1/2">
-          <Card className="shadow-sm" style={{ minHeight: 200 }}>
-            <Typography.Title level={4} className="!mb-4">
-              Hasil dan Evaluasi
-            </Typography.Title>
-            <List
-              dataSource={evaluationItems}
-              renderItem={(item) => (
-                <List.Item className="!px-0 !py-2">
-                  <div className="flex items-center gap-x-2">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    <Typography.Text>{item}</Typography.Text>
-                  </div>
-                </List.Item>
-              )}
-            />
-          </Card>
-
-          <Card className="shadow-sm" style={{ minHeight: 200 }}>
-            <Typography.Title level={4} className="!mb-4">
-              Materi Belajar
-            </Typography.Title>
-            <List
-              dataSource={learningMaterials}
-              renderItem={(item) => (
-                <List.Item className="!px-0 !py-2">
-                  <div className="flex items-center gap-x-2">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    <Typography.Text>{item}</Typography.Text>
-                  </div>
-                </List.Item>
-              )}
-            />
-          </Card>
+          <Col span={24}>
+            <Card title="Hasil dan Evaluasi" className="w-full">
+              <LineChart className="w-full" width={600} height={300} data={data}>
+                <Line type="monotone" dataKey="value" stroke="#8884d8" />
+                <CartesianGrid stroke="#ccc" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+              </LineChart>
+            </Card>
+          </Col>
         </div>
       </div>
     </div>

@@ -22,6 +22,7 @@ import { ROUTES } from "@/shared/commons/constants/routes";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { useGetDetailTest } from "@/shared/hooks/tests/use-get-detail-test";
 import { useGetDetailSession } from "@/shared/hooks/sessions/use-get-detail-session";
+import { match } from "ts-pattern";
 
 const { Title, Text } = Typography;
 
@@ -210,6 +211,8 @@ export const Component: FC = (): ReactElement => {
     );
   }
 
+  const isPassed = subTestScores.some((subTest) => subTest.score >= 75);
+
   return (
     <div className="min-h-screen">
       <PageHeadDetail
@@ -254,11 +257,13 @@ export const Component: FC = (): ReactElement => {
               {dataSession?.data?.category}
             </Descriptions.Item>
             <Descriptions.Item label="Total Soal">{totalQuestions}</Descriptions.Item>
-            <Descriptions.Item label="Jawaban Benar">
-              <Text strong className="text-green-600">
-                {correctAnswersCount}
-              </Text>
-            </Descriptions.Item>
+            {dataSession?.data?.category === "Akademik" && (
+              <Descriptions.Item label="Jawaban Benar">
+                <Text strong className="text-green-600">
+                  {correctAnswersCount}
+                </Text>
+              </Descriptions.Item>
+            )}
             <Descriptions.Item label="Nilai Ujian" span={2}>
               <Tag color={getScoreColor(score)} className="text-2xl px-4 py-1">
                 {score}
@@ -278,20 +283,47 @@ export const Component: FC = (): ReactElement => {
       {hasSubTests && subTestScores.length > 0 && (
         <>
           {/* Sub-test Summary */}
-          <Card className="w-full shadow-lg mt-6">
-            <Title level={3} className="text-blue-600 mb-6">
-              Ringkasan Per Sub-Test
-            </Title>
+          <Card
+            style={{
+              marginTop: "20px",
+              marginBottom: "20px",
+            }}
+            className="w-full shadow-lg mt-6"
+          >
+            <div className="flex w-full justify-between mb-6">
+              <Title level={3}>Ringkasan Per Sub-Test</Title>
+              <div className="">
+                <Tag
+                  style={{
+                    fontSize: "20px",
+                    padding: "5px 10px",
+                  }}
+                  color={isPassed ? "green" : "red"}
+                >
+                  {isPassed ? "Lulus" : "Tidak Lulus"}
+                </Tag>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {subTestScores.map((subTest, index) => (
                 <Card key={index} className="shadow-sm border">
-                  <div className="text-center">
-                    <Title level={5} className="mb-2">
+                  <div className="text-center flex flex-col gap-y-2 items-start justify-center">
+                    <Title level={3} className="mb-2">
                       {subTest.subTestName}
                     </Title>
-                    <Tag color={getScoreColor(subTest.score)} className="text-xl px-3 py-1 mb-2">
-                      {subTest.score}
-                    </Tag>
+                    <div className="flex gap-x-4 justify-end w-full">
+                      <span className="font-semibold">Nilai</span>
+                      <Tag color={getScoreColor(subTest.score)} className="text-xl px-3 py-1 mb-2">
+                        {subTest.score}
+                      </Tag>
+                    </div>
+
+                    <div className="flex gap-x-4 w-full justify-end">
+                      <span className="font-semibold">Passing Grade</span>
+                      <Tag color={"green"} className="text-xl px-3 py-1 mb-2">
+                        75
+                      </Tag>
+                    </div>
                     <div className="text-sm text-gray-600"></div>
                   </div>
                 </Card>
