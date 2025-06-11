@@ -1,4 +1,5 @@
-import { Card, Button, Typography, Radio, Tag, Modal, Select } from "antd";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Card, Button, Typography, Radio, Tag, Modal, Tabs } from "antd";
 import parse from "html-react-parser";
 import { FC, ReactElement, useEffect, useState, useCallback, useRef } from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
@@ -26,12 +27,11 @@ export const Component: FC = (): ReactElement => {
   const isPsikologi = session?.category === "Psikologi";
   const subTests = selectedTest?.test?.sub_tests ?? [];
 
-  const [selectedSubTestId, setSelectedSubTestId] = useState<string>("");
-  const [showSubTestSelection, setShowSubTestSelection] = useState(
-    isPsikologi && subTests.length > 0,
-  );
+  const [currentSubTestIndex, setCurrentSubTestIndex] = useState<number>(0);
+  const [showSubTestSelection, setShowSubTestSelection] = useState(false);
 
-  const currentSubTest = subTests.find((st) => st.id === selectedSubTestId);
+  const currentSubTest = isPsikologi && subTests.length > 0 ? subTests[currentSubTestIndex] : null;
+  const selectedSubTestId = currentSubTest?.id ?? "";
   const questions =
     isPsikologi && currentSubTest
       ? currentSubTest.questions
@@ -109,8 +109,7 @@ export const Component: FC = (): ReactElement => {
 
   const checkFullscreen = useCallback(() => {
     return !!(
-      document.fullscreenElement ||
-      (document as any).webkitFullscreenElement ||
+      (document.fullscreenElement || (document as any).webkitFullscreenElement) ??
       (document as any).msFullscreenElement
     );
   }, []);
@@ -283,52 +282,70 @@ export const Component: FC = (): ReactElement => {
     setShowFullscreenModal(false);
   };
 
-  const handleSubTestSelect = (subTestId: string) => {
-    setSelectedSubTestId(subTestId);
-    setShowSubTestSelection(false);
-    setCurrent(0); // Reset to first question
-    useAnswerStore.getState().reset(); // Clear previous answers
-  };
+  const handleSubTestCompletion = useCallback(() => {
+    if (hasSubmittedRef.current || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    const payload = getPayload();
+    console.log("Sub-test Submit Payload:", payload);
+
+    mutatePsikologi(payload, {
+      onSuccess: () => {
+        // Check if there are more sub-tests
+        if (currentSubTestIndex < subTests.length - 1) {
+          // Move to next sub-test
+          setCurrentSubTestIndex((prev) => prev + 1);
+          setCurrent(0);
+          setMarked([]);
+          useAnswerStore.getState().reset();
+          // Update meta for next sub-test
+          useAnswerStore.getState().setMeta({
+            session_id: session?.id ?? "",
+            test_id: selectedTest?.test.id ?? "",
+            user_id: userData?.user?.id ?? "",
+            sub_test_id: subTests[currentSubTestIndex + 1]?.id ?? "",
+          });
+          setIsSubmitting(false);
+        } else {
+          // All sub-tests completed, navigate to result
+          navigate(
+            generatePath(ROUTES.exams.sessions.test.result, {
+              id: params.id ?? "",
+              testId: params.testId,
+            }),
+          );
+        }
+      },
+      onError: (err) => {
+        console.log("Sub-test Submit Error", err);
+        setIsSubmitting(false);
+      },
+    });
+  }, [
+    getPayload,
+    mutatePsikologi,
+    currentSubTestIndex,
+    subTests,
+    session?.id,
+    selectedTest?.test.id,
+    userData?.user?.id,
+    navigate,
+    params.id,
+    params.testId,
+    isSubmitting,
+  ]);
 
   const areAllQuestionsAnswered = answers.length === questions.length;
+  const isLastSubTest =
+    isPsikologi && subTests.length > 0 ? currentSubTestIndex === subTests.length - 1 : true;
+  const handleFinalSubmit =
+    isPsikologi && subTests.length > 0 && !isLastSubTest ? handleSubTestCompletion : handleSubmit;
+  const submitButtonText =
+    isPsikologi && subTests.length > 0 && !isLastSubTest ? "Selesai Sub-Test" : "Selesai";
 
   if (!selectedTest) {
     return <div className="text-center py-12 text-gray-500">Test tidak tersedia</div>;
-  }
-
-  if (showSubTestSelection) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md w-full mx-4 shadow-sm">
-          <div className="text-center">
-            <Title level={3}>Pilih Sub-Test</Title>
-            <Text className="block mb-4">
-              Silakan pilih sub-test yang ingin Anda kerjakan untuk kategori Psikologi.
-            </Text>
-            <div className="space-y-3">
-              {subTests.map((subTest) => (
-                <Card
-                  key={subTest.id}
-                  className="cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => handleSubTestSelect(subTest.id)}
-                >
-                  <div className="text-left">
-                    <Title level={5} className="mb-2">
-                      {subTest.name}
-                    </Title>
-                    <Text className="text-gray-600">{subTest.description}</Text>
-                    <div className="mt-2">
-                      <Tag color="blue">{subTest.questions.length} Soal</Tag>
-                      <Tag color="green">{subTest.category}</Tag>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
   }
 
   if (questions.length === 0) {
@@ -375,9 +392,14 @@ export const Component: FC = (): ReactElement => {
                   {userData?.user?.student_type} - {session?.category}
                 </span>
                 {isPsikologi && currentSubTest && (
-                  <span className="text-sm text-blue-600 font-medium">
-                    Sub-Test: {currentSubTest.name}
-                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm text-blue-600 font-medium">
+                      Sub-Test: {currentSubTest.name}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {currentSubTestIndex + 1} dari {subTests.length} sub-test
+                    </span>
+                  </div>
                 )}
                 <div className="flex items-center gap-2 mt-1">
                   <div
@@ -398,9 +420,61 @@ export const Component: FC = (): ReactElement => {
               />
             </div>
           </Card>
+
+          {/* Sub-test Progress Tabs for Psikologi */}
+          {isPsikologi && subTests.length > 0 && (
+            <Card className="shadow-sm">
+              <Title level={5} className="mb-4 font-bold text-blue-600">
+                Progress Sub-Test
+              </Title>
+              <Tabs
+                activeKey={currentSubTestIndex.toString()}
+                type="card"
+                size="small"
+                items={subTests.map((subTest, index) => {
+                  const isCompleted = index < currentSubTestIndex;
+                  const isCurrent = index === currentSubTestIndex;
+
+                  let icon = "";
+
+                  if (isCompleted) {
+                    icon = "✓ ";
+                  } else if (isCurrent) {
+                    icon = "▶ ";
+                  } else {
+                    icon = "○ ";
+                  }
+
+                  return {
+                    key: index.toString(),
+                    label: (
+                      <span className={`text-xs ${isCurrent ? "font-bold" : ""}`}>
+                        {icon}
+                        {subTest.name}
+                      </span>
+                    ),
+                    disabled: true, // Disable clicking to prevent navigation
+                  };
+                })}
+              />
+              <div className="mt-2 text-xs text-gray-600">
+                <div className="flex items-center gap-4">
+                  <span>✓ Selesai</span>
+                  <span>▶ Sedang Dikerjakan</span>
+                  <span>○ Belum Dikerjakan</span>
+                </div>
+              </div>
+            </Card>
+          )}
+
           <Card className="shadow-sm">
             <Title level={5} className="mb-4 font-bold">
               Pertanyaan No. {current + 1}
+              {isPsikologi && currentSubTest && (
+                <span className="text-sm font-normal text-blue-600 ml-2">
+                  ({currentSubTest.name})
+                </span>
+              )}
             </Title>
             <div className="mb-4">{parse(currentQuestion.question)}</div>
 
@@ -474,11 +548,11 @@ export const Component: FC = (): ReactElement => {
           <Button
             block
             type="primary"
-            onClick={handleSubmit}
+            onClick={handleFinalSubmit}
             disabled={!areAllQuestionsAnswered || isSubmitting}
             loading={isSubmitting}
           >
-            {isSubmitting ? "Mengirim..." : "Selesai"}
+            {isSubmitting ? "Mengirim..." : submitButtonText}
           </Button>
         </div>
       </div>

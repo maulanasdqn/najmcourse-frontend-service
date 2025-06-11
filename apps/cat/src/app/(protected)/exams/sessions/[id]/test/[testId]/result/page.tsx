@@ -1,7 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import parse from "html-react-parser";
-import { Button, Card, Descriptions, Result, Spin, Tag, Typography, Divider, Alert } from "antd";
+import {
+  Button,
+  Card,
+  Descriptions,
+  Result,
+  Spin,
+  Tag,
+  Typography,
+  Divider,
+  Alert,
+  Collapse,
+} from "antd";
 import { Link, useParams, generatePath } from "react-router";
 import { useGetDetailByTestAndUserIdAnswer } from "@/shared/hooks/answers/use-get-detail-by-test-and-user-id-answer";
+import { useGetAllSubTestResults } from "@/shared/hooks/answers/use-get-all-subtest-results";
 import { FC, ReactElement, useMemo } from "react";
 import { PageHeadDetail } from "@/shared/components/ui/page-head-detail";
 import { useSession } from "@/shared/components/providers";
@@ -15,14 +28,36 @@ const { Title, Text } = Typography;
 export const Component: FC = (): ReactElement => {
   const { session: userData } = useSession();
   const params = useParams<{ id: string; testId: string }>();
+  const { data: dataTest, isLoading: isLoadingTest } = useGetDetailTest(params.testId);
+  const {
+    data: dataSession,
+    isLoading: isLoadingSession,
+    error: sessionError,
+  } = useGetDetailSession(params.id);
+
+  const isPsikologi = dataSession?.data?.category === "Psikologi";
+  const subTests = dataTest?.data?.sub_tests ?? [];
+  const hasSubTests = isPsikologi && subTests.length > 0;
+
+  // For Psikologi with sub-tests, get all sub-test results
+  const subTestResults = useGetAllSubTestResults({
+    testId: params.testId ?? "",
+    userId: userData?.user?.id ?? "",
+    subTestIds: hasSubTests ? subTests.map((st) => st.id) : [],
+  });
+
+  // For non-Psikologi or tests without sub-tests, get single result
   const { data: answerData, isLoading: isLoadingAnswer } = useGetDetailByTestAndUserIdAnswer({
     testId: params.testId ?? "",
     userId: userData?.user?.id ?? "",
   });
-  const { data: dataTest } = useGetDetailTest(params.testId);
-  const { data: dataSession } = useGetDetailSession(params.id);
 
-  const answerResult = answerData?.data;
+  const isLoading =
+    isLoadingSession ||
+    isLoadingTest ||
+    (hasSubTests ? subTestResults.some((result) => result.isLoading) : isLoadingAnswer);
+
+  const answerResult = hasSubTests ? null : answerData?.data;
   const questions = useMemo(() => answerResult?.questions ?? [], [answerResult?.questions]);
 
   const getScoreColor = (score: number): string => {
@@ -31,34 +66,81 @@ export const Component: FC = (): ReactElement => {
     return "error";
   };
 
-  const { score, correctAnswersCount, totalQuestions } = useMemo(() => {
-    if (!questions || questions.length === 0) {
+  const { score, correctAnswersCount, totalQuestions, subTestScores } = useMemo(() => {
+    if (hasSubTests) {
+      // Calculate scores for all sub-tests
+      const subScores = subTestResults.map((result, index) => {
+        const subTestData = result.data?.data;
+        const subTestQuestions = subTestData?.questions ?? [];
+
+        let correctCount = 0;
+        subTestQuestions.forEach((q: any) => {
+          const userSelectedOption = q.options.find((opt: any) => opt.is_user_selected);
+          const correctOption = q.options.find((opt: any) => opt.is_correct);
+
+          if (userSelectedOption && correctOption && userSelectedOption.id === correctOption.id) {
+            correctCount++;
+          }
+        });
+
+        const total = subTestQuestions.length;
+        const subScore =
+          subTestData?.score ?? (total > 0 ? Math.round((correctCount / total) * 100) : 0);
+
+        return {
+          subTestName: subTests[index]?.name ?? `Sub-Test ${index + 1}`,
+          score: subScore,
+          correctCount,
+          totalQuestions: total,
+          questions: subTestQuestions,
+        };
+      });
+
+      const totalCorrect = subScores.reduce((sum, sub) => sum + sub.correctCount, 0);
+      const totalQs = subScores.reduce((sum, sub) => sum + sub.totalQuestions, 0);
+      const avgScore =
+        subScores.length > 0
+          ? Math.round(subScores.reduce((sum, sub) => sum + sub.score, 0) / subScores.length)
+          : 0;
+
       return {
-        score: answerResult?.score ?? 0,
-        correctAnswersCount: 0,
-        totalQuestions: 0,
+        score: avgScore,
+        correctAnswersCount: totalCorrect,
+        totalQuestions: totalQs,
+        subTestScores: subScores,
+      };
+    } else {
+      // Single test calculation
+      if (!questions || questions.length === 0) {
+        return {
+          score: answerResult?.score ?? 0,
+          correctAnswersCount: 0,
+          totalQuestions: 0,
+          subTestScores: [],
+        };
+      }
+
+      let correctCount = 0;
+      questions.forEach((q) => {
+        const userSelectedOption = q.options.find((opt) => opt.is_user_selected);
+        const correctOption = q.options.find((opt) => opt.is_correct);
+
+        if (userSelectedOption && correctOption && userSelectedOption.id === correctOption.id) {
+          correctCount++;
+        }
+      });
+
+      const total = questions.length;
+      return {
+        score: answerResult?.score ?? (total > 0 ? Math.round((correctCount / total) * 100) : 0),
+        correctAnswersCount: correctCount,
+        totalQuestions: total,
+        subTestScores: [],
       };
     }
+  }, [hasSubTests, subTestResults, subTests, questions, answerResult?.score]);
 
-    let correctCount = 0;
-    questions.forEach((q) => {
-      const userSelectedOption = q.options.find((opt) => opt.is_user_selected);
-      const correctOption = q.options.find((opt) => opt.is_correct);
-
-      if (userSelectedOption && correctOption && userSelectedOption.id === correctOption.id) {
-        correctCount++;
-      }
-    });
-
-    const total = questions.length;
-    return {
-      score: answerResult?.score ?? (total > 0 ? Math.round((correctCount / total) * 100) : 0),
-      correctAnswersCount: correctCount,
-      totalQuestions: total,
-    };
-  }, [questions, answerResult?.score]);
-
-  if (isLoadingAnswer) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spin size="large" />
@@ -66,12 +148,59 @@ export const Component: FC = (): ReactElement => {
     );
   }
 
-  if (!answerResult) {
+  // Check for session error first
+  if (sessionError || !dataSession?.data) {
+    return (
+      <Result
+        status="warning"
+        title="Sesi Tidak Ditemukan"
+        subTitle="Maaf, kami tidak dapat menemukan sesi ujian ini. Pastikan URL yang Anda akses benar."
+        extra={
+          <Link to={ROUTES.exams.sessions.list}>
+            <Button type="primary">Kembali ke Daftar Sesi</Button>
+          </Link>
+        }
+      />
+    );
+  }
+
+  // Check for test error
+  if (!dataTest?.data) {
+    return (
+      <Result
+        status="warning"
+        title="Test Tidak Ditemukan"
+        subTitle="Maaf, kami tidak dapat menemukan detail test ini."
+        extra={
+          <Link to={ROUTES.exams.sessions.list}>
+            <Button type="primary">Kembali ke Daftar Sesi</Button>
+          </Link>
+        }
+      />
+    );
+  }
+
+  if (!hasSubTests && !answerResult) {
     return (
       <Result
         status="warning"
         title="Data Ujian Tidak Ditemukan"
-        subTitle="Maaf, kami tidak dapat menemukan detail untuk ujian ini."
+        subTitle="Maaf, kami tidak dapat menemukan detail untuk ujian ini. Pastikan Anda sudah menyelesaikan ujian."
+        extra={
+          <Link to={ROUTES.exams.sessions.list}>
+            <Button type="primary">Kembali ke Daftar Sesi</Button>
+          </Link>
+        }
+      />
+    );
+  }
+
+  if (hasSubTests && subTestResults.some((result) => result.error)) {
+    return (
+      <Result
+        status="warning"
+        title="Data Ujian Tidak Ditemukan"
+        subTitle="Maaf, kami tidak dapat menemukan detail untuk beberapa sub-test. Pastikan Anda sudah menyelesaikan semua sub-test."
         extra={
           <Link to={ROUTES.exams.sessions.list}>
             <Button type="primary">Kembali ke Daftar Sesi</Button>
@@ -146,7 +275,121 @@ export const Component: FC = (): ReactElement => {
         </Card>
       </div>
 
-      {questions && questions.length > 0 && (
+      {hasSubTests && subTestScores.length > 0 && (
+        <>
+          {/* Sub-test Summary */}
+          <Card className="w-full shadow-lg mt-6">
+            <Title level={3} className="text-blue-600 mb-6">
+              Ringkasan Per Sub-Test
+            </Title>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {subTestScores.map((subTest, index) => (
+                <Card key={index} className="shadow-sm border">
+                  <div className="text-center">
+                    <Title level={5} className="mb-2">
+                      {subTest.subTestName}
+                    </Title>
+                    <Tag color={getScoreColor(subTest.score)} className="text-xl px-3 py-1 mb-2">
+                      {subTest.score}
+                    </Tag>
+                    <div className="text-sm text-gray-600"></div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </Card>
+
+          {/* Detailed Sub-test Results */}
+          <Card className="w-full shadow-lg mt-6">
+            <Title level={3} className="text-blue-600 mb-6">
+              Pembahasan Soal Per Sub-Test
+            </Title>
+            <Collapse>
+              {subTestScores.map((subTest, subTestIndex) => (
+                <Collapse.Panel
+                  header={
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{subTest.subTestName}</span>
+                      <Tag color={getScoreColor(subTest.score)}>
+                        Nilai: {subTest.score} ({subTest.totalQuestions})
+                      </Tag>
+                    </div>
+                  }
+                  key={subTestIndex}
+                >
+                  <div className="space-y-6">
+                    {subTest.questions.map((q: any, questionIndex: number) => {
+                      const userSelectedOption = q.options.find((opt: any) => opt.is_user_selected);
+                      const correctOption = q.options.find((opt: any) => opt.is_correct);
+                      const isAnswerCorrect =
+                        userSelectedOption &&
+                        correctOption &&
+                        userSelectedOption.id === correctOption.id;
+
+                      return (
+                        <div
+                          key={q.id}
+                          className="p-4 border border-gray-200 rounded-md shadow-sm bg-white"
+                        >
+                          <div className="mb-4">
+                            <Text strong className="text-base">
+                              Pertanyaan {questionIndex + 1}:
+                            </Text>
+                            <div className="prose max-w-none mt-1">{parse(q.question)}</div>
+                            {q.question_image_url && (
+                              <img
+                                src={q.question_image_url}
+                                alt="Gambar Pertanyaan"
+                                className="mt-2 rounded max-w-md max-h-80 object-contain"
+                              />
+                            )}
+                          </div>
+
+                          <div className="space-y-2 mb-4">
+                            <Text strong>Pilihan Jawaban:</Text>
+                            {q.options.map((opt: any) => {
+                              let optionStyle =
+                                "p-2 border rounded flex items-center justify-between";
+
+                              optionStyle += " bg-gray-50 border-gray-200";
+
+                              return (
+                                <div key={opt.id} className={optionStyle}>
+                                  <span>{opt.label}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          <Divider orientation="left" className="text-sm">
+                            Pembahasan
+                          </Divider>
+                          <div className="prose max-w-none bg-blue-50 p-3 rounded">
+                            {q.discussion ? (
+                              parse(q.discussion)
+                            ) : (
+                              <Text type="secondary">Pembahasan tidak tersedia.</Text>
+                            )}
+                            {q.discussion_image_url && (
+                              <img
+                                src={q.discussion_image_url}
+                                alt="Gambar Pembahasan"
+                                className="mt-2 rounded max-w-md max-h-80 object-contain"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Collapse.Panel>
+              ))}
+            </Collapse>
+          </Card>
+        </>
+      )}
+
+      {!hasSubTests && questions && questions.length > 0 && (
         <Card className="w-full shadow-lg mt-6">
           <Title level={3} className="text-blue-600 mb-6">
             Pembahasan Soal

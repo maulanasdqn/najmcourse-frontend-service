@@ -24,6 +24,9 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   const { form, fields, subTestFields, handler } = useFormTest();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pastedQuestions, setPastedQuestions] = useState("");
+  const [isSubTestModalVisible, setIsSubTestModalVisible] = useState(false);
+  const [pastedSubTestQuestions, setPastedSubTestQuestions] = useState("");
+  const [currentSubTestIndex, setCurrentSubTestIndex] = useState<number | null>(null);
   const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
   const [editingSubTestIndex, setEditingSubTestIndex] = useState<number | null>(null);
   const [editingSubTestQuestionIndex, setEditingSubTestQuestionIndex] = useState<{
@@ -89,6 +92,76 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
 
     setIsModalVisible(false);
     setPastedQuestions("");
+  };
+
+  const parseAndAddSubTestQuestions = () => {
+    if (!pastedSubTestQuestions.trim() || currentSubTestIndex === null) return;
+
+    const escapeAndFormatText = (text: string): string => {
+      if (!text) return "<p><br></p>";
+      const escaped = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+      const paragraphs = escaped.split("\n").filter((line: string) => line.trim());
+      if (paragraphs.length === 0) return "<p><br></p>";
+      if (paragraphs.length === 1) return `<p>${paragraphs[0]}</p>`;
+      return paragraphs.map((p: string) => `<p>${p}</p>`).join("");
+    };
+
+    const questionMatches = pastedSubTestQuestions.match(/\d+\.\s+[\s\S]*?(?=\n\s*\d+\.\s+|$)/g);
+
+    if (!questionMatches) return;
+
+    const currentSubTestQuestions =
+      form.getValues(`sub_tests.${currentSubTestIndex}.questions`) || [];
+
+    questionMatches.forEach((questionBlock) => {
+      if (!questionBlock.trim()) return;
+
+      const cleanedBlock = questionBlock.replace(/^\d+\.\s+/, "").trim();
+      const parts = cleanedBlock.split(/\nPembahasan\s*\n/);
+      const questionPart = parts[0].trim();
+      const discussionPart = parts[1] ? parts[1].trim() : "";
+      const optionMatch = questionPart.match(/^([\s\S]*?)\n\s*[A-E]\./s);
+      const questionText = optionMatch ? optionMatch[1].trim() : questionPart;
+      const optionLines = questionPart
+        .split("\n")
+        .filter((line) => line.trim().match(/^[A-E]\.\s+/));
+      const options = optionLines.map((line) => {
+        const cleanedLine = line.trim().replace(/^[A-E]\.\s*/, "");
+        return {
+          id: v4(),
+          label: cleanedLine,
+          image_url: "",
+          is_correct: false,
+          points: 0,
+        };
+      });
+
+      const newQuestion = {
+        id: v4(),
+        question: escapeAndFormatText(questionText),
+        question_image_url: "",
+        discussion: escapeAndFormatText(discussionPart),
+        discussion_image_url: "",
+        options: options,
+      };
+
+      currentSubTestQuestions.push(newQuestion);
+    });
+
+    form.setValue(`sub_tests.${currentSubTestIndex}.questions`, currentSubTestQuestions, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    setIsSubTestModalVisible(false);
+    setPastedSubTestQuestions("");
+    setCurrentSubTestIndex(null);
   };
 
   const handleEditQuestion = (index: number) => {
@@ -530,18 +603,30 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
           </Card>
         ))}
 
-        <Button
-          type="dashed"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            addSubTestQuestion();
-            handleEditSubTestQuestion(subTestIndex, subTestQuestionsFieldArray.fields.length);
-          }}
-          className="w-full"
-          size="large"
-        >
-          Tambah Soal Sub-Test
-        </Button>
+        <div className="flex gap-3 justify-center">
+          <Button
+            type="dashed"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              addSubTestQuestion();
+              handleEditSubTestQuestion(subTestIndex, subTestQuestionsFieldArray.fields.length);
+            }}
+            size="large"
+          >
+            Tambah Soal Sub-Test
+          </Button>
+          <Button
+            type="dashed"
+            icon={<CopyOutlined />}
+            onClick={() => {
+              setCurrentSubTestIndex(subTestIndex);
+              setIsSubTestModalVisible(true);
+            }}
+            size="large"
+          >
+            Paste Soal
+          </Button>
+        </div>
       </div>
     );
   };
@@ -970,6 +1055,65 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
         />
         <p className="mt-2 text-xs text-gray-500">
           Catatan: Soal-soal ini akan ditambahkan ke daftar soal yang sudah ada. Setiap soal harus
+          dimulai dengan nomor (1., 2., dst.) dan menyertakan pilihan jawaban (A., B., C., dst.)
+          serta bagian pembahasan.
+        </p>
+      </Modal>
+
+      <Modal
+        title="Paste Soal Sub-Test"
+        open={isSubTestModalVisible}
+        onOk={parseAndAddSubTestQuestions}
+        onCancel={() => {
+          setIsSubTestModalVisible(false);
+          setPastedSubTestQuestions("");
+          setCurrentSubTestIndex(null);
+        }}
+        okText="Tambahkan Soal"
+        cancelText="Batal"
+        width={800}
+      >
+        <div className="mb-4">
+          <p className="mb-2 text-sm text-gray-600">Format yang didukung:</p>
+          <div className="p-3 bg-gray-100 rounded text-xs font-mono max-h-40 overflow-y-auto">
+            1. Yang meliputi bidang PU (openbare werken) di Indonesia pada zaman Belanda adalah
+            sebagai berikut, kecuali ...
+            <br />
+            A. Lands Gebouwen
+            <br />
+            B. Wegen
+            <br />
+            C. lrrigatie & Assainering
+            <br />
+            D. Water Kracht
+            <br />
+            E. Afdelingen
+            <br />
+            Pembahasan
+            <br />
+            Penjelasan jawaban yang benar
+            <br />
+            <br />
+            2. Yang dimaksud 'jalan' sesuai Undang-Undang No. 38 Tahun 2004 adalah ...
+            <br />
+            A. Ruang sepanjangjalan yang dibatasi oleh lebar, tinggi, dan kedalaman ruang bebas
+            tertentu
+            <br />
+            B. Ruang sepanjang jalan yang dibatasi oleh lebar dan tinggi tertentu
+            <br />
+            Pembahasan
+            <br />
+            Penjelasan jawaban yang benar
+          </div>
+        </div>
+        <TextArea
+          rows={12}
+          value={pastedSubTestQuestions}
+          onChange={(e) => setPastedSubTestQuestions(e.target.value)}
+          placeholder="Paste soal-soal sub-test Anda di sini..."
+        />
+        <p className="mt-2 text-xs text-gray-500">
+          Catatan: Soal-soal ini akan ditambahkan ke sub-test yang dipilih. Setiap soal harus
           dimulai dengan nomor (1., 2., dst.) dan menyertakan pilihan jawaban (A., B., C., dst.)
           serta bagian pembahasan.
         </p>
