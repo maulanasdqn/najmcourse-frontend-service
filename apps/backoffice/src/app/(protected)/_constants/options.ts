@@ -13,6 +13,14 @@ export const studentTypes = [
     value: "POLRI",
   },
   {
+    label: "Kedinasan",
+    value: "KEDINASAN",
+  },
+  {
+    label: "All",
+    value: "ALL",
+  },
+  {
     label: "Staff / Admin",
     value: "-",
   },

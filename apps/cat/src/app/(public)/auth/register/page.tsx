@@ -29,7 +29,7 @@ export const Component: FC = (): ReactElement => {
         </Text>
       </div>
       <Form
-        name="auth_login"
+        name="auth_register"
         initialValues={{ remember: true }}
         onFinish={handler.onSubmit}
         layout="vertical"
@@ -82,6 +82,10 @@ export const Component: FC = (): ReactElement => {
             {
               label: "Polri",
               value: "POLRI",
+            },
+            {
+              label: "Kedinasan",
+              value: "KEDINASAN",
             },
           ]}
           size="large"

@@ -18,8 +18,6 @@ export const useRegister = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  console.log(form.formState.errors);
-
   const onSubmit = form.handleSubmit((data) => {
     mutate(data, {
       onSuccess: (res) => {
