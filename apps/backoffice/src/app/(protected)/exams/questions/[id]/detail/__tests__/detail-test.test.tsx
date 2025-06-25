@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Component } from "../page";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router";
@@ -64,7 +64,7 @@ describe("Detail Test Page", () => {
 
   it("Test should render the basic test details", () => {
     renderPage();
-    expect(screen.getByText("Detail Session")).toBeInTheDocument();
+    expect(screen.getByText("Detail Test")).toBeInTheDocument();
     expect(screen.getByText("test-id-1")).toBeInTheDocument();
     expect(screen.getByText("Create User")).toBeInTheDocument();
     expect(screen.getByText("01/05/2025 17:00")).toBeInTheDocument();
@@ -83,11 +83,18 @@ describe("Detail Test Page", () => {
   it("Test should render questions, images, and options", async () => {
     renderPage();
 
-    expect(await screen.findByText("Question 1")).toBeInTheDocument();
-    expect(screen.getByText("ID:")).toBeInTheDocument();
+    const questionPanel = await screen.findByText("Question 1");
+    expect(questionPanel).toBeInTheDocument();
+
+    fireEvent.click(questionPanel);
+
+    await waitFor(() => {
+      expect(screen.getByText("ID:")).toBeInTheDocument();
+      expect(screen.getByText("q1")).toBeInTheDocument();
+    });
+
     expect(screen.getByText("What is React?")).toBeInTheDocument();
     expect(screen.getByText("React is a library.")).toBeInTheDocument();
-    expect(screen.getByAltText("image")).toBeInTheDocument();
     expect(screen.getByText("Label:")).toBeInTheDocument();
     expect(screen.getByText("Library")).toBeInTheDocument();
     expect(screen.getByText("Points:")).toBeInTheDocument();

@@ -4,7 +4,12 @@ import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useListRole } from "../_hooks/use-list-role";
 
+const mockUseSession = vi.fn();
+
 vi.mock("../_hooks/use-list-role");
+vi.mock("@/shared/components/providers/hooks/use-session", () => ({
+  useSession: mockUseSession,
+}));
 
 const defaultMockReturn = {
   dataSource: [],
@@ -30,9 +35,24 @@ const renderPage = () =>
     </QueryClientProvider>,
   );
 
+const mockSession = {
+  user: {
+    role: {
+      permissions: [{ name: "CREATE_ROLES" }],
+    },
+  },
+};
+
 describe("Page List Roles", () => {
   beforeEach(() => {
     vi.mocked(useListRole).mockReturnValue(defaultMockReturn);
+    mockUseSession.mockReturnValue({
+      session: mockSession,
+      status: "authenticated",
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      isLoading: false,
+    });
   });
 
   it("Test renders title and create button", () => {

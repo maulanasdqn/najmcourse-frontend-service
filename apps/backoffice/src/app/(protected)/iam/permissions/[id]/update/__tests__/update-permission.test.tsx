@@ -6,7 +6,7 @@ import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUpdatePermission } from "../_hooks/use-update-permission";
 import { useForm } from "react-hook-form";
-import { TPermissionUpdateRequest } from "@/api/permissions/type";
+import { TPermissionUpdateRequest } from "@/shared/apis/permissions/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { permissionUpdateSchema } from "@/shared/apis/permissions/schema";
 
@@ -30,12 +30,18 @@ vi.mock("../../_hooks/use-get-detail-permissions", () => ({
 }));
 
 vi.mock("../_hooks/use-update-permission");
+const mockUseFormPermission = vi.fn();
+vi.mock("../../_hooks/use-form-permission", () => ({
+  useFormPermission: mockUseFormPermission,
+}));
 
 const TestWrapper = ({
   isValid = true,
+  isDirty = true,
   onSubmit = vi.fn().mockResolvedValue(undefined),
 }: {
   isValid?: boolean;
+  isDirty?: boolean;
   onSubmit?: (e?: any) => Promise<void>;
 }) => {
   const form = useForm<TPermissionUpdateRequest>({
@@ -45,18 +51,22 @@ const TestWrapper = ({
   });
 
   vi.mocked(useUpdatePermission).mockReturnValue({
-    form: {
-      ...form,
-      formState: {
-        ...form.formState,
-        isValid,
-      },
-    },
+    form,
     state: {
       isLoading: false,
     },
     handler: {
       onSubmit,
+    },
+  });
+
+  mockUseFormPermission.mockReturnValue({
+    form: {
+      control: form.control,
+      formState: {
+        isValid,
+        isDirty,
+      },
     },
   });
 
@@ -77,18 +87,18 @@ describe("Update Permission Page", () => {
   });
 
   it("Test enables submit button when form is valid", () => {
-    render(<TestWrapper isValid />);
+    render(<TestWrapper isValid isDirty />);
     expect(screen.getByRole("button", { name: "Submit" })).not.toBeDisabled();
   });
 
   it("Test disables submit button when form is invalid", () => {
-    render(<TestWrapper isValid={false} />);
+    render(<TestWrapper isValid={false} isDirty={false} />);
     expect(screen.getByRole("button", { name: "Submit" })).toBeDisabled();
   });
 
   it("Test calls onSubmit when form is submitted", async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
-    render(<TestWrapper isValid onSubmit={onSubmit} />);
+    render(<TestWrapper isValid isDirty onSubmit={onSubmit} />);
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalled();
@@ -96,7 +106,7 @@ describe("Update Permission Page", () => {
   });
 
   it("Test shows validation error when name is empty", async () => {
-    render(<TestWrapper isValid={false} />);
+    render(<TestWrapper isValid={false} isDirty={false} />);
     const input = screen.getByPlaceholderText("Input name");
     fireEvent.change(input, { target: { value: "a" } });
     fireEvent.change(input, { target: { value: "" } });
@@ -106,7 +116,7 @@ describe("Update Permission Page", () => {
   });
 
   it("Test enables submit button when name is filled", async () => {
-    render(<TestWrapper isValid />);
+    render(<TestWrapper isValid isDirty />);
     const input = screen.getByPlaceholderText("Input name");
     fireEvent.change(input, { target: { value: "Create User" } });
     await waitFor(() => {
