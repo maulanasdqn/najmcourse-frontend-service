@@ -87,6 +87,13 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             placeholder="Input multiplier"
             name={`tests.${index}.multiplier`}
           />
+          <ControlledInput
+            label="Timer (Durasi dalam menit)"
+            control={form.control}
+            placeholder="Input timer duration in minutes"
+            name={`tests.${index}.timer`}
+            type="number"
+          />
           <ControlledDatePicker
             label="Start Date"
             control={form.control}
@@ -169,6 +176,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
               weight: "0%",
               shuffle: false,
               multiplier: 0,
+              timer: 60,
               start_date: "",
               end_date: "",
             })

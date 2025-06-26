@@ -27,6 +27,7 @@ export type TSessionDetailTestItem = {
   shuffle: boolean;
   start_date: string;
   end_date: string;
+  timer: number;
 };
 
 export type TSessionDetailItem = TBaseSession & {

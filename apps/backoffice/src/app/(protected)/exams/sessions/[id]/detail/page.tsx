@@ -40,6 +40,9 @@ export const Component: FC = (): ReactElement => {
                   <strong>Multiplier (Pengkali):</strong> {test.multiplier}
                 </p>
                 <p>
+                  <strong>Timer (Durasi):</strong> {test.timer} menit
+                </p>
+                <p>
                   <strong>Start Date:</strong> {dayjs(test.start_date).format("DD/MM/YYYY HH:mm")}
                 </p>
                 <p>

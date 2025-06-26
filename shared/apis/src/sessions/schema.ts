@@ -33,6 +33,9 @@ const baseSessionSchema = z.object({
           shuffle: z.boolean().optional().nullable(),
           weight: z.string({ required_error: "Weight is required" }),
           multiplier: z.coerce.number({ required_error: "Multiplier is required" }),
+          timer: z.coerce
+            .number({ required_error: "Timer is required" })
+            .min(1, { message: "Timer must be at least 1 minute" }),
           start_date: z
             .string({ required_error: "Start date is required" })
             .min(1, { message: "Start date must be at least 1 character" }),
@@ -66,6 +69,9 @@ export const sessionCreateSchema = baseSessionSchema.extend({
           shuffle: z.boolean().optional().nullable(),
           weight: z.string({ required_error: "Weight is required" }),
           multiplier: z.coerce.number({ required_error: "Multiplier is required" }),
+          timer: z.coerce
+            .number({ required_error: "Timer is required" })
+            .min(1, { message: "Timer must be at least 1 minute" }),
           start_date: z
             .string({ required_error: "Start date is required" })
             .min(1, { message: "Start date must be at least 1 character" }),

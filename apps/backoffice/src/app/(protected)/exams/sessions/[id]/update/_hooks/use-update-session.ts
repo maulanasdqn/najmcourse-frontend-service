@@ -43,6 +43,7 @@ export const useUpdateSession = () => {
       test_id: "",
       weight: "0%",
       multiplier: 0,
+      timer: 60,
       start_date: "",
       end_date: "",
     });
@@ -67,6 +68,7 @@ export const useUpdateSession = () => {
           weight: test.weight,
           multiplier: test.multiplier,
           shuffle: test.shuffle,
+          timer: test.timer || 60,
           start_date: test.start_date,
           end_date: test.end_date,
         })),

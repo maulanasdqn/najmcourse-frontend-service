@@ -203,6 +203,9 @@ const TestCard: FC<{
             <strong>Jumlah Soal:</strong> {test?.test?.questions?.length}
           </p>
           <p className="text-sm text-gray-700">
+            <strong>Durasi:</strong> {test.timer} menit
+          </p>
+          <p className="text-sm text-gray-700">
             <strong>Tanggal Mulai:</strong> {dayjs(test.start_date).format("DD/MM/YYYY HH:mm")}
           </p>
           <p className="text-sm text-gray-700">

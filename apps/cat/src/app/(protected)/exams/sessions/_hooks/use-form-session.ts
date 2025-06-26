@@ -19,8 +19,9 @@ export const useFormSession = () => {
   const onAddTest = () => {
     fields.append({
       test_id: "",
-      weight: 0,
+      weight: "",
       multiplier: 0,
+      timer: 60,
       start_date: "",
       end_date: "",
     });
