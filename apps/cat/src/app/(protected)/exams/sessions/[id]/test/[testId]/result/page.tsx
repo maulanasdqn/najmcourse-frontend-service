@@ -22,7 +22,6 @@ import { ROUTES } from "@/shared/commons/constants/routes";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { useGetDetailTest } from "@/shared/hooks/tests/use-get-detail-test";
 import { useGetDetailSession } from "@/shared/hooks/sessions/use-get-detail-session";
-import { match } from "ts-pattern";
 
 const { Title, Text } = Typography;
 
@@ -37,17 +36,15 @@ export const Component: FC = (): ReactElement => {
   } = useGetDetailSession(params.id);
 
   const isPsikologi = dataSession?.data?.category === "Psikologi";
-  const subTests = dataTest?.data?.sub_tests ?? [];
+  const subTests = useMemo(() => dataTest?.data?.sub_tests ?? [], [dataTest?.data?.sub_tests]);
   const hasSubTests = isPsikologi && subTests.length > 0;
 
-  // For Psikologi with sub-tests, get all sub-test results
   const subTestResults = useGetAllSubTestResults({
     testId: params.testId ?? "",
     userId: userData?.user?.id ?? "",
     subTestIds: hasSubTests ? subTests.map((st) => st.id) : [],
   });
 
-  // For non-Psikologi or tests without sub-tests, get single result
   const { data: answerData, isLoading: isLoadingAnswer } = useGetDetailByTestAndUserIdAnswer({
     testId: params.testId ?? "",
     userId: userData?.user?.id ?? "",
@@ -69,7 +66,6 @@ export const Component: FC = (): ReactElement => {
 
   const { score, correctAnswersCount, totalQuestions, subTestScores } = useMemo(() => {
     if (hasSubTests) {
-      // Calculate scores for all sub-tests
       const subScores = subTestResults.map((result, index) => {
         const subTestData = result.data?.data;
         const subTestQuestions = subTestData?.questions ?? [];
@@ -149,7 +145,6 @@ export const Component: FC = (): ReactElement => {
     );
   }
 
-  // Check for session error first
   if (sessionError || !dataSession?.data) {
     return (
       <Result
@@ -165,7 +160,6 @@ export const Component: FC = (): ReactElement => {
     );
   }
 
-  // Check for test error
   if (!dataTest?.data) {
     return (
       <Result
@@ -282,7 +276,6 @@ export const Component: FC = (): ReactElement => {
 
       {hasSubTests && subTestScores.length > 0 && (
         <>
-          {/* Sub-test Summary */}
           <Card
             style={{
               marginTop: "20px",
@@ -331,7 +324,6 @@ export const Component: FC = (): ReactElement => {
             </div>
           </Card>
 
-          {/* Detailed Sub-test Results */}
           <Card className="w-full shadow-lg mt-6">
             <Title level={3} className="text-blue-600 mb-6">
               Pembahasan Soal Per Sub-Test
@@ -357,7 +349,7 @@ export const Component: FC = (): ReactElement => {
                         userSelectedOption &&
                         correctOption &&
                         userSelectedOption.id === correctOption.id;
-
+                      console.log(isAnswerCorrect);
                       return (
                         <div
                           key={q.id}

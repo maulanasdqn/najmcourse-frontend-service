@@ -8,6 +8,7 @@ export type TSubTestItem = {
   id: string;
   name: string;
   questions: TQuestionItem[];
+  passing_grade: number;
   banner?: string;
   category: string;
   created_at: string;

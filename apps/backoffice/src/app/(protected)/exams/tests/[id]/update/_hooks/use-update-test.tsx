@@ -39,6 +39,7 @@ export const useUpdateTest = () => {
           name: sub_test.name,
           category: detail?.data?.category,
           description: sub_test.description,
+          passing_grade: sub_test.passing_grade,
           questions: sub_test.questions.map((question) => ({
             id: question.id,
             question: question.question,
@@ -73,17 +74,25 @@ export const useUpdateTest = () => {
     }
   }, [detail?.data, form]);
 
-  console.log(form.formState.errors);
-
   const onSubmit = form.handleSubmit((data) => {
-    mutate(data, {
-      onSuccess: () => {
-        form.reset();
-        message.success("Test updated successfully");
-        navigate(ROUTES.exams.tests.list);
+    mutate(
+      {
+        ...data,
+        sub_tests: data.sub_tests?.map((subTest) => ({
+          ...subTest,
+          passing_grade: Number(subTest.passing_grade),
+        })),
       },
-      onError: (err) => void message.error(err?.response?.data?.message ?? "Something went wrong"),
-    });
+      {
+        onSuccess: () => {
+          form.reset();
+          message.success("Test updated successfully");
+          navigate(ROUTES.exams.tests.list);
+        },
+        onError: (err) =>
+          void message.error(err?.response?.data?.message ?? "Something went wrong"),
+      },
+    );
   });
 
   const handler = {

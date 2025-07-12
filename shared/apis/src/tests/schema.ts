@@ -34,6 +34,7 @@ const subTestSchema = z.object({
   name: z.string({ required_error: "Sub-test name is required" }).min(1, {
     message: "Sub-test name must be at least 1 character",
   }),
+  passing_grade: z.coerce.number().min(0, { message: "Passing grade must be at least 0" }),
   banner: z.string().trim().optional().nullable(),
   category: z.string({ required_error: "Category is required" }).min(1, {
     message: "Category must be at least 1 character",

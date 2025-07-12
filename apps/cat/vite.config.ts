@@ -9,11 +9,11 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: "../../node_modules/.vite/apps/cat",
   server: {
-    port: 3000,
+    port: 3002,
     host: "localhost",
   },
   preview: {
-    port: 3000,
+    port: 3002,
     host: "localhost",
   },
   plugins: [

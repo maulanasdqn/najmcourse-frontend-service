@@ -23,14 +23,23 @@ export const useCreateTest = () => {
   });
 
   const onSubmit = form.handleSubmit((data) => {
-    mutate(data, {
-      onSuccess: () => {
-        form.reset();
-        message.success("Test updated successfully");
-        navigate(ROUTES.exams.tests.list);
+    mutate(
+      {
+        ...data,
+        sub_tests: data.sub_tests?.map((subTest) => ({
+          ...subTest,
+          passing_grade: Number(subTest.passing_grade),
+        })),
+      } as any,
+      {
+        onSuccess: () => {
+          form.reset();
+          message.success("Test updated successfully");
+          navigate(ROUTES.exams.tests.list);
+        },
+        onError: (err) => void message.error(err?.response?.data?.message),
       },
-      onError: (err) => void message.error(err?.response?.data?.message),
-    });
+    );
   });
 
   const handler = {

@@ -10,7 +10,7 @@ import {
   EditOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Modal, Input, Card, Space, Typography, Radio, Divider, Tabs } from "antd";
+import { Button, Form, Modal, Input, Card, Space, Typography, Radio, Divider } from "antd";
 import { useFormTest } from "../_hooks/use-form-test";
 import { TFormFieldsProps } from "@/shared/commons/types/form-field";
 import { FC, ReactElement, useState } from "react";
@@ -28,12 +28,10 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
   const [pastedSubTestQuestions, setPastedSubTestQuestions] = useState("");
   const [currentSubTestIndex, setCurrentSubTestIndex] = useState<number | null>(null);
   const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
-  const [editingSubTestIndex, setEditingSubTestIndex] = useState<number | null>(null);
   const [editingSubTestQuestionIndex, setEditingSubTestQuestionIndex] = useState<{
     subTestIndex: number;
     questionIndex: number;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<"main" | "subtests">("subtests");
 
   const parseAndAddQuestions = () => {
     if (!pastedQuestions.trim()) return;
@@ -206,27 +204,6 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
     });
 
     form.trigger(`questions.${questionIndex}.options`);
-  };
-
-  const handleAddSubTestOption = (subTestIndex: number, questionIndex: number) => {
-    const currentOptions =
-      form.getValues(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`) || [];
-
-    const newOption = {
-      id: v4(),
-      label: "",
-      image_url: "",
-      is_correct: false,
-      points: 0,
-    };
-
-    const updatedOptions = [...currentOptions, newOption];
-    form.setValue(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`, updatedOptions, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-
-    form.trigger(`sub_tests.${subTestIndex}.questions.${questionIndex}.options`);
   };
 
   const getOptionLabel = (index: number): string => {
@@ -544,11 +521,23 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                             : "border-gray-200 bg-white"
                         }`}
                       >
-                        <Radio disabled value={option.id} className="mr-3">
-                          <span className="font-medium text-gray-700 mr-2">
-                            {getOptionLabel(optionIndex)}.
-                          </span>
-                          <span className="text-gray-800">{option.label}</span>
+                        <Radio
+                          disabled
+                          value={option.id}
+                          style={{
+                            width: "100%",
+                          }}
+                          className="mr-3 w-full"
+                        >
+                          <div className="flex justify-between w-full">
+                            <span className="font-medium text-gray-700 mr-2">
+                              {getOptionLabel(optionIndex)}.
+                            </span>
+                            <div className="flex items-center gap-x-10">
+                              <span className="text-gray-800">{option.label}</span>
+                              <span className="text-gray-400">{option.points} Poin</span>
+                            </div>
+                          </div>
                           {option.image_url && (
                             <img
                               src={option.image_url}
@@ -914,6 +903,13 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                 control={form.control}
                 name={`sub_tests.${subTestIndex}.name`}
                 placeholder="Masukkan nama sub-test"
+              />
+
+              <ControlledInput
+                label="Passing Grade"
+                control={form.control}
+                name={`sub_tests.${subTestIndex}.passing_grade`}
+                placeholder="Masukkan passing grade"
               />
 
               <ControlledUploadFile

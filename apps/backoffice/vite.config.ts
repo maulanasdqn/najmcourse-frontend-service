@@ -10,11 +10,11 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: "../../node_modules/.vite/apps/backoffice",
   server: {
-    port: 3002,
+    port: 3001,
     host: "localhost",
   },
   preview: {
-    port: 3002,
+    port: 3001,
     host: "localhost",
   },
   plugins: [
