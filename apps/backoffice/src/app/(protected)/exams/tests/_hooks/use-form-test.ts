@@ -35,8 +35,9 @@ export const useFormTest = () => {
       id: v4(),
       name: "",
       banner: "",
-      category: form.getValues("category") || "Psikologi",
+      category: "",
       questions: [],
+      passing_grade: 0,
     });
   };
 

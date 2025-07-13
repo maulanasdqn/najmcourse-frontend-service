@@ -37,7 +37,7 @@ export const useUpdateTest = () => {
         sub_tests: detail?.data?.sub_tests?.map?.((sub_test) => ({
           id: sub_test.id,
           name: sub_test.name,
-          category: detail?.data?.category,
+          category: sub_test.category,
           description: sub_test.description,
           passing_grade: sub_test.passing_grade,
           questions: sub_test.questions.map((question) => ({

@@ -281,35 +281,80 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
 
             <div className="flex items-center justify-between">
               {form.watch("category") === "Akademik" && (
-                <ControlledSwitch
-                  label="Jawaban Benar"
-                  control={form.control}
-                  name={`${fieldName}.${optionIndex}.is_correct` as any}
-                  onChange={() => setCorrect(optionIndex)}
-                />
+                <>
+                  {form.watch("category") === "Akademik" && (
+                    <ControlledSwitch
+                      label="Jawaban Benar"
+                      control={form.control}
+                      name={`${fieldName}.${optionIndex}.is_correct` as any}
+                      onChange={() => {
+                        setCorrect(optionIndex);
+                        form.setValue(`${fieldName}.${optionIndex}.points` as any, 0);
+                      }}
+                    />
+                  )}
+
+                  {form.watch("category") === "Akademik" &&
+                    form.watch(`${fieldName}.${optionIndex}.is_correct` as any) && (
+                      <ControlledInput
+                        required
+                        label="Poin"
+                        control={form.control}
+                        name={`${fieldName}.${optionIndex}.points` as any}
+                        placeholder="0"
+                        style={{ width: 100 }}
+                      />
+                    )}
+
+                  {form.watch("category") === "Psikologi" && (
+                    <ControlledInput
+                      required
+                      label="Poin"
+                      control={form.control}
+                      name={`${fieldName}.${optionIndex}.points` as any}
+                      placeholder="0"
+                      style={{ width: 100 }}
+                    />
+                  )}
+                </>
               )}
 
-              {form.watch("category") === "Akademik" &&
-                form.watch(`${fieldName}.${optionIndex}.is_correct` as any) && (
-                  <ControlledInput
-                    required
-                    label="Poin"
-                    control={form.control}
-                    name={`${fieldName}.${optionIndex}.points` as any}
-                    placeholder="0"
-                    style={{ width: 100 }}
-                  />
-                )}
-
               {form.watch("category") === "Psikologi" && (
-                <ControlledInput
-                  required
-                  label="Poin"
-                  control={form.control}
-                  name={`${fieldName}.${optionIndex}.points` as any}
-                  placeholder="0"
-                  style={{ width: 100 }}
-                />
+                <>
+                  {form.watch(`sub_tests.${subTestIndex}.category` as any) === "Akademik" && (
+                    <ControlledSwitch
+                      label="Jawaban Benar"
+                      control={form.control}
+                      name={`${fieldName}.${optionIndex}.is_correct` as any}
+                      onChange={() => {
+                        setCorrect(optionIndex);
+                        form.setValue(`${fieldName}.${optionIndex}.points` as any, 0);
+                      }}
+                    />
+                  )}
+                  {form.watch(`sub_tests.${subTestIndex}.category` as any) === "Akademik" &&
+                    form.watch(`${fieldName}.${optionIndex}.is_correct` as any) && (
+                      <ControlledInput
+                        required
+                        label="Poin"
+                        control={form.control}
+                        name={`${fieldName}.${optionIndex}.points` as any}
+                        placeholder="0"
+                        style={{ width: 100 }}
+                      />
+                    )}
+
+                  {form.watch(`sub_tests.${subTestIndex}.category` as any) === "Psikologi" && (
+                    <ControlledInput
+                      required
+                      label="Poin"
+                      control={form.control}
+                      name={`${fieldName}.${optionIndex}.points` as any}
+                      placeholder="0"
+                      style={{ width: 100 }}
+                    />
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -903,6 +948,23 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                 control={form.control}
                 name={`sub_tests.${subTestIndex}.name`}
                 placeholder="Masukkan nama sub-test"
+              />
+
+              <ControlledSelect
+                label="Kategori Sub-Test"
+                control={form.control}
+                placeholder="Masukkan kategori test"
+                name={`sub_tests.${subTestIndex}.category`}
+                options={[
+                  {
+                    label: "Akademik",
+                    value: "Akademik",
+                  },
+                  {
+                    label: "Psikologi",
+                    value: "Psikologi",
+                  },
+                ]}
               />
 
               <ControlledInput
