@@ -65,7 +65,7 @@ export const postVerifyEmail = async (payload: TVerifyEmailRequest): Promise<TMe
     method: "POST",
     data: {
       ...payload,
-      otp: Number(payload.otp),
+      otp: payload.otp,
     },
   });
   return data;

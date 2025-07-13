@@ -8,7 +8,7 @@ import { match, P } from "ts-pattern";
 import { generatePath, Link } from "react-router";
 
 export const Component: FC = (): ReactElement => {
-  const { dataSource, isLoading } = useListSession();
+  const { dataSource, isLoading, userData } = useListSession();
 
   const loadingCardKeys = useMemo(
     () => Array.from({ length: 6 }).map(() => crypto.randomUUID()),
@@ -65,7 +65,11 @@ export const Component: FC = (): ReactElement => {
                 alt=""
                 src="https://cdni.iconscout.com/illustration/premium/thumb/sorry-item-not-found-illustration-download-in-svg-png-gif-file-formats--available-product-tokostore-pack-e-commerce-shopping-illustrations-2809510.png"
               />
-              <p className="text-2xl font-semibold text-gray-700">Belum ada sesi ujian</p>
+              <p className="text-2xl font-semibold text-gray-700">
+                {!userData?.is_payment_completed
+                  ? "Lakukan Pembayaran Terlebih Dahulu"
+                  : "Belum ada sesi ujian"}
+              </p>
             </div>
           ))}
       </div>

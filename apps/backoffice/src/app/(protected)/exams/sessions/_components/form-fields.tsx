@@ -75,6 +75,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             })}
           />
           <ControlledSelect
+            disabled={form.watch("category") === "Psikologi"}
             label="Weight (Bobot)"
             control={form.control}
             placeholder="Select weight"
@@ -82,6 +83,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             options={options.weightOptions}
           />
           <ControlledInput
+            disabled={form.watch("category") === "Psikologi"}
             label="Multiplier (Pengkali)"
             control={form.control}
             placeholder="Input multiplier"

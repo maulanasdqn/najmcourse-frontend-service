@@ -5,8 +5,8 @@ export const ROUTES = {
     login: "/auth/login",
     verify: "/auth/verify",
     payment: "/auth/payment",
-    forgotPassword: "/auth/forgot-password",
-    resetPassword: "/auth/reset-password",
+    forgotPassword: "/auth/forgot",
+    resetPassword: "/auth/reset",
   },
   iam: {
     users: {

@@ -46,3 +46,8 @@ export const userActivateSchema = z.object({
   id: z.string({ required_error: "ID is required" }).min(1, "ID is required"),
   is_active: z.boolean({ required_error: "Active status is required" }),
 });
+
+export const userCompletePaymentSchema = z.object({
+  id: z.string({ required_error: "ID is required" }).min(1, "ID is required"),
+  is_payment_completed: z.boolean({ required_error: "Payment status is required" }),
+});

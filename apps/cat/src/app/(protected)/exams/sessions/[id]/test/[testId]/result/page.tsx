@@ -86,6 +86,7 @@ export const Component: FC = (): ReactElement => {
 
         return {
           subTestName: subTests[index]?.name ?? `Sub-Test ${index + 1}`,
+          passing_grade: subTests[index]?.passing_grade ?? 0,
           score: subScore,
           correctCount,
           totalQuestions: total,
@@ -205,7 +206,7 @@ export const Component: FC = (): ReactElement => {
     );
   }
 
-  const isPassed = subTestScores.some((subTest) => subTest.score >= 75);
+  const isPassed = subTestScores.some((subTest) => subTest.score >= subTest.passing_grade);
 
   return (
     <div className="min-h-screen">
@@ -314,7 +315,7 @@ export const Component: FC = (): ReactElement => {
                     <div className="flex gap-x-4 w-full justify-end">
                       <span className="font-semibold">Passing Grade</span>
                       <Tag color={"green"} className="text-xl px-3 py-1 mb-2">
-                        75
+                        {subTest.passing_grade}
                       </Tag>
                     </div>
                     <div className="text-sm text-gray-600"></div>

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   userActivateSchema,
+  userCompletePaymentSchema,
   userCreateSchema,
   userUpdateBackofficeSchema,
   userUpdateSchema,
@@ -20,6 +21,7 @@ export type TUserItem = {
   student_type: string;
   is_active: boolean;
   is_profile_completed: boolean;
+  is_payment_completed: boolean;
   identity_number: string | null;
   religion: string | null;
   gender: string | null;
@@ -38,3 +40,5 @@ export type TUserListResponse = TResponseList<TUserItem>;
 export type TUserDetailResponse = TResponseDetail<TUserItem>;
 
 export type TUserActivateRequest = z.infer<typeof userActivateSchema>;
+
+export type TUserCompletePaymentRequest = z.infer<typeof userCompletePaymentSchema>;

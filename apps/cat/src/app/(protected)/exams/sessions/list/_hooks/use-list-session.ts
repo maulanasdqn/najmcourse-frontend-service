@@ -14,9 +14,12 @@ export const useListSession = () => {
 
   return {
     isLoading,
-    dataSource: data?.data.filter(
-      (item) => item.student_type === userData?.student_type || item.student_type === "ALL",
-    ),
+    userData,
+    dataSource: userData?.is_payment_completed
+      ? data?.data.filter(
+          (item) => item.student_type === userData?.student_type || item.student_type === "ALL",
+        )
+      : [],
     meta: data?.meta,
     columns,
   };

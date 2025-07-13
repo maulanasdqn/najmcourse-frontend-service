@@ -18,6 +18,7 @@ export const ENDPOINTS = {
     UPDATE_ME: "/users/update/me",
     DELETE: "/users/delete/:id",
     ACTIVATE: "/users/activate/:id",
+    COMPLETE_PAYMENT: "/users/complete-payment/:id",
   },
   ROLES: {
     LIST: "/roles",

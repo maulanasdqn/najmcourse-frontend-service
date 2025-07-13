@@ -6,6 +6,7 @@ import type { TMetaRequest } from "@/shared/commons/types/meta";
 import type { TMessageResponse } from "@/shared/commons/types/response";
 import type {
   TUserActivateRequest,
+  TUserCompletePaymentRequest,
   TUserCreateRequest,
   TUserDetailResponse,
   TUserListResponse,
@@ -62,6 +63,17 @@ export const putUpdateBackofficeUser = async (
 export const putActivateUser = async (payload: TUserActivateRequest): Promise<TMessageResponse> => {
   const { data } = await api({
     url: generatePath(ENDPOINTS.USERS.ACTIVATE, { id: payload.id }),
+    method: "PUT",
+    data: payload,
+  });
+  return data;
+};
+
+export const putCompletePaymentUser = async (
+  payload: TUserCompletePaymentRequest,
+): Promise<TMessageResponse> => {
+  const { data } = await api({
+    url: generatePath(ENDPOINTS.USERS.COMPLETE_PAYMENT, { id: payload.id }),
     method: "PUT",
     data: payload,
   });
