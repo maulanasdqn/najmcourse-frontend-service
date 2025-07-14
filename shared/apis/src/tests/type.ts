@@ -20,6 +20,7 @@ export type TTestListItem = {
   name: string;
   category: string;
   banner: string;
+  subject: string;
   question_count: number;
   created_at: string;
   updated_at: string;
@@ -30,6 +31,7 @@ export type TTestDetailItem = {
   name: string;
   category: string;
   banner: string;
+  subject: string;
   questions: TQuestionItem[];
   sub_tests?: TSubTestItem[];
   created_at: string;

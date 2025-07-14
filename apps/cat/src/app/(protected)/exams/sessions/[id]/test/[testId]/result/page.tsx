@@ -248,6 +248,10 @@ export const Component: FC = (): ReactElement => {
             <Descriptions.Item label="Nama Ujian" span={2}>
               {dataTest?.data?.name}
             </Descriptions.Item>
+            <Descriptions.Item label="Mata Pelajaran" span={2}>
+              {dataTest?.data?.subject}
+            </Descriptions.Item>
+
             <Descriptions.Item label="Kategori Ujian" span={2}>
               {dataSession?.data?.category}
             </Descriptions.Item>

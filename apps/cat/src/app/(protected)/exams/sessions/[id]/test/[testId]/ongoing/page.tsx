@@ -384,6 +384,7 @@ export const Component: FC = (): ReactElement => {
                 <span>
                   {userData?.user?.student_type} - {session?.category}
                 </span>
+                <span>{selectedTest?.test?.subject}</span>
                 {isPsikologi && currentSubTest && (
                   <div className="flex flex-col gap-1">
                     <span className="text-sm text-blue-600 font-medium">

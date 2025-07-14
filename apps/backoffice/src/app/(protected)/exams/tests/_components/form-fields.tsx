@@ -21,7 +21,7 @@ const { TextArea } = Input;
 const { Text, Title } = Typography;
 
 export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
-  const { form, fields, subTestFields, handler } = useFormTest();
+  const { form, fields, subTestFields, handler, options } = useFormTest();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pastedQuestions, setPastedQuestions] = useState("");
   const [isSubTestModalVisible, setIsSubTestModalVisible] = useState(false);
@@ -1015,6 +1015,7 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
             placeholder="Masukkan nama test"
             name="name"
           />
+
           <ControlledSelect
             label="Kategori Test"
             control={form.control}
@@ -1030,6 +1031,14 @@ export const FormFields: FC<TFormFieldsProps> = (props): ReactElement => {
                 value: "Psikologi",
               },
             ]}
+          />
+
+          <ControlledSelect
+            label="Mata Pelajaran"
+            control={form.control}
+            placeholder="Masukkan kategori test"
+            name="subject"
+            options={options.subjectOptions}
           />
         </Card>
         <Card

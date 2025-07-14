@@ -23,6 +23,7 @@ export const Component: FC = (): ReactElement => {
       <Descriptions bordered column={1}>
         <Descriptions.Item label="ID">{test?.id ?? "-"}</Descriptions.Item>
         <Descriptions.Item label="Name">{test?.name ?? "-"}</Descriptions.Item>
+        <Descriptions.Item label="Mata Pelajaran">{test?.subject ?? "-"}</Descriptions.Item>
         <Descriptions.Item label="Registered Questions">
           <Collapse accordion>
             {test?.questions?.map((question, index) => (

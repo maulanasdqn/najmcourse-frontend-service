@@ -45,7 +45,13 @@ export const useColumnTest = (props: TUseColumnTestProps) => {
       sorter: true,
     },
     {
-      title: "Test Kategori",
+      title: "Subject",
+      dataIndex: "subject",
+      key: "subject",
+      sorter: true,
+    },
+    {
+      title: "Test Categori",
       dataIndex: "category",
       key: "category",
       sorter: true,

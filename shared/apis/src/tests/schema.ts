@@ -57,6 +57,9 @@ export const testCreateSchema = z
     name: z.string({ required_error: "Name is required" }).min(1, {
       message: "Name must be at least 1 character",
     }),
+    subject: z.string({ required_error: "Subject is required" }).min(1, {
+      message: "Subject must be at least 1 character",
+    }),
     category: z.string({ required_error: "Category is required" }).min(1, {
       message: "Category must be at least 1 character",
     }),
@@ -94,6 +97,9 @@ export const testUpdateSchema = z.object({
   id: z.string().trim().optional().nullable(),
   name: z.string({ required_error: "Name is required" }).min(1, {
     message: "Name must be at least 1 character",
+  }),
+  subject: z.string({ required_error: "Subject is required" }).min(1, {
+    message: "Subject must be at least 1 character",
   }),
   banner: z.string().trim().optional().nullable(),
   category: z.string({ required_error: "Category is required" }).min(1, {

@@ -32,6 +32,7 @@ export const useUpdateTest = () => {
       form.reset({
         id: detail?.data.id,
         name: detail?.data.name,
+        subject: detail?.data.subject,
         category: detail?.data.category,
         banner: detail?.data.banner,
         sub_tests: detail?.data?.sub_tests?.map?.((sub_test) => ({
