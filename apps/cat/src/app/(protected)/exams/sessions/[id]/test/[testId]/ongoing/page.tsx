@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, Button, Typography, Radio, Tag, Modal, Tabs } from "antd";
+import { Card, Button, Typography, Radio, Tag, Modal, Tabs, message } from "antd";
 import parse from "html-react-parser";
-import { FC, ReactElement, useEffect, useState, useCallback, useRef } from "react";
+import { FC, ReactElement, useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { useGetDetailSession } from "@/shared/hooks/sessions/use-get-detail-session";
 import dayjs from "dayjs";
@@ -25,11 +25,8 @@ export const Component: FC = (): ReactElement => {
 
   const selectedTest = session?.tests?.find((t) => t.test.id === params.testId);
   const isPsikologi = session?.category === "Psikologi";
-  const subTests = selectedTest?.test?.sub_tests ?? [];
-
+  const subTests = useMemo(() => selectedTest?.test.sub_tests ?? [], [selectedTest]);
   const [currentSubTestIndex, setCurrentSubTestIndex] = useState<number>(0);
-  const [showSubTestSelection, setShowSubTestSelection] = useState(false);
-
   const currentSubTest = isPsikologi && subTests.length > 0 ? subTests[currentSubTestIndex] : null;
   const selectedSubTestId = currentSubTest?.id ?? "";
   const questions =
@@ -43,7 +40,6 @@ export const Component: FC = (): ReactElement => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFullscreenModal, setShowFullscreenModal] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const currentQuestion = questions[current];
   const hasSubmittedRef = useRef(false);
 
@@ -56,7 +52,6 @@ export const Component: FC = (): ReactElement => {
     setIsSubmitting(true);
 
     const payload = getPayload();
-    console.log("Auto Submit Payload:", payload);
 
     const mutateFunction = isPsikologi ? mutatePsikologi : mutateAkademik;
 
@@ -70,9 +65,9 @@ export const Component: FC = (): ReactElement => {
         );
       },
       onError: (err) => {
-        console.log("Auto Submit Error", err);
         hasSubmittedRef.current = false;
         setIsSubmitting(false);
+        message.error(err?.response?.data?.message ?? "Terjadi kesalahan pada server");
       },
     });
   }, [
@@ -117,7 +112,6 @@ export const Component: FC = (): ReactElement => {
   const handleFullscreenChange = useCallback(() => {
     const isCurrentlyFullscreen = checkFullscreen();
     setIsFullscreen(isCurrentlyFullscreen);
-
     if (!isCurrentlyFullscreen && !showFullscreenModal && !hasSubmittedRef.current) {
       Modal.warning({
         title: "Keluar dari Mode Fullscreen",
@@ -132,13 +126,15 @@ export const Component: FC = (): ReactElement => {
   }, [checkFullscreen, showFullscreenModal, autoSubmit]);
 
   useEffect(() => {
-    if (!selectedTest?.start_date || !selectedTest?.end_date) return;
+    if (!selectedTest?.timer || selectedTest.timer <= 0) {
+      setTimeLeft("00:00:00");
+      return;
+    }
 
+    const endTime = dayjs().add(selectedTest.timer, "minute");
     const interval = setInterval(() => {
       const now = dayjs();
-      const end = dayjs(selectedTest.end_date);
-      const diff = end.diff(now, "second");
-
+      const diff = endTime.diff(now, "second");
       if (diff <= 0) {
         setTimeLeft("00:00:00");
         clearInterval(interval);
@@ -159,7 +155,9 @@ export const Component: FC = (): ReactElement => {
       const m = Math.floor((diff % 3600) / 60);
       const s = diff % 60;
       setTimeLeft(
-        `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`,
+        `${h.toString().padStart(2, "0")}:${m
+          .toString()
+          .padStart(2, "0")}:${s.toString().padStart(2, "0")}`,
       );
     }, 1000);
     return () => clearInterval(interval);
@@ -249,7 +247,6 @@ export const Component: FC = (): ReactElement => {
         setIsSubmitting(true);
 
         const payload = getPayload();
-        console.log("Manual Submit Payload:", payload);
 
         const mutateFunction = isPsikologi ? mutatePsikologi : mutateAkademik;
 
@@ -265,9 +262,9 @@ export const Component: FC = (): ReactElement => {
           },
           onError: (err) => {
             exitFullscreen();
-            console.log("Manual Submit Error", err);
             hasSubmittedRef.current = false;
             setIsSubmitting(false);
+            message.error(err?.response?.data?.message ?? "Terjadi kesalahan pada server");
           },
         });
       },
@@ -292,14 +289,11 @@ export const Component: FC = (): ReactElement => {
 
     mutatePsikologi(payload, {
       onSuccess: () => {
-        // Check if there are more sub-tests
         if (currentSubTestIndex < subTests.length - 1) {
-          // Move to next sub-test
           setCurrentSubTestIndex((prev) => prev + 1);
           setCurrent(0);
           setMarked([]);
           useAnswerStore.getState().reset();
-          // Update meta for next sub-test
           useAnswerStore.getState().setMeta({
             session_id: session?.id ?? "",
             test_id: selectedTest?.test.id ?? "",
@@ -308,7 +302,6 @@ export const Component: FC = (): ReactElement => {
           });
           setIsSubmitting(false);
         } else {
-          // All sub-tests completed, navigate to result
           navigate(
             generatePath(ROUTES.exams.sessions.test.result, {
               id: params.id ?? "",
@@ -318,8 +311,8 @@ export const Component: FC = (): ReactElement => {
         }
       },
       onError: (err) => {
-        console.log("Sub-test Submit Error", err);
         setIsSubmitting(false);
+        message.error(err?.response?.data?.message ?? "Terjadi kesalahan pada server");
       },
     });
   }, [
@@ -421,7 +414,6 @@ export const Component: FC = (): ReactElement => {
             </div>
           </Card>
 
-          {/* Sub-test Progress Tabs for Psikologi */}
           {isPsikologi && subTests.length > 0 && (
             <Card className="shadow-sm">
               <Title level={5} className="mb-4 font-bold text-blue-600">
@@ -493,9 +485,16 @@ export const Component: FC = (): ReactElement => {
             >
               <div className="flex flex-col gap-2">
                 {currentQuestion.options.map((opt) => (
-                  <Radio key={opt.id} value={opt.id}>
-                    {opt.label}
-                  </Radio>
+                  <div id={opt.id} key={opt.id} className="flex flex-col gap-y-2">
+                    <Radio value={opt.id}>{opt.label}</Radio>
+                    {opt.image_url && (
+                      <img
+                        src={opt.image_url}
+                        alt="Gambar Pilihan"
+                        className="mt-2 rounded max-w-md max-h-80 object-contain"
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
             </Radio.Group>

@@ -66,6 +66,7 @@ export const Component: FC = (): ReactElement => {
 
   const { score, correctAnswersCount, totalQuestions, subTestScores } = useMemo(() => {
     if (hasSubTests) {
+      const subScore = subTestResults.reduce((_sum, result) => result.data?.data?.score ?? 0, 0);
       const subScores = subTestResults.map((result, index) => {
         const subTestData = result.data?.data;
         const subTestQuestions = subTestData?.questions ?? [];
@@ -81,11 +82,10 @@ export const Component: FC = (): ReactElement => {
         });
 
         const total = subTestQuestions.length;
-        const subScore =
-          subTestData?.score ?? (total > 0 ? Math.round((correctCount / total) * 100) : 0);
 
         return {
           subTestName: subTests[index]?.name ?? `Sub-Test ${index + 1}`,
+          subTestCategory: subTests[index]?.category ?? "",
           passing_grade: subTests[index]?.passing_grade ?? 0,
           score: subScore,
           correctCount,
@@ -350,7 +350,6 @@ export const Component: FC = (): ReactElement => {
                         userSelectedOption &&
                         correctOption &&
                         userSelectedOption.id === correctOption.id;
-                      console.log(isAnswerCorrect);
                       return (
                         <div
                           key={q.id}
@@ -370,39 +369,112 @@ export const Component: FC = (): ReactElement => {
                             )}
                           </div>
 
-                          <div className="space-y-2 mb-4">
-                            <Text strong>Pilihan Jawaban:</Text>
-                            {q.options.map((opt: any) => {
-                              let optionStyle =
-                                "p-2 border rounded flex items-center justify-between";
+                          {subTest.subTestCategory === "Psikologi" && (
+                            <>
+                              <div className="space-y-2 mb-4">
+                                <Text strong>Pilihan Jawaban:</Text>
+                                {q.options.map((opt: any) => {
+                                  let optionStyle =
+                                    "p-2 border rounded flex items-center justify-between";
 
-                              optionStyle += " bg-gray-50 border-gray-200";
+                                  optionStyle += " bg-gray-50 border-gray-200";
 
-                              return (
-                                <div key={opt.id} className={optionStyle}>
-                                  <span>{opt.label}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
+                                  return (
+                                    <div key={opt.id} className={optionStyle}>
+                                      <span>{opt.label}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
 
-                          <Divider orientation="left" className="text-sm">
-                            Pembahasan
-                          </Divider>
-                          <div className="prose max-w-none bg-blue-50 p-3 rounded">
-                            {q.discussion ? (
-                              parse(q.discussion)
-                            ) : (
-                              <Text type="secondary">Pembahasan tidak tersedia.</Text>
-                            )}
-                            {q.discussion_image_url && (
-                              <img
-                                src={q.discussion_image_url}
-                                alt="Gambar Pembahasan"
-                                className="mt-2 rounded max-w-md max-h-80 object-contain"
-                              />
-                            )}
-                          </div>
+                              <Divider orientation="left" className="text-sm">
+                                Pembahasan
+                              </Divider>
+                              <div className="prose max-w-none bg-blue-50 p-3 rounded">
+                                {q.discussion ? (
+                                  parse(q.discussion)
+                                ) : (
+                                  <Text type="secondary">Pembahasan tidak tersedia.</Text>
+                                )}
+                                {q.discussion_image_url && (
+                                  <img
+                                    src={q.discussion_image_url}
+                                    alt="Gambar Pembahasan"
+                                    className="mt-2 rounded max-w-md max-h-80 object-contain"
+                                  />
+                                )}
+                              </div>
+                            </>
+                          )}
+
+                          {subTest.subTestCategory === "Akademik" && (
+                            <>
+                              <div className="space-y-2 mb-4">
+                                <Text strong>Pilihan Jawaban:</Text>
+                                {q.options.map((opt: any) => {
+                                  const isUserSelected = opt.is_user_selected;
+                                  const isCorrect = opt.is_correct;
+                                  let optionStyle =
+                                    "p-2 border rounded flex items-center justify-between";
+                                  let icon = null;
+
+                                  if (isCorrect) {
+                                    optionStyle += " bg-green-50 border-green-300 text-green-700";
+                                    icon = <CheckCircleFilled className="text-green-500" />;
+                                  } else if (isUserSelected && !isCorrect) {
+                                    optionStyle += " bg-red-50 border-red-300 text-red-700";
+                                    icon = <CloseCircleFilled className="text-red-500" />;
+                                  } else {
+                                    optionStyle += " bg-gray-50 border-gray-200";
+                                  }
+
+                                  return (
+                                    <div key={opt.id} className={optionStyle}>
+                                      <span>{opt.label}</span>
+                                      {icon}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {userSelectedOption && (
+                                <Alert
+                                  message={
+                                    isAnswerCorrect ? "Jawaban Anda Benar" : "Jawaban Anda Salah"
+                                  }
+                                  type={isAnswerCorrect ? "success" : "error"}
+                                  showIcon
+                                  className="mb-4"
+                                />
+                              )}
+                              {!userSelectedOption && (
+                                <Alert
+                                  message="Anda tidak menjawab pertanyaan ini."
+                                  type="warning"
+                                  showIcon
+                                  className="mb-4"
+                                />
+                              )}
+
+                              <Divider orientation="left" className="text-sm">
+                                Pembahasan
+                              </Divider>
+                              <div className="prose max-w-none bg-blue-50 p-3 rounded">
+                                {q.discussion ? (
+                                  parse(q.discussion)
+                                ) : (
+                                  <Text type="secondary">Pembahasan tidak tersedia.</Text>
+                                )}
+                                {q.discussion_image_url && (
+                                  <img
+                                    src={q.discussion_image_url}
+                                    alt="Gambar Pembahasan"
+                                    className="mt-2 rounded max-w-md max-h-80 object-contain"
+                                  />
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
                       );
                     })}

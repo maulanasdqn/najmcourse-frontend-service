@@ -1,4 +1,3 @@
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
@@ -193,6 +192,7 @@ const Lexical: FC<TLexicalProps> = (props): ReactElement => {
         <RichTextPlugin
           contentEditable={
             <ContentEditable
+              autoFocus={false}
               className="editor-input border border-gray-200 bg-white focus:border-[1px] focus:border-blue-300 rounded-l-lg rounded-r-lg rounded-b-lg"
               aria-placeholder={placeholder}
               placeholder={
@@ -204,7 +204,6 @@ const Lexical: FC<TLexicalProps> = (props): ReactElement => {
         />
         <LoadHtmlPlugin html={props.value ?? "<p><br></p>"} />
         <HistoryPlugin />
-        <AutoFocusPlugin />
         <OnChangePlugin onChange={handleChange} />
       </div>
     </LexicalComposer>
