@@ -1,3 +1,6 @@
+export * from "./admin/api";
+export * from "./admin/type";
+export * from "./admin/schema";
 export * from "./auth/api";
 export * from "./auth/type";
 export * from "./auth/schema";
@@ -18,6 +21,9 @@ export * from "./sessions/type";
 export * from "./sessions/schema";
 export * from "./storage/api";
 export * from "./storage/type";
+export * from "./student/api";
+export * from "./student/type";
+export * from "./student/schema";
 export * from "./tests/api";
 export * from "./tests/type";
 export * from "./tests/schema";

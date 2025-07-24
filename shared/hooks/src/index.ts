@@ -1,3 +1,4 @@
+export * from "./admin";
 export * from "./answers";
 export * from "./auth";
 export * from "./options";
@@ -6,5 +7,6 @@ export * from "./questions";
 export * from "./roles";
 export * from "./sessions";
 export * from "./storage";
+export * from "./student";
 export * from "./tests";
 export * from "./users";

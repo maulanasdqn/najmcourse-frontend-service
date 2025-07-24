@@ -101,4 +101,11 @@ export const ENDPOINTS = {
   STORAGE: {
     UPLOAD: "/storage/upload",
   },
+  ADMIN: {
+    DASHBOARD_STATS: "/admin/stats/dashboard",
+  },
+  STUDENT: {
+    DASHBOARD_STATS: "/student/stats/dashboard/:user_id",
+    STATS: "/sessions/student-stats/:user_id",
+  },
 };
