@@ -43,6 +43,10 @@ npm run lint
 # Run linting for specific apps
 npm run backoffice:lint
 npm run cat:lint
+
+# Run single test file
+nx vite:test backoffice --testNamePattern="ComponentName"
+nx vite:test cat src/path/to/test.spec.tsx
 ```
 
 ### Nx Commands
@@ -55,6 +59,18 @@ nx run-many -t=eslint:lint
 # Run for specific project
 nx vite:dev backoffice
 nx vite:test cat
+
+# Visualize dependency graph
+nx graph
+
+# Show project structure
+nx show projects
+```
+
+### Storybook
+```bash
+# Run Storybook for component development
+npm run storybook
 ```
 
 ## Architecture
@@ -175,3 +191,106 @@ Key files:
 2. Update route permissions in middleware
 3. Add routes to `shared/commons/src/constants/routes.ts`
 4. Update API endpoints in `shared/commons/src/constants/endpoints.ts`
+
+## Critical Development Patterns
+
+### File-Based Routing Structure
+Both apps use React Router 7 with consistent patterns:
+```
+app/
+├── (protected)/              # Protected routes with auth middleware
+│   ├── feature/              # Domain grouping (iam, exams, etc.)
+│   │   ├── entity/           # Entity name (users, roles, etc.)
+│   │   │   ├── list/         # List view
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── _hooks/
+│   │   │   ├── create/       # Create form
+│   │   │   ├── [id]/         # Dynamic routes
+│   │   │   │   ├── detail/   # Detail view
+│   │   │   │   └── update/   # Edit form
+│   │   │   ├── _components/  # Private components
+│   │   │   └── _hooks/       # Private hooks
+├── (public)/                 # Public routes (auth)
+└── layout.tsx               # App layout
+```
+
+### Type Naming Conventions
+- **API Types**: `T` prefix with descriptive names
+  - `TUserCreateRequest`, `TUserListResponse`, `TMessageResponse`
+- **Component Props**: `T{ComponentName}Props<T>`
+  - `TControlledInputProps<T extends FieldValues>`
+- **API Functions**: HTTP method + action + entity
+  - `getListUser`, `postCreateUser`, `putUpdateUser`, `deleteUser`
+
+### Permission & Feature Flag System
+Every protected route requires both:
+- **Permission check**: User role must have specific permission
+- **Feature flag**: Environment variable must enable the feature
+
+```typescript
+// middleware.ts pattern
+const mappingRoutePermissions = [
+  {
+    path: ROUTES.iam.users.list,
+    permissions: [PERMISSIONS.USERS.READ_LIST_USERS],
+    flag: FEATURE_FLAGS.IAM.USERS.LIST_USERS,
+  }
+];
+```
+
+### API Integration Pattern
+1. **Type Definition**: `shared/apis/src/{domain}/type.ts`
+2. **Schema Validation**: `shared/apis/src/{domain}/schema.ts`
+3. **API Functions**: `shared/apis/src/{domain}/api.ts`
+4. **React Hooks**: `shared/hooks/src/{domain}/`
+
+### Form Handling Standard
+All forms use React Hook Form + Zod validation:
+```typescript
+// Component with form
+const { control } = useForm<TFormType>({
+  resolver: zodResolver(schema),
+  defaultValues: {...}
+});
+
+// Controlled components
+<ControlledInput control={control} name="fieldName" />
+```
+
+### State Management Architecture
+- **Global State**: Zustand stores in `shared/libs/src/zustand/`
+- **Server State**: React Query with custom hooks
+- **Form State**: React Hook Form with validation
+- **Session State**: localStorage + cookies for auth tokens
+
+## Environment Requirements
+- **Node.js**: v22.15.0 (specified in package.json engines)
+- **Package Manager**: npm (lockfile present)
+- **Docker**: Optional for containerized development
+
+## Important Implementation Notes
+
+### Known File Naming Issue
+There's a typo in the filename: `apps/backoffice/src/app/(protected)/iam/users/_hooks/use-form.-user.ts` (extra dot before "user").
+
+### Component Export Pattern
+The codebase uses both patterns - be consistent within each file:
+```typescript
+// Pattern 1: Named export with default
+export const Component = () => {};
+export default Component;
+
+// Pattern 2: Direct export
+export const ControlledInput = () => {};
+```
+
+### Testing Co-location
+- Tests: `__tests__/ComponentName.test.tsx`
+- Stories: `__stories__/ComponentName.stories.tsx`
+- Specs: `ComponentName.spec.tsx` (for shared components)
+
+### Nx Integration Notes
+This workspace includes Nx Console integration via `.cursor/rules/nx-rules.mdc`. When working with Nx:
+- Use `nx_workspace` tool to understand workspace architecture
+- Use `nx_docs` tool for configuration questions
+- Use `nx_generators` tool for scaffolding new components/features
