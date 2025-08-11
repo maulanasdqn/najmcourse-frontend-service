@@ -69,11 +69,25 @@ export default defineConfig(() => ({
     globals: true,
     setupFiles: ["../../vitest.setup.ts"],
     environment: "jsdom",
-    include: ["{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    include: [
+      // Include backoffice app tests
+      "{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+      // Include shared API integration tests relevant to backoffice
+      "../../shared/apis/src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ],
     reporters: ["default"],
     coverage: {
       reportsDirectory: "../../coverage/apps/backoffice",
       provider: "v8" as const,
+      include: [
+        "src/**/*.{js,ts,jsx,tsx}",
+        "../../shared/apis/src/**/*.{js,ts,jsx,tsx}",
+      ],
+      exclude: [
+        "**/*.{test,spec}.{js,ts,jsx,tsx}",
+        "**/__tests__/**",
+        "**/__mocks__/**",
+      ],
     },
   },
 }));
